@@ -1,0 +1,111 @@
+<!DOCTYPE HTML>
+<!--
+	Editorial by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>C++ in Unreal Engine - Freddie Cross</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+	<div class="inner">
+
+							<!-- Header -->
+	  <header id="header">
+									<a href="index.html" class="logo"><b>Freddie Cross</b></a>
+									<ul class="icons">
+										<li><a href="https://compactstudios.itch.io" class="icon brands fa-itch-io"><span class="label">itch</span></a></li>
+										<li><a href="https://www.linkedin.com/in/freddie-cross-23853521a" class="icon brands fa-linkedin"><span class="label">Linkedin</span></a></li>
+										<li><a href="https://compactrhythm.bandcamp.com/" class="icon brands fa-bandcamp"><span class="label">Bandcamp</span></a></li>
+									</ul>
+			</header>
+
+							<!-- Content -->
+								<section>
+									<header class="main">
+										<h1>Ghost Town (Mar - May 2024)&nbsp;&nbsp;</h1>
+									</header>
+
+									<span class="image main"><img src="images/GT_01.jpg" alt=""/></span>
+	  <p>For my final semester in my first year at Staffordshire University, I was placed in a group of my peers from the same course. This was my first proper group project. We each assigned ourselves roles and utilised Trello to assign ourselves and each other tasks. This project was quite unsuccessful as nobody took leadership of the project so we were all relying on each other to come up with individual ideas rather than having a specific goal we are all working towards.<br>My role in the project was to create mechanics for the player. I created movement systems including walking, sprinting and jumping while also having developed other mechanics such as melee combat and dodging. Some extra parts of the project I developed include animation management and enemies.</p>
+									<div class="col-6 col-12-small">
+									<hr class="major" />
+									  <h2 id="content">My Contribution&nbsp;</h2>
+												<h3>Player Character Dodging</h3>
+										<p>This was my first time developing a third person character inside Unreal Engine and I found it quite easy to implement with the components that are offered. As part of the design of the game, I was told to make dodging mechanics and so I used animations from mixamo to visually represenent what I wanted to see and make the player invincible for a short amount of time while the character gets pushed in the direction it's moving in.</p>
+									<h3>Combat</h3>
+									<p>One of the challenges inside the game include fightin enemies and so I created the ability to deal damage with an animation and a hitbox appearing while checking what object is being hit. I designed this so that it could be applied to non enemy types of objects like trees which might need to be cut down however this part of the game was never implemented.</p>
+									<h3>Enemies</h3>
+									<p>After developing combat, I then created something that could fight back and so I created a character which was also animated like the player. It used Unreal Engine's Pawn Sensing component to see the player in front of it. I used Behavior Trees for the first time to manage different states of the character like when it is idle and then chasing the player.</p>
+										<h3>Animation</h3>
+									<p>While I didn't make the animations myself, I worked with Animation Blueprints for the first time inside Unreal Engine. These are very powerful tools working similar to a Behavior Tree by checking variables and managing states. I added the animations to the project and worked on the state machine to manage the animations successfully.</p>
+															
+										<hr class="major" />
+									<h2>Demonstration</h2>
+										<iframe width="560" height="315" src="https://www.youtube.com/embed/C23RRpTlAnw?si=XjYGPycL1wG4sVT4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+									<hr class="major" />
+
+								</section>
+
+						</div>
+					</div>
+
+				<!-- Sidebar -->
+					<div id="sidebar">
+						<div class="inner">
+
+							<!-- Menu -->
+								<nav id="menu">
+									<header class="major">
+										<h2>Menu</h2>
+									</header>
+									<ul class="Sidebar">
+										<li class="Homepage"><a href="index.html">Homepage</a></li>
+										
+										<li class="GameDev"><a href="elements.html">game development Portfolio</a></li>
+										<li class="music"><a href="#">Music Portfolio</a></li>
+										
+										<li class="About"><a href="generic.html">About</a></li>
+										<li>
+											<p></p>
+							<!-- Section -->
+								<section>
+									<header class="major">
+										<h2>Get in touch</h2>
+									</header>
+									<ul class="contact">
+										<li class="icon solid fa-envelope"><a href="#">fa.cross@hotmail.com</a></li>
+										<li class="icon solid fa-phone">+447707662227</li>
+										<li class="icon solid fa-home">77 Springfield Gardens, Upminster, Essex&nbsp;&nbsp;</li>
+									</ul>
+								</section>
+<p></p>
+							<!-- Footer -->
+								<footer id="footer">
+									<p class="copyright"> Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
+								</footer>
+
+						</div>
+					</div>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
