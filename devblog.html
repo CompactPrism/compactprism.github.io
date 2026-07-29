@@ -17,9 +17,17 @@
 		<p>Progress updates on the project, newest first. See the <a href="devblog_about.html">About</a> tab for what this project is.</p>
 
 		<!-- ================================================================
-			HOW TO ADD A NEW POST
+			HOW TO ADD A NEW POST — EASY WAY
+			Double-click new_post.bat (or open post_composer.html in your
+			browser). Write your post with the formatting toolbar, click
+			"Save into blog file", pick this file, done — the post is
+			inserted below the marker line with the current date and time.
+			Then commit & push the file as usual.
+
+			HOW TO ADD A NEW POST — MANUAL WAY
 			1. Copy the whole <article class="post"> ... </article> block below.
-			2. Paste it directly UNDER this comment (newest posts go on top).
+			2. Paste it directly UNDER the NEW-POSTS-GO-BELOW marker line
+			   (newest posts go on top).
 			3. Change the title and date, then write your update inside
 			   <div class="post-body">. Plain <p> paragraphs, <img>, <ul>,
 			   <video controls src="..."> and YouTube <iframe> embeds all
@@ -32,7 +40,10 @@
 			   .tabbar of BOTH files so they point at each other.
 			3. In index.html, follow the "DEV BLOGS" comment to add an app
 			   entry and a desktop icon for it.
+			The post composer works with any blog file that contains the
+			marker line below.
 		================================================================= -->
+		<!-- NEW-POSTS-GO-BELOW -->
 
 		<article class="post">
 			<header class="post-title">
