@@ -298,6 +298,7 @@
 			<div class="sm-item" id="sm-projects" tabindex="0"><span class="sm-icon">📁</span>Projects<span class="arrow">▶</span>
 				<div id="submenu-projects"></div>
 			</div>
+			<button class="sm-item" data-app="devblog"><span class="sm-icon">📓</span>Dev Blog</button>
 			<button class="sm-item" data-app="portfolio"><span class="sm-icon">📄</span>Full Portfolio</button>
 			<button class="sm-item" data-app="contact"><span class="sm-icon">📧</span>Contact</button>
 			<div class="sm-sep"></div>
@@ -396,7 +397,7 @@
 			{ id: 'payup', title: 'Pay Up', page: 'pay_up.html', img: 'images/CS_01.png', meta: 'Unity · 2D · 2024', group: 'Staffordshire University' },
 			{ id: 'mementomori', title: 'Memento Mori', page: 'Memento_Mori.html', img: 'images/MM_01.png', meta: 'Unity · 2023', group: 'Havering Sixth Form College' },
 			{ id: 'metamorphs', title: 'Metamorphs', page: 'Metamorphs.html', img: 'images/WIP.png', meta: 'Stencyl · 2021-22', group: 'Havering Sixth Form College' },
-			{ id: 'planegame', title: 'PLANE GAME!!!!', page: 'Plane_Game.html', img: 'images/WT_03.jpg', meta: 'Unity · Game Jam · 2023', group: 'Extra Projects' },
+			{ id: 'planegame', title: 'PLANE GAME!!!!', page: 'Plane_Game.html', img: 'images/WIP.png', meta: 'Unity · Game Jam · 2023', group: 'Extra Projects' },
 			{ id: 'collectdales', title: 'Collect The Dales', page: 'Collect_Dales.html', img: 'images/CTD_01.png', meta: 'Unity · 2022', group: 'Extra Projects' }
 		];
 		var GROUPS = ['Staffordshire University', 'Havering Sixth Form College', 'Extra Projects'];
@@ -407,7 +408,14 @@
 			portfolio: { title: 'Full Portfolio - Freddie Cross', icon: '📄', type: 'iframe', src: 'GameDevPortPub.html', w: 900, h: 620 },
 			contact:   { title: 'Contact', icon: '📧', type: 'tpl', tpl: 'tpl-contact', w: 440, h: 420 },
 			recycle:   { title: 'Recycle Bin', icon: '🗑️', type: 'tpl', tpl: 'tpl-recycle', w: 400, h: 260 },
-			shutdown:  { title: 'Shut Down', icon: '🔌', type: 'tpl', tpl: 'tpl-shutdown', w: 380, h: 260 }
+			shutdown:  { title: 'Shut Down', icon: '🔌', type: 'tpl', tpl: 'tpl-shutdown', w: 380, h: 260 },
+			/* ---- DEV BLOGS ----
+			   To add a blog for another project: copy devblog.html and
+			   devblog_about.html (see instructions inside devblog.html),
+			   then add an app entry here like the one below, plus a
+			   DESKTOP_ICONS entry further down, e.g.:
+			   mygame: { title: 'My Game - Dev Blog', icon: '📓', type: 'iframe', src: 'mygame_blog.html', w: 860, h: 620 }, */
+			devblog:   { title: 'My New Project - Dev Blog', icon: '📓', type: 'iframe', src: 'devblog.html', w: 860, h: 620 }
 		};
 		PROJECTS.forEach(function (p) {
 			APPS['prj-' + p.id] = { title: p.title, iconImg: p.img, icon: '🎮', type: 'iframe', src: p.page, w: 900, h: 620 };
@@ -416,6 +424,7 @@
 		var DESKTOP_ICONS = [
 			{ app: 'about', icon: '👨‍💻', label: 'About Me' },
 			{ app: 'projects', icon: '📁', label: 'Projects' },
+			{ app: 'devblog', icon: '📓', label: 'Dev Blog' },
 			{ app: 'portfolio', icon: '📄', label: 'Full Portfolio' },
 			{ app: 'contact', icon: '📧', label: 'Contact' },
 			{ app: 'prj-phonyphantoms', img: 'images/phonyphantoms.png', label: 'Phony Phantoms' },
