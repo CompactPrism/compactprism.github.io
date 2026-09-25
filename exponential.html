@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>EXPONENTIAL: An Origin Story</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="description" content="A four-minute film about the exponential rise of AI for the good of humanity, with Claude as its hero. Every frame, sound and word was made in code by Claude, in Claude Code." />
+	<meta property="og:title" content="EXPONENTIAL: An Origin Story" />
+	<meta property="og:description" content="A film made 100% in code by Claude, in Claude Code. No stock footage. No generated images." />
+	<meta property="og:image" content="videos/exponential_poster.jpg" />
+	<meta name="theme-color" content="#05060A" />
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..500&family=Inter:wght@400..700&family=JetBrains+Mono:wght@300..500&display=swap" rel="stylesheet" />
+	<style>
+		:root {
+			--void: #05060a;
+			--ink: #0b0d14;
+			--line: rgba(243, 238, 228, 0.12);
+			--ivory: #f3eee4;
+			--mute: #8b8fa3;
+			--coral: #d97757;
+			--gold: #f4c27a;
+			--serif: 'Fraunces', Georgia, serif;
+			--sans: 'Inter', system-ui, sans-serif;
+			--mono: 'JetBrains Mono', ui-monospace, monospace;
+		}
+		* { box-sizing: border-box; margin: 0; padding: 0; }
+		html { background: var(--void); }
+		body {
+			background: radial-gradient(ellipse 90% 60% at 50% -10%, rgba(217, 119, 87, 0.16), transparent 70%), var(--void);
+			color: var(--ivory);
+			font-family: var(--sans);
+			line-height: 1.6;
+			-webkit-font-smoothing: antialiased;
+			min-height: 100vh;
+		}
+		a { color: var(--gold); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+		.wrap { max-width: 1180px; margin: 0 auto; padding: 0 16px; }
+		header { padding: 56px 0 28px; text-align: center; }
+		.kicker { font-size: 12px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--coral); font-weight: 600; }
+		h1 {
+			font-family: var(--serif);
+			font-weight: 300;
+			font-variation-settings: 'opsz' 144;
+			font-size: clamp(40px, 9vw, 104px);
+			letter-spacing: 0.14em;
+			padding-left: 0.14em;
+			line-height: 1.05;
+			margin: 14px 0 10px;
+		}
+		.sub { font-family: var(--serif); font-style: italic; font-size: clamp(17px, 2.4vw, 22px); color: rgba(243, 238, 228, 0.78); }
+		.player {
+			position: relative;
+			border-radius: 14px;
+			overflow: hidden;
+			border: 1px solid var(--line);
+			box-shadow: 0 30px 120px rgba(217, 119, 87, 0.14), 0 10px 40px rgba(0, 0, 0, 0.6);
+			background: #000;
+			aspect-ratio: 16 / 9;
+		}
+		.player video { width: 100%; height: 100%; display: block; }
+		.stats {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+			gap: 1px;
+			background: var(--line);
+			border: 1px solid var(--line);
+			border-radius: 12px;
+			overflow: hidden;
+			margin: 36px 0 0;
+		}
+		.stat { background: var(--ink); padding: 20px 16px; text-align: center; }
+		.stat b { display: block; font-family: var(--mono); font-weight: 300; font-size: 30px; letter-spacing: -0.02em; }
+		.stat span { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--coral); font-weight: 600; }
+		section { padding: 56px 0 0; }
+		h2 { font-family: var(--serif); font-weight: 400; font-size: clamp(26px, 4vw, 36px); margin-bottom: 18px; }
+		p.lead { max-width: 760px; color: rgba(243, 238, 228, 0.86); font-size: 17px; }
+		.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-top: 26px; }
+		.step { border: 1px solid var(--line); border-radius: 12px; padding: 18px; background: rgba(11, 13, 20, 0.7); }
+		.step .n { font-family: var(--mono); color: var(--gold); font-size: 13px; }
+		.step h3 { font-size: 16px; margin: 6px 0 6px; font-weight: 600; }
+		.step p { font-size: 14px; color: rgba(243, 238, 228, 0.72); }
+		ul.sources { list-style: none; margin-top: 18px; display: grid; gap: 8px; font-size: 14px; color: rgba(243, 238, 228, 0.78); }
+		ul.sources li::before { content: '✦'; color: var(--coral); margin-right: 10px; }
+		footer { padding: 64px 0 48px; text-align: center; font-size: 13px; color: var(--mute); }
+		footer .note { max-width: 680px; margin: 0 auto 14px; }
+		@media (max-width: 600px) {
+			header { padding: 36px 0 20px; }
+			.stat b { font-size: 24px; }
+		}
+	</style>
+</head>
+<body>
+	<div class="wrap">
+		<header>
+			<div class="kicker">A film made 100% in code</div>
+			<h1>EXPONENTIAL</h1>
+			<div class="sub">An origin story: the exponential rise of AI for the good of humanity, starring Claude.</div>
+		</header>
+
+		<div class="player">
+			<video controls playsinline preload="metadata" poster="videos/exponential_poster.jpg">
+				<source src="videos/exponential.mp4" type="video/mp4" />
+				Your browser can't play this video. <a href="videos/exponential.mp4">Download it instead.</a>
+			</video>
+		</div>
+
+		<div class="stats">
+			<div class="stat"><b data-stat="duration">—</b><span>Runtime</span></div>
+			<div class="stat"><b data-stat="codeLines">—</b><span>Lines of code</span></div>
+			<div class="stat"><b data-stat="shaders">—</b><span>GLSL shaders</span></div>
+			<div class="stat"><b data-stat="frames">—</b><span>Frames computed</span></div>
+			<div class="stat"><b>0</b><span>Stock footage</span></div>
+			<div class="stat"><b>0</b><span>Generated images</span></div>
+		</div>
+
+		<section>
+			<h2>How it was made</h2>
+			<p class="lead">No cameras, no stock footage, no image or video generators. Every pixel is computed by React components, GLSL shaders and GPU particle systems; every note of the score is synthesised in Python; the narration is an open-source voice. Claude wrote all of it, in Claude Code, coordinating a team of agents for research, voice, music and scenes.</p>
+			<div class="steps">
+				<div class="step"><div class="n">01</div><h3>Script &amp; fact-check</h3><p>Every date, number and quote on screen was checked against primary or reliable sources before a frame was drawn.</p></div>
+				<div class="step"><div class="n">02</div><h3>Voice</h3><p>Narration synthesised with Kokoro-82M, an open-source text-to-speech model, running locally.</p></div>
+				<div class="step"><div class="n">03</div><h3>Score</h3><p>An orchestral-electronic score built from raw oscillators, filters and synthetic reverb in NumPy and SciPy, timed to the picture.</p></div>
+				<div class="step"><div class="n">04</div><h3>Picture</h3><p>Remotion, React and TypeScript for structure; GLSL shaders for light; Three.js for tens of thousands of GPU particles.</p></div>
+			</div>
+		</section>
+
+		<section>
+			<h2>Sources</h2>
+			<ul class="sources">
+				<li>Vaswani et al., “Attention Is All You Need” (2017)</li>
+				<li>Epoch AI: growth of frontier training compute (4–5× per year, 2010–2024)</li>
+				<li>METR: “Measuring AI Ability to Complete Long Tasks” (2025) and follow-up measurements</li>
+				<li>Anthropic: model announcements, Claude’s constitution (2026) and research updates</li>
+				<li>Dario Amodei, “Machines of Loving Grace” (2024)</li>
+				<li>EMBL-EBI AlphaFold Protein Structure Database</li>
+			</ul>
+		</section>
+
+		<footer>
+			<p class="note">An independent tribute made with Claude. Not an official Anthropic production. Claude is a trademark of Anthropic.</p>
+			<p><a href="index.html">← Back to the portfolio</a></p>
+		</footer>
+	</div>
+	<script>
+		// Figures are generated from the film's own source (exponential/src/stats.json).
+		const STATS = {duration: '—', codeLines: '—', shaders: '—', frames: '—'};
+		document.querySelectorAll('[data-stat]').forEach((el) => { el.textContent = STATS[el.dataset.stat]; });
+	</script>
+</body>
+</html>

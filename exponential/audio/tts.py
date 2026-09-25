@@ -10,7 +10,9 @@ script.json is a list of lines:
 
 Each line becomes out_dir/<id>.wav (24 kHz, mono, 16-bit), trimmed to ~40 ms
 of silence at each end, and out_dir/manifest.json lists every line as
-{id, file, duration_s, text, voice, speed, phonemes, g2p}.
+{id, file, duration_s, text, voice, speed, phonemes, g2p, peak_dbfs,
+speech_rms_dbfs}. Kokoro is not bit-exact between runs (durations can move
+by ~0.05 s), so drive Remotion timing from manifest.json, not constants.
 
 Pronunciation control, from lightest to heaviest:
   * lexicon.json (next to this file, or --lexicon): word -> phonemes, applied
@@ -24,9 +26,15 @@ G2P: misaki (the G2P Kokoro v1.0 was trained with) when installed, otherwise
 kokoro-onnx's espeak-ng mapped to misaki symbols. Voices starting with "b"
 use British G2P.
 
-Models are expected in models/ next to this file (see README in the report):
-  kokoro-v1.0.onnx  voices-v1.0.bin   (github.com/thewh1teagle/kokoro-onnx
-  releases, tag model-files-v1.1)
+Setup (models/ is git-ignored):
+  pip install kokoro-onnx soundfile scipy
+  pip install --no-deps misaki==0.9.4 num2words && pip install addict regex spacy
+  pip install https://github.com/explosion/spacy-models/releases/download/\
+en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+  curl -L -o models/kokoro-v1.0.onnx https://github.com/thewh1teagle/\
+kokoro-onnx/releases/download/model-files-v1.1/kokoro-v1.0.onnx
+  curl -L -o models/voices-v1.0.bin https://github.com/thewh1teagle/\
+kokoro-onnx/releases/download/model-files-v1.1/voices-v1.0.bin
 """
 
 from __future__ import annotations
@@ -55,10 +63,10 @@ ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
 
 # espeak-ng IPA -> misaki symbols (after misaki.espeak.EspeakFallback, Apache-2.0)
 _E2M = sorted({
-    "ʔˌn̩": "ʔn", "ʔn̩": "ʔn",
+    "ʔˌn\u0329": "ʔn", "ʔn\u0329": "ʔn",
     "aɪ": "I", "aʊ": "W", "dʒ": "ʤ", "eɪ": "A", "tʃ": "ʧ", "ɔɪ": "Y",
     "ʲo": "jo", "ʲə": "jə", "ʲ": "",
-    "ɚ": "əɹ", "r": "ɹ", "x": "k", "ç": "k", "ɐ": "ə", "ɬ": "l", "̃": "",
+    "ɚ": "əɹ", "r": "ɹ", "x": "k", "ç": "k", "ɐ": "ə", "ɬ": "l", "\u0303": "",
 }.items(), key=lambda kv: -len(kv[0]))
 
 # [word](/phonemes/)  -- misaki's inline override syntax
@@ -68,7 +76,7 @@ LINK_RE = re.compile(r"\[([^\]]+)\]\(/([^/)]*)/\)")
 def espeak_to_misaki(ps: str, british: bool) -> str:
     for old, new in _E2M:
         ps = ps.replace(old, new)
-    ps = re.sub(r"(\S)̩", r"ᵊ\1", ps).replace("̩", "")
+    ps = re.sub("(\\S)\u0329", "ᵊ\\1", ps).replace("\u0329", "")
     if british:
         ps = ps.replace("eə", "ɛː").replace("iə", "ɪə").replace("əʊ", "Q")
     else:
@@ -324,8 +332,8 @@ def load_script(path: Path) -> list[dict]:
 def main(argv=None):
     ap = argparse.ArgumentParser(
         description="Render script.json lines to WAV with Kokoro-82M.")
-    ap.add_argument("script", type=Path)
-    ap.add_argument("out_dir", type=Path)
+    ap.add_argument("script", type=Path, nargs="?")
+    ap.add_argument("out_dir", type=Path, nargs="?")
     ap.add_argument("--voice", default="af_heart",
                     help="default voice (per-line 'voice' wins)")
     ap.add_argument("--speed", type=float, default=0.95,
@@ -363,6 +371,8 @@ def main(argv=None):
         print("\n".join(sorted(voices)))
         return
 
+    if args.script is None or (args.out_dir is None and not args.dry_run):
+        ap.error("script.json and out_dir/ are required")
     lines = load_script(args.script)
     lexicon = {}
     if args.lexicon and args.lexicon.exists():
@@ -398,9 +408,12 @@ def main(argv=None):
             continue
 
         t0 = time.perf_counter()
-        audio, _ = kokoro.create(
-            ps, voice=voice, speed=speed, is_phonemes=True, trim=True,
-            sentence_pause=args.sentence_pause, clause_pause=args.clause_pause)
+        try:
+            audio, _ = kokoro.create(
+                ps, voice=voice, speed=speed, is_phonemes=True, trim=True,
+                sentence_pause=args.sentence_pause, clause_pause=args.clause_pause)
+        except ValueError as e:
+            sys.exit(f"{lid}: {e}")
         synth_s += time.perf_counter() - t0
         audio = np.asarray(audio, dtype=np.float64)
         if not args.raw:
