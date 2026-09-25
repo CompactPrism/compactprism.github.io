@@ -135,6 +135,7 @@ void main(){
   float veil = .5;
   if (rd.y > -.02) veil = fbm(vec3(atan(rd.x, -rd.z) * 2.2, max(rd.y, 0.) * 9., uTime * .02)) * .5 + .5;
   vec3 col = skyCol(rd, veil);
+  if (rd.y > .01) col += COL_ICE * stars(vec2(atan(rd.x, -rd.z), rd.y) * 1.6, 70., uTime) * .22 * uEnv * smoothstep(.01, .12, rd.y);
   // --- glassy floor
   if (rd.y < 0.) {
     float sF = -ro.y / rd.y;
