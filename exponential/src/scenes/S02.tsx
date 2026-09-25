@@ -129,7 +129,7 @@ const Card: React.FC<{i: number; cam: Cam; t: number; ti: number; out: number}> 
   const nx = NODE_X[i];
   const top = project(cam, [nx, YL + STEM, 0]);
   if (top.z < 0.5) return null;
-  const k = clamp(top.s / 165, 0.93, 1.08);
+  const k = clamp(top.s / 170, 0.94, 1.06);
   const a = prog(t, ti + 0.18, ti + 0.7, E.out);
   const op = a * (1 - out);
   if (op < 0.005) return null;
@@ -147,19 +147,19 @@ const Card: React.FC<{i: number; cam: Cam; t: number; ti: number; out: number}> 
         display: 'flex',
         alignItems: 'center',
         gap: 16,
-        padding: '14px 22px 14px 14px',
+        padding: '16px 26px 16px 16px',
         borderRadius: 12,
-        background: 'linear-gradient(180deg, rgba(24,32,48,0.62), rgba(8,11,18,0.72))',
-        border: `1px solid ${rgba(C.ice, 0.2)}`,
-        boxShadow: `0 0 40px ${rgba(C.cold, 0.16)}, inset 0 1px 0 ${rgba(C.ice, 0.14)}`,
+        background: 'linear-gradient(180deg, rgba(30,41,60,0.82), rgba(9,12,20,0.88))',
+        border: `1px solid ${rgba(C.ice, 0.26)}`,
+        boxShadow: `0 0 44px ${rgba(C.cold, 0.2)}, 0 10px 30px rgba(0,0,0,0.5), inset 0 1px 0 ${rgba(C.ice, 0.2)}`,
         whiteSpace: 'nowrap',
       }}
     >
-      <Icon i={i} size={78} draw={prog(t, ti + 0.1, ti + 1.25, E.inOut)} lit={prog(t, ti + 0.9, ti + 1.4, E.out)} color={C.ice} hotColor="#F2F7FC" />
+      <Icon i={i} size={92} draw={prog(t, ti + 0.1, ti + 1.25, E.inOut)} lit={prog(t, ti + 0.9, ti + 1.4, E.out)} color={C.ice} hotColor="#F2F7FC" />
       <div style={{display: 'flex', flexDirection: 'column', gap: 3}}>
-        <div style={{fontFamily: F.mono, fontSize: 26, color: C.ice, letterSpacing: '0.02em', fontWeight: 500, ...txt(0)}}>{m.date}</div>
-        <div style={{fontFamily: F.sans, fontSize: 23, color: C.ivory, fontWeight: 650, letterSpacing: '0.2em', textTransform: 'uppercase', ...txt(0.08)}}>{m.name}</div>
-        <div style={{fontFamily: F.serif, fontStyle: 'italic', fontSize: 24, color: rgba(C.ice, 0.62), fontWeight: 380, ...txt(0.16)}}>{m.place}</div>
+        <div style={{fontFamily: F.mono, fontSize: 30, color: C.ice, letterSpacing: '0.02em', fontWeight: 500, ...txt(0)}}>{m.date}</div>
+        <div style={{fontFamily: F.sans, fontSize: 26, color: C.ivory, fontWeight: 650, letterSpacing: '0.2em', textTransform: 'uppercase', ...txt(0.08)}}>{m.name}</div>
+        <div style={{fontFamily: F.serif, fontStyle: 'italic', fontSize: 27, color: rgba(C.ice, 0.7), fontWeight: 400, ...txt(0.16)}}>{m.place}</div>
       </div>
     </div>
   );
@@ -180,9 +180,9 @@ export const S02: React.FC = () => {
   // --- camera (always moving: slow push, rise-and-reveal, heavy lateral track, pull-back, push)
   const K0: [V3, V3] = [[X0, YL + 0.02, 2.6], [X0, YL, 0]];
   const txA = 3.3;
-  const txB = 6.2;
-  const KA: [V3, V3] = [[txA - 3.5, 1.8, 12], [txA, 0.45, 0]];
-  const KB: [V3, V3] = [[txB - 3.5, 1.8, 12], [txB, 0.45, 0]];
+  const txB = 6.8;
+  const KA: [V3, V3] = [[txA - 3.5, 1.85, 12], [txA, 0.95, 0]];
+  const KB: [V3, V3] = [[txB - 3.5, 1.85, 12], [txB, 0.95, 0]];
   const KC: [V3, V3] = [[24, 0.22, 12.2], [4.3, 0.3, 0]];
   const KD: [V3, V3] = [[23.2, 0.25, 11.2], [5.0, 0.31, 0]];
   let pos: V3;
@@ -195,7 +195,7 @@ export const S02: React.FC = () => {
     const p0: V3 = [K0[0][0] + pre * 2, K0[0][1], K0[0][2] - pre * 3];
     const t0: V3 = [K0[1][0] + pre * 1.6, K0[1][1], 0];
     pos = bez(p0, [-4.2, 0.5, 8.5], KA[0], u);
-    tgt = bez(t0, [-2.0, 0.2, 0], KA[1], u);
+    tgt = bez(t0, [-2.0, 0.3, 0], KA[1], u);
     fov = lerp(32, 30, u);
   } else if (t < tPull0) {
     const u = prog(t, c4, tPull0, E.linear);
@@ -238,7 +238,7 @@ export const S02: React.FC = () => {
   const pointI = (1.0 + 0.12 * Math.sin(t * 2.4)) * (1 - 0.75 * prog(tau, 0.2, 1.8, E.inOut));
   const env = lerp(0.15, 1, prog(t, 1.2, c3 + 2.0, E.inOut));
 
-  const ign = tIgn.map((ti) => (t < ti ? 0.12 : 0.55 + 2.2 * Math.exp(-(t - ti) * 3.2) + 0.08 * Math.sin(t * 2 + ti)));
+  const ign = tIgn.map((ti) => (t < ti ? 0.12 : 0.8 + 2.2 * Math.exp(-(t - ti) * 3.2) + 0.08 * Math.sin(t * 2 + ti)));
   const glint =
     prog(t, tPull0 + 1.0, tPull1 + 0.2, E.inOut) * (0.8 + 0.15 * Math.sin(t * 5.1) * Math.sin(t * 3.3)) + prog(t, tPull1, tPush, E.linear) * 0.3 + Math.pow(up, 2) * 3.5;
   const push = Math.pow(up, 1.3);
@@ -285,9 +285,9 @@ export const S02: React.FC = () => {
             pos = c;
             float z = -c.z;
             float big = step(.975, aSeed2.y);
-            size = (.55 + 1.5 * pow(aSeed.w, 3.)) * (1. + big * 5.);
+            size = (.8 + 2.2 * pow(aSeed.w, 3.)) * (1. + big * 5.);
             color = mix(vec3(.74, .82, .9), vec3(.45, .56, .67), aSeed2.z);
-            alpha = smoothstep(.2, 1.1, z) * (1. - smoothstep(16., 38., z)) * (.16 + .34 * aSeed2.w) * (1. - big * .7) * uDust;
+            alpha = smoothstep(.2, 1.1, z) * (1. - smoothstep(16., 38., z)) * (.3 + .5 * aSeed2.w) * (1. - big * .75) * uDust;
           `}
         />
       </ThreeCanvas>

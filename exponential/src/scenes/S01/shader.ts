@@ -44,7 +44,7 @@ void main(){
 
   // ---- far stars (cold, faint)
   vec2 sq = (p - vec2(960., 540.)) / uStarK + uStarOff;
-  float st = starLayer(sq, 34., .78, uTime) + .6 * starLayer(sq + 91., 19., .88, uTime * 1.3);
+  float st = starLayer(sq, 34., .84, uTime) + .6 * starLayer(sq + 91., 19., .93, uTime * 1.3);
   col += vec3(.70, .78, .92) * st * .55 * uStarI;
 
   // ---- the spark: hot core, bloom, volumetric shafts, anamorphic streak
@@ -82,7 +82,7 @@ void main(){
   if (uFlash > .001) {
     vec2 fq = (p - uFlashC) / 1080.;
     float fr = length(fq * vec2(.75, 1.5));
-    col += mix(COL_IVORY, COL_GOLD, .5) * uFlash * (1.25 * exp(-fr * 2.4) + .38);
+    col += mix(COL_IVORY, COL_GOLD, .5) * uFlash * (1.4 * exp(-fr * 2.8) + .22);
     col += COL_GOLD * uFlash * exp(-abs(p.y - uFlashC.y) / 9.) * 1.6;
   }
   if (uRingI > .001) {

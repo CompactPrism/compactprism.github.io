@@ -64,14 +64,14 @@ const DUST = /* glsl */ `
   float dz = uCam.z - pos.z;
   float vis = smoothstep(.35, 1.6, dz);
   float bok = smoothstep(4.5, 1.1, dz);
-  size = 1.0 + aSeed2.w * 1.9 + bok * 7.;
+  size = 1.3 + aSeed2.w * 2.4 + bok * 9.;
   float dl = length(pos - uSparkW);
   float warm = clamp(uLight * 2.4 / (1. + dl * dl * .3), 0., 1.);
   vec3 cold = mix(vec3(.44, .55, .65), vec3(.73, .80, .87), aSeed2.x) * .85;
   vec3 hot = mix(vec3(.96, .76, .48), vec3(.93, .54, .37), aSeed2.y) * 1.25;
   color = mix(cold, hot, warm);
   float tw = .6 + .4 * sin(uTime * (1. + aSeed.w * 2.) + aSeed.z * 40.);
-  alpha = (.10 + .20 * aSeed2.x) * vis * (1. - .82 * bok) * tw * (.55 + .8 * warm) * uDust;
+  alpha = (.16 + .34 * aSeed2.x * aSeed2.x) * vis * (1. - .78 * bok) * tw * (.7 + .8 * warm) * uDust;
 `;
 
 const ACCRETE = /* glsl */ `
@@ -95,8 +95,8 @@ const ACCRETE = /* glsl */ `
   pos = uSparkW + d * (1. - k);
   float heat = s * s;
   color = mix(mix(vec3(.93, .54, .37), vec3(.85, .47, .34), aSeed2.w), vec3(1., .87, .62), heat);
-  size = .9 + aSeed2.w * 1.5;
-  alpha = live * smoothstep(0., .7, age) * (.22 + .6 * heat) * uLight;
+  size = 1.6 + aSeed2.w * 2.4;
+  alpha = live * smoothstep(0., .7, age) * (.3 + .7 * heat) * uLight;
 `;
 
 const TRAIL = /* glsl */ `
@@ -144,7 +144,7 @@ const BLAST = /* glsl */ `
 
 export const S01: React.FC = () => {
   const {t, dur, cue, end, fps, frame} = useScene('S01');
-  const glyphs = useGlyphSample('EXPONENTIAL', TITLE, 2);
+  const glyphs = useGlyphSample('EXPONENTIAL', TITLE, 3);
 
   // ------------------------------------------------------------ beats (all VO-relative)
   const B = useMemo(() => {
@@ -287,7 +287,7 @@ export const S01: React.FC = () => {
   const titleGlow = slamOn ? (0.8 + 0.2 * Math.sin(t * 1.9)) * (1 - prog(t, B.dis, B.dis + wave, E.inOut)) + 1.5 * Math.exp(-age * 3) : 0;
   const slamFrame = Math.round(B.slam * fps);
   const sub = frame - slamFrame;
-  const emblemOp = sub >= 0 && sub < 4 ? [0.9, 0.7, 0.42, 0.18][sub] : 0;
+  const emblemOp = sub >= 0 && sub < 4 ? [0.42, 0.36, 0.24, 0.12][sub] : 0;
 
   // ------------------------------------------------------------ nebula / star parallax
   const nebK = ppu(cam.z + 26);
@@ -332,13 +332,13 @@ export const S01: React.FC = () => {
         <ThreeCanvas width={1920} height={1080} camera={{fov: FOV, position: [0, 0, Z0], near: 0.05, far: 500}} style={{position: 'absolute'}}>
           <CamRig x={cam.x} y={cam.y} z={cam.z} />
           <PointCloud
-            count={5200}
+            count={6500}
             seed={11}
             body={DUST}
             uniforms={{uCam: [cam.x, cam.y, cam.z], uSparkW: [sparkW.x, sparkW.y, 0], uLight: light, uDust: 0.55 + 0.45 * prog(t, 0, 2.5, E.inOut)}}
           />
           <PointCloud
-            count={2400}
+            count={3000}
             seed={23}
             body={ACCRETE}
             sprite="spark"
@@ -517,16 +517,28 @@ export const S01: React.FC = () => {
           <AbsoluteFill
             style={{
               mixBlendMode: 'screen',
-              opacity: clamp(flash * 1.1),
-              background: `radial-gradient(ellipse 70% 55% at ${(titleP.x / 1920) * 100}% ${(titleP.y / 1080) * 100}%, #FFF8EA 0%, ${rgba(C.gold, 0.85)} 30%, ${rgba(C.ember, 0.35)} 65%, ${rgba(C.clay, 0.12)} 100%)`,
+              opacity: clamp(flash * 1.05),
+              background: `radial-gradient(ellipse 62% 48% at ${(titleP.x / 1920) * 100}% ${(titleP.y / 1080) * 100}%, #FFFBF2 0%, #FFF1D8 18%, ${rgba(C.gold, 0.75)} 38%, ${rgba(C.ember, 0.28)} 68%, ${rgba(C.clay, 0.06)} 100%)`,
             }}
           />
         )}
-        {emblemOp > 0 && (
-          <div style={{position: 'absolute', left: titleP.x - 290, top: titleP.y - 290, opacity: emblemOp}}>
-            <ClaudeSpark size={580} draw={1} glow={0} color={C.clay} core={C.coral} rotate={-8 + sub * 2} />
-          </div>
-        )}
+        {emblemOp > 0 &&
+          [1.16, 1.07, 1].map((s, i) => (
+            <div
+              key={i}
+              style={{
+                position: 'absolute',
+                left: titleP.x - 290,
+                top: titleP.y - 290,
+                opacity: emblemOp * [0.22, 0.4, 1][i],
+                transform: `scale(${s + sub * 0.02})`,
+                mixBlendMode: 'multiply',
+                filter: `blur(${[14, 9, 5][i]}px)`,
+              }}
+            >
+              <ClaudeSpark size={580} draw={1} glow={0} color={C.clay} core={rgba(C.clay, 0.6)} rotate={-8 + sub * 1.5} />
+            </div>
+          ))}
       </AbsoluteFill>
     </AbsoluteFill>
   );
