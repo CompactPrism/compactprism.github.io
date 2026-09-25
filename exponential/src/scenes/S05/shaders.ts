@@ -71,11 +71,11 @@ void main(){
         float lon = atan(nr.z, nr.x);
         float ob = .05 / (abs(sin(lat * 5. + T * .25)) + .05);
         float om = .05 / (abs(sin(lon * 3. + T * .1)) + .05) * smoothstep(1.4, .2, abs(lat));
-        float ord = max(ob * ob, om * om * .7) * .7;
+        float ord = max(ob * ob, om * om * .7) * 1.1;
         float pat = mix(fil, ord, uOrder);
         float rim = pow(1. - z, 2.2);
         // chaos: dark plasma body with white-hot bolts; order: a warm, evenly lit woven sphere
-        vec3 body = mix(COL_STEEL * .35 + COL_ELEC * .06, COL_EMBER * .35, uOrder);
+        vec3 body = mix(COL_STEEL * .3 + COL_ELEC * .05, COL_CLAY * .45, uOrder);
         vec3 inner = body * (.4 + .6 * z) + cc * (pat * 1.05 + rim * 1.1 + z * .06 * uOrder);
         inner += vec3(1.) * pow(fil, 1.6) * .45 * chaosK;
         col += inner * uSph.w * (.8 + .4 * chaosK);
@@ -91,7 +91,7 @@ void main(){
         float spike = pow(vnoise(cs * 9. + vec2(floor(T * 12.) * 3.1, 0.)), 3.) * 2.;
         col += (cC + vec3(.3)) * bl * bl * exp(-max(rr, 0.) * (1.7 - spike * .4)) * chaosK * uSph.w * 1.1;
       }
-      col += cc * exp(-max(r - 1., 0.) * 3.2) * .38 * uSph.w;
+      col += cc * exp(-abs(r - 1.) * (r < 1. ? 9. : 3.2)) * .38 * uSph.w;
       col += cc * exp(-max(r - 1., 0.) * .9) * .08 * uSph.w;
     }
   }

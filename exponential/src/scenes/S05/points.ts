@@ -12,7 +12,7 @@ export const GROUND = /* glsl */ `
   color = mix(vec3(.30, .38, .50), vec3(.96, .58, .38), clamp(w, 0., 1.));
   float far = smoothstep(-44., -8., P.z) * smoothstep(7., 3.5, P.z);
   alpha = uGround * far * (.16 + .55 * aSeed.y * aSeed.y + 1.1 * w);
-  size = 1.25 + .6 * aSeed.z + 1.2 * w;
+  size = 4.2 + 2.2 * aSeed.z + 4. * w;
 `;
 
 // Floating dust: gives depth; big soft points near the camera read as bokeh.
@@ -25,8 +25,8 @@ export const DUST = /* glsl */ `
   float dz = -mvq.z;
   color = mix(vec3(.55, .66, .80), vec3(.96, .70, .48), clamp(uWarmD + (aSeed2.z - .5) * .3, 0., 1.));
   float near = smoothstep(4., .8, dz);
-  size = (1.3 + 2.2 * aSeed2.w) * (1. + near * 4.) * clamp(dz / 1.2, .15, 1.);
-  alpha = uDust * (.1 + .25 * aSeed2.y) * (1. - near * .75) * smoothstep(.3, .9, dz);
+  size = (3.2 + 5. * aSeed2.w) * (1. + near * 4.) * clamp(dz / 1.2, .15, 1.);
+  alpha = uDust * (.14 + .3 * aSeed2.y) * (1. - near * .75) * smoothstep(.3, .9, dz);
 `;
 
 // THE REVEAL: tens of thousands of particles converge from everywhere into the 12-ray starburst
@@ -86,7 +86,7 @@ export const HERO_PTS = /* glsl */ `
   color = mix(color, vec3(1., .93, .82), smoothstep(.9, 1., e) * .5 * (1. - uPost));
   float fadeIn = smoothstep(0., .12, l) * uOn;
   float post = kind < .62 ? (1. - smoothstep(0., .25, uPost)) : (kind < .84 ? (1. - smoothstep(.1, 1., uPost)) : 1.);
-  alpha = fadeIn * post * (.35 + .5 * e) ;
-  size = (1.2 + 1.8 * aSeed2.y) * (1. + (1. - e) * 1.2) * clamp(dz / 2.5, .15, 1.);
+  alpha = fadeIn * post * (.55 + .45 * e) ;
+  size = (3.4 + 4. * aSeed2.y) * (1. + (1. - e) * 1.1) * clamp(dz / 2.5, .15, 1.);
   if (kind >= .84) { size *= 1. + uPost * .8; alpha *= 1. + uPost * .6; }
 `;
