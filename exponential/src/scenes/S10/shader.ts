@@ -110,9 +110,9 @@ void main(){
     float coastN = 1. - smoothstep(0., .035, abs(cont - .045));
     float hub = smoothstep(.72, .9, c1) * smoothstep(.45, .8, c0);
     float fil = (1. - smoothstep(0., .035, abs(snoise(Np * 24. + 9.)))) * smoothstep(.4, .7, c0);
-    float dens = land * clamp(coastN * 1.1 + hub + fil * .6 + smoothstep(.4, .8, c0) * .38, 0., 1.);
-    float spark = smoothstep(.72 - dens * .32, .9 - dens * .25, c2);
-    float city = spark * (.25 + .75 * dens) * land + hub * land * .3;
+    float dens = land * clamp(coastN * 1.1 + hub + fil * .6 + smoothstep(.5, .85, c0) * .22, 0., 1.);
+    float spark = smoothstep(.76 - dens * .36, .92 - dens * .27, c2);
+    float city = spark * (.12 + .88 * dens) * land + hub * land * .3;
     city *= smoothstep(.06, .32, mu);
     float front = ndl + uIgn + (c1 - .5) * .16;
     float ign = smoothstep(0., .04, front);

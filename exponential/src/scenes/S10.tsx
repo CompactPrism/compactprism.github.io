@@ -85,6 +85,11 @@ const limbY = (cam: Cam, x: number) => {
 };
 
 // Circle through three points (used to mask the DOM emblem with the Earth's limb as it rises).
+const mixHex = (a: string, b: string, k: number) => {
+  const p = (h: string, i: number) => parseInt(h.slice(1 + i * 2, 3 + i * 2), 16);
+  return '#' + [0, 1, 2].map((i) => Math.round(p(a, i) + (p(b, i) - p(a, i)) * clamp(k)).toString(16).padStart(2, '0')).join('');
+};
+
 const circle3 = (a: {x: number; y: number}, b: {x: number; y: number}, c: {x: number; y: number}) => {
   const d = 2 * (a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (a.y - b.y));
   if (Math.abs(d) < 1e-6) return null;
@@ -254,7 +259,7 @@ export const S10: React.FC = () => {
             maskImage: clear < box / 2 ? maskCss : undefined,
           }}
         >
-          <ClaudeSpark size={emSize} draw={emDraw} glow={emGlow} rotate={rot} pulse={0.5 + 0.5 * Math.sin(t * 1.3)} color={C.coral} core="#FFF3DE" />
+          <ClaudeSpark size={emSize} draw={emDraw} glow={emGlow} rotate={rot} pulse={0.5 + 0.5 * Math.sin(t * 1.3)} color={mixHex('#F7B679', C.coral, settle)} core="#FFF6E8" />
         </div>
       )}
 
