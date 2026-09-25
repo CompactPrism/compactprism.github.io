@@ -23,9 +23,9 @@ const SKY = /* glsl */ `
 uniform float uCity; uniform vec3 uCamPos; uniform float uBoost;
 vec3 skyCol(vec3 d){
   float el = d.y;
-  vec3 zen = vec3(.008, .011, .026);
-  vec3 hor = mix(vec3(.03, .032, .045), vec3(.24, .11, .06), uCity);
-  float hz = exp(-max(el, 0.) * 6.);
+  vec3 zen = vec3(.006, .008, .02);
+  vec3 hor = mix(vec3(.03, .032, .045), vec3(.2, .088, .05), uCity);
+  float hz = exp(-max(el, 0.) * 8.);
   vec3 c = mix(zen, hor, hz);
   vec2 pd = normalize(vec2(${PX}, ${PZ}) - uCamPos.xz + 1e-3);
   vec2 dd = normalize(d.xz + 1e-5);
@@ -154,14 +154,14 @@ export const City: React.FC<Props> = ({cam, t, ign, city, draw, boost}) => {
     const mats: THREE.Matrix4[] = [];
     const CELL = 10;
     for (let ix = -52; ix <= 52; ix++) {
-      for (let iz = -118; iz <= 5; iz++) {
+      for (let iz = -150; iz <= 5; iz++) {
         const x = ix * CELL;
         const z = iz * CELL;
         const a = r(), b = r(), c = r(), d = r(), e = r();
         const dp = Math.hypot(x - PILLAR[0], z - PILLAR[2]);
         if (Math.abs(x) < 18 && z > PILLAR[2] - 10) continue; // the avenue the curve runs along
         if (dp < 34) continue; // plaza round the pillar
-        if (a < 0.1) continue;
+        if (a < (iz < -95 ? 0.4 : 0.1)) continue;
         const w = CELL * (0.5 + 0.34 * b);
         const dd = CELL * (0.5 + 0.34 * c);
         let h = 3 + 19 * Math.pow(d, 2.3);
@@ -178,7 +178,7 @@ export const City: React.FC<Props> = ({cam, t, ign, city, draw, boost}) => {
   }, []);
 
   const mats = useMemo(() => {
-    const common = {uTime: {value: 0}, uIgn: {value: 0}, uFog: {value: 0.0017}, uCity: {value: 0}, uCamPos: {value: new THREE.Vector3()}, uBoost: {value: 0}};
+    const common = {uTime: {value: 0}, uIgn: {value: 0}, uFog: {value: 0.0021}, uCity: {value: 0}, uCamPos: {value: new THREE.Vector3()}, uBoost: {value: 0}};
     const tower = new THREE.ShaderMaterial({uniforms: {...common}, vertexShader: TOWER_V, fragmentShader: TOWER_F});
     const ground = new THREE.ShaderMaterial({uniforms: {...common, uDraw: {value: 0}}, vertexShader: GROUND_V, fragmentShader: GROUND_F});
     const sky = new THREE.ShaderMaterial({

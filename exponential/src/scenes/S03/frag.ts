@@ -48,7 +48,7 @@ void main(){
         float dist = length(e);
         float inside = 1. - smoothstep(0., .01, dist);
         float grad = .75 + .25 * (l.y / lv);
-        col += mix(COL_ICE, COL_IVORY, .55) * uPapI * (inside * .06 * grad + exp(-dist * 9.) * .24 + exp(-dist * 2.) * .09);
+        col += mix(COL_ICE, COL_IVORY, .55) * uPapI * (inside * .04 * grad + exp(-dist * 9.) * .24 + exp(-dist * 2.) * .09);
       }
     }
   }

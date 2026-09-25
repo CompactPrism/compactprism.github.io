@@ -47,7 +47,7 @@ const TRAIL = `
   float fade = pow(1. - age / life, 2.);
   alpha = fade * .6 * step(0., us) * uOn;
   color = mix(EMBER, GOLD, aSeed2.w);
-  size = mix(10., 34., pow(aSeed2.x, 3.)) * (.6 + .6 * fade);
+  size = mix(18., 60., pow(aSeed2.x, 3.)) * (.6 + .6 * fade);
 `;
 
 const HEAD = `
@@ -79,7 +79,7 @@ const STREAMS = `
   float on = smoothstep(uIgn, uIgn - 80., dp);
   alpha = on * smoothstep(0., .06, life) * (1. - life) * (.5 + .5 * uRush) * .7;
   color = mix(EMBER, GOLD, aSeed2.x);
-  size = mix(14., 34., pow(aSeed2.y, 3.)) * (1. + uRush * .5);
+  size = mix(45., 120., pow(aSeed2.y, 3.)) * (1. + uRush * .5);
 `;
 
 // Packets hopping between towers along low arcs.
@@ -94,7 +94,7 @@ const ARCS = `
   float dp = length(a - vec2(${PILLAR[0].toFixed(2)}, ${PILLAR[2].toFixed(2)}));
   alpha = smoothstep(uIgn, uIgn - 80., dp) * sin(PI * s) * .5;
   color = mix(GOLD, mix(ELEC, vec3(1.), .5), step(.85, hash11(id * 9.1)));
-  size = 16.;
+  size = 48.;
 `;
 
 // Near dust in a box that wraps around the camera: world-anchored, so it parallaxes as we fly.
@@ -307,7 +307,7 @@ const Ruler: React.FC<{t: number; rIn: number; comp: number; op: number}> = ({t,
     if (f > drawn) break;
     const x = x0 + f * span;
     const major = i % 10 === 0;
-    const h = major ? 30 : i % 5 === 0 ? 18 : 10;
+    const h = major ? 40 : i % 5 === 0 ? 24 : 13;
     const col = heat > 0.02 ? `rgba(255,${Math.round(lerp(214, 245, heat))},${Math.round(lerp(170, 225, heat))},${lerp(0.55, 0.95, heat)})` : rgba(C.ice, major ? 0.75 : 0.45);
     ticks.push(<line key={i} x1={x} y1={y - h} x2={x} y2={y} stroke={col} strokeWidth={major ? 2 : 1.2} />);
   }
@@ -316,17 +316,17 @@ const Ruler: React.FC<{t: number; rIn: number; comp: number; op: number}> = ({t,
   const toOp = clamp(comp * 2.2 - 1.2);
   return (
     <div style={{position: 'absolute', inset: 0, opacity: op}}>
-      <div style={{position: 'absolute', left: x0 - 40, top: y - 128, width: x1 - x0 + 80, height: 200, background: 'radial-gradient(ellipse at 30% 60%, rgba(5,6,10,0.55), rgba(5,6,10,0) 70%)'}} />
+      <div style={{position: 'absolute', left: x0 - 60, top: y - 150, width: x1 - x0 + 120, height: 240, background: 'radial-gradient(ellipse at 45% 55%, rgba(5,6,10,0.7), rgba(5,6,10,0) 72%)'}} />
       <svg width={1920} height={1080} style={{position: 'absolute', inset: 0}}>
         <line x1={x0} y1={y} x2={endX} y2={y} stroke={heat > 0.02 ? rgba(C.gold, 0.4 + 0.6 * heat) : rgba(C.ice, 0.6)} strokeWidth={1.6} />
         {heat > 0.02 && <line x1={x0} y1={y} x2={endX} y2={y} stroke={rgba(C.ember, 0.35 * heat)} strokeWidth={14} strokeLinecap="round" />}
         {ticks}
         {heat > 0.3 && <ellipse cx={x0 + span / 2} cy={y - 12} rx={span * 0.75} ry={34} fill={rgba(C.gold, 0.18 * heat)} />}
       </svg>
-      <div style={{position: 'absolute', left: x0, top: y - 102, ...lab, color: rgba(C.ivory, 0.88)}}>{FACTS.fromTo}</div>
+      <div style={{position: 'absolute', left: x0, top: y - 112, ...lab, fontSize: 24, color: C.ivory, textShadow: '0 2px 12px rgba(0,0,0,0.9)'}}>{FACTS.fromTo}</div>
       <div style={{position: 'absolute', left: x0 + span + 26, top: y - 44, whiteSpace: 'nowrap'}}>
-        <span style={{fontFamily: F.mono, fontSize: 40, color: C.ivory, opacity: fromOp, position: 'absolute', left: 0, top: 0}}>{FACTS.from}</span>
-        <span style={{fontFamily: F.mono, fontSize: 44, fontWeight: 600, color: C.gold, opacity: toOp, position: 'absolute', left: 0, top: -4, textShadow: `0 0 20px ${rgba(C.ember, 0.7)}`}}>
+        <span style={{fontFamily: F.mono, fontSize: 48, color: C.ivory, opacity: fromOp, position: 'absolute', left: 0, top: -6, textShadow: '0 2px 16px rgba(0,0,0,0.8)'}}>{FACTS.from}</span>
+        <span style={{fontFamily: F.mono, fontSize: 60, fontWeight: 600, color: C.gold, opacity: toOp, position: 'absolute', left: 0, top: -14, textShadow: `0 0 20px ${rgba(C.ember, 0.7)}`}}>
           {FACTS.to}
         </span>
       </div>

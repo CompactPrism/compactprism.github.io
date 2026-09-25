@@ -185,7 +185,7 @@ void main(){
     col += vec3(1., .7, .5) * uFlare * exp(-abs(halo - 330.) / 22.) * .03;
   }
 
-  col += vec3(1., .94, .82) * uFlash * 3.;
+  col += vec3(1., .86, .66) * uFlash * 3.2;
   col = 1. - exp(-col * uExpo);
   fragColor = vec4(col + dither(gl_FragCoord.xy), 1.);
 }`;

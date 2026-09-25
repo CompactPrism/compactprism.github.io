@@ -90,6 +90,7 @@ export const GlowLine: React.FC<Props> = ({fn, uMax, n = 700, draw, cull = -1, w
         transparent: true,
         depthWrite: false,
         depthTest: true,
+        side: THREE.DoubleSide,
         blending: THREE.AdditiveBlending,
         premultipliedAlpha: true,
       }),

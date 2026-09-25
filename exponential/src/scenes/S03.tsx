@@ -76,7 +76,7 @@ export const S03: React.FC = () => {
   const tFire = c7 + 0.17 * d7 + 0.15; // "weigh every word against every other word"
   const tOnce = c7 + 0.58 * d7; // "all at once"
   const tFold = c7 + 0.69 * d7 - 0.1; // "They called it the Transformer"
-  const tSnap = tFold + 1.0;
+  const tSnap = tFold + 0.8;
   const tRise = dur - 0.85;
 
   // ---------------- camera
@@ -122,7 +122,7 @@ export const S03: React.FC = () => {
   const pU = rotX(rotY([PAPER_HW, 0, 0], pYaw), pPitch);
   const pV = rotX(rotY([0, PAPER_HH, 0], pYaw), pPitch);
   const paperW = (x: number, y: number): V3 => add(pC, add([pU[0] * x, pU[1] * x, pU[2] * x], [pV[0] * y, pV[1] * y, pV[2] * y]));
-  const paperOn = prog(t, 0.25, 1.7, E.out);
+  const paperOn = prog(t, 0.3, 2.1, E.inOut);
   const paperI = paperOn * lerp(1, 0.22, recede) * (1 - prog(t, c7 + 0.2, c7 + 1.2, E.inOut));
 
   const strokes: Stroke[] = [];
@@ -149,7 +149,7 @@ export const S03: React.FC = () => {
       edge.push(P(paperW(lerp(a[0], b[0], f), lerp(a[1], b[1], f))));
     }
     if (edge.length > 1) strokes.push({pts: edge, c: IVORY, w: 1.7, a: 0.95 * paperI, glow: 1.6});
-    quads.push({pts: corners.slice(0, 4).map(([x, y]) => P(paperW(x, y))), c: [120, 150, 185], a: 0.03 * paperI});
+    quads.push({pts: corners.slice(0, 4).map(([x, y]) => P(paperW(x, y))), c: [120, 150, 185], a: 0.03 * paperI * prog(t, 0.9, 2.4, E.inOut)});
     // light bars (text), revealed top to bottom
     PAPER_BARS.forEach(([x0, x1, y, th], k) => {
       const rv = prog(t, 0.9 + (0.95 - y) * 1.9, 1.5 + (0.95 - y) * 1.9, E.out);
@@ -198,8 +198,8 @@ export const S03: React.FC = () => {
   // ---------------- attention web
   const fireD = prog(t, tFire, tFire + 0.75, E.out); // all arcs at the same moment
   const B0y = 0.1;
-  const tilt = 1.2 * prog(t, tSnap + 0.3, tSnap + 1.05, E.inOut);
-  const GAP = 0.45;
+  const tilt = 1.2 * prog(t, tSnap + 0.5, tSnap + 1.15, E.inOut);
+  const GAP = 0.5;
   const riseU = Math.max(0, t - tRise);
   const blockW = (x: number, y: number, layer: number): V3 => [x, B0y + y * Math.cos(tilt) + layer * GAP + riseU * riseU * (5 + layer * 1.2), -y * Math.sin(tilt)];
 
@@ -207,7 +207,7 @@ export const S03: React.FC = () => {
     const snapFade = 1 - prog(t, tSnap - 0.05, tSnap + 0.35, E.inOut);
     ARCS.forEach((a, k) => {
       const kw = Math.pow(a.w, 0.6);
-      const m = E.inOut(clamp((t - tFold - 0.3 * a.seed) / 0.68));
+      const m = E.inOut(clamp((t - tFold - 0.24 * a.seed) / 0.56));
       const L = k % BLOCK_LINES.length;
       const n = Math.max(2, Math.round(ARC_N * clamp(fireD * 1.15 - a.seed * 0.15)));
       const pts: [number, number][] = [];
@@ -238,7 +238,7 @@ export const S03: React.FC = () => {
   const layers = 6;
   if (blockOn > 0) {
     for (let layer = 0; layer < layers; layer++) {
-      const tl = tSnap + 0.48 + (layer - 1) * 0.12;
+      const tl = tSnap + 0.66 + (layer - 1) * 0.12;
       const lu = layer === 0 ? 1 : prog(t, tl, tl + 0.45, E.out);
       if (lu <= 0) continue;
       const ly = layer === 0 ? 0 : layer - 1 + lu;
@@ -253,7 +253,8 @@ export const S03: React.FC = () => {
             return P([w[0], w[1] - off, w[2]]);
           });
           const c = ln.kind === 'res' ? EMBER : ln.kind === 'frame' ? mixc(GOLD, IVORY, 0.3) : GOLD;
-          strokes.push({pts, c, w: ln.kind === 'frame' ? 1.2 : 1.6, a: la * (ln.kind === 'frame' ? 0.55 : 0.9) * (tr === 0 ? 1 : 0.4 / tr), glow: tr === 0 ? 1.2 : 0.6});
+          const kindA = ln.kind === 'frame' ? 0.6 : ln.kind === 'box' ? 0.9 : layer === 0 ? 0.9 : 0.4;
+          strokes.push({pts, c, w: ln.kind === 'frame' ? 1.2 : 1.6, a: la * kindA * (tr === 0 ? 1 : 0.4 / tr), glow: tr === 0 ? 1.2 : 0.6});
         });
         if (tr === 0) {
           (['mha', 'an1', 'ff', 'an2'] as const).forEach((b) => {
@@ -291,7 +292,7 @@ export const S03: React.FC = () => {
   const webI = prog(t, tFire - 0.2, tFire + 0.8, E.out) * (1 - prog(t, tFold, tSnap + 0.4, E.inOut));
 
   // block box labels (upright block only)
-  const boxLabelA = prog(t, tSnap + 0.05, tSnap + 0.4, E.out) * (1 - prog(t, tSnap + 0.3, tSnap + 0.65, E.inOut));
+  const boxLabelA = prog(t, tSnap - 0.05, tSnap + 0.25, E.out) * (1 - prog(t, tSnap + 0.45, tSnap + 0.75, E.inOut));
   const tfA = prog(t, tSnap + 0.1, tSnap + 0.7, E.out) * (1 - blackout);
   const stackCards = (t0: number) => prog(t, t0, t0 + 0.5, E.out) * (1 - prog(t, tRise, tRise + 0.5, E.inOut));
   const topLayer = project(cam, blockW(-1.28, 0, layers - 1));
@@ -514,19 +515,19 @@ export const S03: React.FC = () => {
         ] as const).map(([lab, y], k) => {
           const p = project(cam, blockW(0, y, 0));
           return (
-            <div key={k} style={{position: 'absolute', left: p.x, top: p.y, transform: 'translate(-50%, -50%)', ...capsLabel, fontSize: 22, color: C.ivory, opacity: boxLabelA, textShadow: `0 0 14px ${rgba(C.ember, 0.6)}`, whiteSpace: 'nowrap'}}>
+            <div key={k} style={{position: 'absolute', left: p.x, top: p.y, transform: 'translate(-50%, -50%)', ...capsLabel, fontSize: 22, letterSpacing: '0.12em', color: C.ivory, opacity: boxLabelA, textShadow: `0 0 14px ${rgba(C.ember, 0.6)}`, whiteSpace: 'nowrap'}}>
               {lab}
             </div>
           );
         })}
 
       {/* ---- stack: N = 6, results cards, the name */}
-      {stackCards(tSnap + 0.95) > 0.005 && (
+      {stackCards(tSnap + 1.0) > 0.005 && (
         <>
-          <svg width={1920} height={1080} style={{position: 'absolute', inset: 0, opacity: stackCards(tSnap + 0.95)}}>
+          <svg width={1920} height={1080} style={{position: 'absolute', inset: 0, opacity: stackCards(tSnap + 1.0)}}>
             <path d={`M${topLayer.x - 30},${topLayer.y} h-14 V${botLayer.y} h14`} fill="none" stroke={C.gold} strokeOpacity={0.7} strokeWidth={1.4} />
           </svg>
-          <div style={{position: 'absolute', left: topLayer.x - 60, top: (topLayer.y + botLayer.y) / 2, transform: 'translate(-100%, -50%)', textAlign: 'right', opacity: stackCards(tSnap + 0.95)}}>
+          <div style={{position: 'absolute', left: topLayer.x - 60, top: (topLayer.y + botLayer.y) / 2, transform: 'translate(-100%, -50%)', textAlign: 'right', opacity: stackCards(tSnap + 1.0)}}>
             <div style={{fontFamily: F.mono, fontSize: 44, color: C.ivory, lineHeight: 1.1}}>
               <span style={{fontFamily: F.serif, fontStyle: 'italic'}}>N</span> = {FACTS.layers}
             </div>
@@ -534,8 +535,8 @@ export const S03: React.FC = () => {
           </div>
         </>
       )}
-      {stackCards(tSnap + 0.3) > 0.005 && (
-        <div style={{...glass(1), left: 1330 - pos[0] * 12, top: 300, padding: '16px 26px 18px', opacity: stackCards(tSnap + 0.3)}}>
+      {stackCards(tSnap + 0.35) > 0.005 && (
+        <div style={{...glass(1), left: 1330 - pos[0] * 12, top: 300, padding: '16px 26px 18px', opacity: stackCards(tSnap + 0.35)}}>
           <div style={{display: 'flex', alignItems: 'baseline', gap: 14}}>
             <div style={{fontFamily: F.mono, fontSize: 60, color: C.ivory, lineHeight: 1}}>{FACTS.bleu}</div>
             <div style={{...capsLabel, color: C.gold}}>BLEU</div>
@@ -543,8 +544,8 @@ export const S03: React.FC = () => {
           <div style={{fontFamily: F.serif, fontStyle: 'italic', fontSize: 25, color: rgba(C.ivory, 0.72), marginTop: 8}}>{FACTS.bleuTask}</div>
         </div>
       )}
-      {stackCards(tSnap + 0.55) > 0.005 && (
-        <div style={{...glass(1), left: 1330 - pos[0] * 12, top: 470, padding: '16px 26px 18px', opacity: stackCards(tSnap + 0.55)}}>
+      {stackCards(tSnap + 0.6) > 0.005 && (
+        <div style={{...glass(1), left: 1330 - pos[0] * 12, top: 470, padding: '16px 26px 18px', opacity: stackCards(tSnap + 0.6)}}>
           <div style={{...capsLabel, color: rgba(C.gold, 0.8), marginBottom: 6}}>Trained in</div>
           <div style={{fontFamily: F.mono, fontSize: 40, color: C.ivory, lineHeight: 1.1}}>{FACTS.train}</div>
           <div style={{fontFamily: F.serif, fontStyle: 'italic', fontSize: 25, color: rgba(C.ivory, 0.72), marginTop: 6}}>on {FACTS.gpus}</div>
