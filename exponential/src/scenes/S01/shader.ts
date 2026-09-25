@@ -22,7 +22,7 @@ float starLayer(vec2 uv, float cell, float thresh, float t){
   vec2 o = .2 + .6 * hash22(id + 7.3);
   vec2 d = (f - o) * cell;
   float tw = .65 + .35 * sin(t * (.8 + 2.5 * h.y) + h.x * 40.);
-  return exp(-dot(d, d) / (uStarK * uStarK * .9)) * tw * (.35 + .65 * h.y);
+  return exp(-dot(d, d) / 1.5) * tw * (.35 + .65 * h.y);
 }
 
 void main(){
@@ -43,8 +43,8 @@ void main(){
   col += mix(cold, warm, clamp(lit * 1.3, 0., 1.)) * wisp * (.7 + .5 * fil) * (.03 + lit * .42) * uNeb;
 
   // ---- far stars (cold, faint)
-  vec2 sq = vec2(c.x, -c.y) * uStarK * 1080. + uStarOff;
-  float st = starLayer(sq, 26. * uStarK, .80, uTime) + .6 * starLayer(sq + 91., 14. * uStarK, .9, uTime * 1.3);
+  vec2 sq = (p - vec2(960., 540.)) / uStarK + uStarOff;
+  float st = starLayer(sq, 34., .78, uTime) + .6 * starLayer(sq + 91., 19., .88, uTime * 1.3);
   col += vec3(.70, .78, .92) * st * .55 * uStarI;
 
   // ---- the spark: hot core, bloom, volumetric shafts, anamorphic streak
