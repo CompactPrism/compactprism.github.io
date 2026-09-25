@@ -51,41 +51,53 @@ const CLOUD = `
   ${CHART_GLSL}
   float tr = uTravel;
   ${RIVER}
+  float role = aSeed2.x;
   float rsize = mix(2.6, 7.5, pow(aSeed.w, 3.)) * (1. + mist * .4) * (1. + uPulse * .35);
   float rA = ra * mix(.85, .35, mist) * (1. + uPulse * .7);
+  if (role > .76) {
+    // spray: a wide, deep volume of rising motes around the column (near bokeh + far specks = parallax)
+    float fy2 = fract(aSeed.y + tr * (.018 + .012 * aSeed2.z));
+    rp = vec3((aSeed.z - .5) * 30., mix(-13., 19., fy2), 3. - aSeed.w * 34.);
+    rA = smoothstep(0., .1, fy2) * smoothstep(1., .85, fy2) * .55;
+    rsize = mix(2.2, 6.5, pow(aSeed2.y, 4.)) * (1. + uPulse * .3);
+  }
 
   vec3 cp = rp; vec3 cc = rc; float cA = 0.; float cS = 2.;
-  float role = aSeed2.x;
   float headYr = mix(${TREND.start.toFixed(1)}, ${TREND.end.toFixed(2)}, uDraw);
+  vec3 hp = vec3(CH_X(headYr), CH_Y(TREND_V(headYr), uMorph), 0.);
   if (role < .48) {
-    float f = fract(aSeed2.y + uTime * (.06 + .05 * aSeed2.z));
-    float yr = mix(2010., headYr, f);
-    vec2 j = (aSeed.zw - .5) * .07 * (1. + 3. * pow(aSeed2.w, 6.));
-    cp = vec3(CH_X(yr) + j.x, CH_Y(TREND_V(yr), uMorph) + j.y, (aSeed2.w - .5) * .3);
-    cA = .45 * smoothstep(0., .08, f) * step(.001, uDraw);
-    cc = mix(EMBER, GOLD, aSeed2.w);
-    cS = mix(2.4, 5.2, pow(aSeed.w, 4.));
-    if (aSeed2.z < .12) {
-      vec3 hp = vec3(CH_X(headYr), CH_Y(TREND_V(headYr), uMorph), 0.);
-      float an = aSeed.x * TAU + uTime * (1.5 + aSeed.y * 3.);
-      float r = .04 + .5 * pow(aSeed.z, 2.2);
-      cp = hp + vec3(cos(an) * r, sin(an) * r * .8, (aSeed.w - .5) * .5);
-      cA = .6 * step(.001, uDraw);
+    // flow along the drawn line toward the head; everything not yet laid down swirls in a reservoir at the head
+    float q = fract(aSeed2.y + uTime * (.05 + .04 * aSeed2.z));
+    float yr = 2010. + q * ${(TREND.end - TREND.start).toFixed(2)};
+    if (yr <= headYr && uDraw > .001) {
+      vec2 j = (aSeed.zw - .5) * .07 * (1. + 3. * pow(aSeed2.w, 6.));
+      cp = vec3(CH_X(yr) + j.x, CH_Y(TREND_V(yr), uMorph) + j.y, (aSeed2.w - .5) * .3);
+      cA = .45 * smoothstep(0., .03, q);
+      cc = mix(EMBER, GOLD, aSeed2.w);
+      cS = mix(2.4, 5.2, pow(aSeed.w, 4.));
+    } else {
+      float an = aSeed.x * TAU + uTime * (1.2 + aSeed.y * 2.5);
+      float r = (.05 + .75 * pow(aSeed.z, 1.7)) * (1. - .5 * uDraw);
+      cp = hp + vec3(cos(an) * r, sin(an) * r * .85, (aSeed.w - .5) * r * 1.2);
+      cA = .1 + .12 * aSeed.w;
       cc = mix(GOLD, vec3(1., .95, .86), aSeed.w);
-      cS = mix(2.6, 7., aSeed.w);
+      cS = mix(2., 5.5, aSeed.w);
     }
   } else if (role < .7) {
     float dec = floor(aSeed2.y * 12.);
     float xx = aSeed2.z;
-    cp = vec3(mix(CH_X(2010.), CH_X(2026.), xx), CH_Y(16. + dec, uMorph), 0.);
-    cA = .13 * step(xx, uGrid) * (1. - .75 * uMorph);
+    float shown = step(xx, uGrid);
+    cp = vec3(mix(CH_X(2010.), CH_X(2026.), xx * shown), CH_Y(16. + dec, uMorph), 0.);
+    cA = mix(.015, .13, shown) * (1. - .75 * uMorph);
     cc = mix(ICE, ELEC, .35);
     cS = 2.2;
   } else if (role < .76) {
     float along = aSeed2.y;
     cp = aSeed2.z < .45 ? vec3(CH_X(2010.), mix(CH_Y(16., 0.), CH_Y(27., 0.), along), 0.)
                         : vec3(mix(CH_X(2010.), CH_X(2026.), along), CH_Y(16., 0.), 0.);
-    cA = .3 * step(along, uAxes);
+    float shownA = step(along, uAxes);
+    cp = mix(vec3(CH_X(2010.), CH_Y(16., 0.), 0.), cp, shownA);
+    cA = mix(.01, .3, shownA);
     cc = ICE; cS = 2.6;
   } else {
     float dz = aSeed.z;
@@ -131,8 +143,8 @@ void main(){
   // hit pulse: expanding ring + bloom
   float r = length(uv * vec2(.9, 1.2));
   float rad = (1. - uPulse) * 1.3;
-  col += mix(COL_ELEC, COL_GOLD, uWarm) * exp(-pow((r - rad) * 7., 2.)) * uPulse * .35;
-  col += tint * uPulse * .12 * exp(-r * 1.5);
+  col += mix(COL_ELEC, COL_GOLD, uWarm) * exp(-pow((r - rad) * 12., 2.)) * uPulse * .22;
+  col += tint * uPulse * .035 * exp(-r * 2.);
   // chart: soft warm atmosphere, glow behind the head of the curve
   vec2 h = uv - uHead;
   col += mix(COL_CLAY, COL_GOLD, .4) * uChart * (.03 + .22 * exp(-dot(h, h) * 7.));
