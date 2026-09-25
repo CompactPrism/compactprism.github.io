@@ -192,7 +192,7 @@ export const S10: React.FC = () => {
   const clTrack = 0.02 + 0.12 * (1 - prog(tt, 0, 2.6, E.out));
   const sweep = -30 + 160 * prog(tt, 0.4, 3.2, E.inOut);
   const tagOp = prog(tt, 0.8, 1.9, E.out);
-  const hudOp = prog(tt, 1.8, 3.0, E.out) * 0.62;
+  const capBand = prog(t, B.l26 - 0.6, B.l26, E.inOut) * (1 - prog(t, B.l28e + 0.3, B.l28e + 1.2, E.inOut));
   const fadeOut = prog(t, B.fade0, dur, E.inOut);
   const titleScale = 1 + 0.02 * prog(t, B.title, dur, E.linear);
 
@@ -318,18 +318,14 @@ export const S10: React.FC = () => {
           />
         </AbsoluteFill>
       )}
-      {hudOp > 0.001 && (
-        <>
-          <div style={{position: 'absolute', left: 120, bottom: 150, opacity: hudOp, fontFamily: F.mono, fontSize: 22, letterSpacing: '0.14em', color: rgba(C.gold, 0.9)}}>
-            CLAUDE OPUS 5.5 <span style={{color: rgba(C.ivory, 0.55)}}>· SEP 22, 2026</span>
-          </div>
-          <div style={{position: 'absolute', right: 120, bottom: 150, width: 560, textAlign: 'right', opacity: hudOp}}>
-            <div style={{fontFamily: F.serif, fontStyle: 'italic', fontSize: 24, lineHeight: 1.3, color: rgba(C.ivory, 0.78)}}>
-              “exceptionally helpful while also being honest, thoughtful, and caring about the world.”
-            </div>
-            <div style={{marginTop: 8, fontFamily: F.mono, fontSize: 22, letterSpacing: '0.14em', color: rgba(C.gold, 0.8)}}>CLAUDE’S CONSTITUTION · 2026</div>
-          </div>
-        </>
+      {/* keeps the caption band calm over the lit city lights while the VO runs */}
+      {capBand > 0.001 && (
+        <AbsoluteFill
+          style={{
+            opacity: capBand,
+            background: 'linear-gradient(180deg, rgba(0,0,0,0) 76%, rgba(2,3,6,0.5) 86%, rgba(2,3,6,0.78) 100%)',
+          }}
+        />
       )}
       {fadeOut > 0 && <AbsoluteFill style={{background: '#000', opacity: fadeOut}} />}
     </AbsoluteFill>
