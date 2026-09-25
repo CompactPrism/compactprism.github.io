@@ -118,11 +118,9 @@ vec3 emit(vec3 ro, vec3 rd, float rough, float pix){
   return col;
 }
 
-vec3 skyCol(vec3 rd){
+vec3 skyCol(vec3 rd, float veil){
   float el = rd.y;
   vec3 sky = mix(vec3(.010, .013, .022), vec3(.003, .004, .007), smoothstep(-.02, .32, el));
-  float az = atan(rd.x, -rd.z);
-  float veil = fbm(vec3(az * 2.2, max(el, 0.) * 9., uTime * .02)) * .5 + .5;
   sky += COL_COLD * .02 * veil * smoothstep(.3, .0, el);
   sky += COL_COLD * .06 * exp(-abs(el) * 30.) * uEnv;
   return sky;
@@ -134,7 +132,9 @@ void main(){
   vec3 ro = uCamPos; vec3 rd = camRay(fc);
   float pix = 1. / (uRes.y * uFocal);
 
-  vec3 col = skyCol(rd);
+  float veil = .5;
+  if (rd.y > -.02) veil = fbm(vec3(atan(rd.x, -rd.z) * 2.2, max(rd.y, 0.) * 9., uTime * .02)) * .5 + .5;
+  vec3 col = skyCol(rd, veil);
   // --- glassy floor
   if (rd.y < 0.) {
     float sF = -ro.y / rd.y;
@@ -155,7 +155,7 @@ void main(){
     vec3 fl = base + COL_COLD * spill * .045 + refl * (fres * .5 + .05);
     // distance haze towards the horizon
     float fogA = 1. - exp(-sF * .028);
-    col = mix(fl, skyCol(vec3(rd.x, 0., rd.z)), fogA);
+    col = mix(fl, skyCol(vec3(rd.x, 0., rd.z), .5), fogA);
   }
 
   // --- direct light

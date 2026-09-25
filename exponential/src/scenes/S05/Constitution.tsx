@@ -15,7 +15,7 @@ const ARTICLES = [
 type Props = {t: number; t0: number; op: number; recede: number; cx: number; cy: number; tilt: number};
 
 export const DOC_W = 680;
-export const DOC_H = 540;
+export const DOC_H = 580;
 
 const Burn: React.FC<{x: number; on: number}> = ({x, on}) =>
   on <= 0.001 ? null : (
@@ -89,25 +89,20 @@ export const Constitution: React.FC<Props> = ({t, t0, op, recede, cx, cy, tilt})
         />
       ))}
       <div style={{position: 'absolute', inset: 0, opacity: unroll > 0.7 ? 1 : 0, padding: '40px 64px'}}>
-        {/* header */}
+        {/* header: the idea's real date (Constitutional AI paper, Dec 2022) */}
         <div
           style={{
             display: 'flex',
-            alignItems: 'center',
-            gap: 18,
-            justifyContent: 'center',
+            alignItems: 'baseline',
+            justifyContent: 'space-between',
             opacity: headP,
-            fontFamily: F.sans,
-            fontWeight: 600,
-            fontSize: 22,
-            letterSpacing: '0.48em',
-            color: rgba(C.gold, 0.85),
-            marginBottom: 26,
+            marginBottom: 22,
+            paddingBottom: 12,
+            borderBottom: `1px solid ${rgba(C.gold, 0.28 * headP)}`,
           }}
         >
-          <div style={{width: 60 * headP, height: 1, background: rgba(C.gold, 0.6)}} />
-          <span style={{paddingLeft: '0.48em'}}>CONSTITUTION</span>
-          <div style={{width: 60 * headP, height: 1, background: rgba(C.gold, 0.6)}} />
+          <span style={{fontFamily: F.sans, fontWeight: 600, fontSize: 22, letterSpacing: '0.34em', color: rgba(C.gold, 0.88)}}>CONSTITUTIONAL AI</span>
+          <span style={{fontFamily: F.mono, fontWeight: 500, fontSize: 22, letterSpacing: '0.12em', color: rgba(C.ivory, 0.62)}}>DEC 2022</span>
         </div>
         {/* verbatim quote, engraved line by line */}
         {QUOTE_LINES.map((line, i) => {
@@ -131,7 +126,6 @@ export const Constitution: React.FC<Props> = ({t, t0, op, recede, cx, cy, tilt})
                 >
                   {line}
                 </div>
-                <Burn x={0} on={0} />
                 <div style={{position: 'absolute', left: `${p * 100}%`, top: 0, bottom: 0}}>
                   <Burn x={0} on={p > 0 && p < 1 ? 1 : 0} />
                 </div>
@@ -139,7 +133,20 @@ export const Constitution: React.FC<Props> = ({t, t0, op, recede, cx, cy, tilt})
             </div>
           );
         })}
-        <div style={{height: 1, margin: '26px 40px 22px', background: `linear-gradient(90deg, rgba(0,0,0,0), ${rgba(C.gold, 0.45)}, rgba(0,0,0,0))`, opacity: prog(t, artStart - 0.3, artStart + 0.3)}} />
+        <div
+          style={{
+            textAlign: 'center',
+            marginTop: 8,
+            fontFamily: F.mono,
+            fontSize: 22,
+            letterSpacing: '0.08em',
+            color: rgba(C.ivory, 0.55),
+            opacity: prog(t, qStart + 1.4, qStart + 1.9),
+          }}
+        >
+          — Claude’s constitution, 2026
+        </div>
+        <div style={{height: 1, margin: '18px 40px 18px', background: `linear-gradient(90deg, rgba(0,0,0,0), ${rgba(C.gold, 0.45)}, rgba(0,0,0,0))`, opacity: prog(t, artStart - 0.3, artStart + 0.3)}} />
         {/* abstract articles */}
         {ARTICLES.map((a, ai) => (
           <div key={ai} style={{display: 'flex', gap: 22, marginBottom: 16}}>

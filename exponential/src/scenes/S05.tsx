@@ -32,9 +32,9 @@ const FACTS = {
 type V3 = [number, number, number];
 const L3 = (a: V3, b: V3, k: number): V3 => [lerp(a[0], b[0], k), lerp(a[1], b[1], k), lerp(a[2], b[2], k)];
 
-const S_WORLD = 1.8; // emblem diameter in world units (at z=0)
-const SPH_R = 1.0; // energy sphere radius
-const CAGE_R = 1.14;
+const S_WORLD = 2.05; // emblem diameter in world units (at z=0)
+const SPH_R = 0.86; // energy sphere radius
+const CAGE_R = 1.3;
 const FIRE: V3 = [0, -1.28, 0];
 const GROUND_Y = -1.45;
 
@@ -360,10 +360,38 @@ const Cage: React.FC<{
 };
 
 const WORDS = ['HELPFUL', 'HONEST', 'HARMLESS'];
-const WX = [600, 960, 1320];
 const WY = 790;
+const W_SIZE = 56;
+const W_TRACK = 0.16; // em, final tracking
+const SEP_GAP = 46; // px on each side of a separator dot
+
+// Measure the words once (fonts are loaded before render) so separators sit at exactly equal gaps.
+let wordLayout: {x: number[]; w: number[]} | null = null;
+const layoutWords = () => {
+  if (wordLayout) return wordLayout;
+  let widths = WORDS.map((w) => w.length * W_SIZE * 0.78);
+  try {
+    const cv = document.createElement('canvas').getContext('2d');
+    if (cv) {
+      cv.font = `380 ${W_SIZE}px 'Fraunces Variable'`;
+      widths = WORDS.map((w) => cv.measureText(w).width + w.length * W_SIZE * W_TRACK);
+    }
+  } catch {
+    // keep estimate
+  }
+  const total = widths.reduce((a, b) => a + b, 0) + 4 * SEP_GAP;
+  let x = 960 - total / 2;
+  const xs: number[] = [];
+  widths.forEach((w) => {
+    xs.push(x + w / 2);
+    x += w + 2 * SEP_GAP;
+  });
+  wordLayout = {x: xs, w: widths};
+  return wordLayout;
+};
 
 const Principles: React.FC<{t: number; words: number[]; stamp: number[]; on: number; target: {x: number; y: number}}> = ({t, words, stamp, on, target}) => {
+  const {x: WX, w: WW} = layoutWords();
   return (
     <AbsoluteFill style={{opacity: on}}>
       <svg width={1920} height={1080} style={{position: 'absolute', inset: 0}}>
@@ -372,15 +400,15 @@ const Principles: React.FC<{t: number; words: number[]; stamp: number[]; on: num
           const y0 = WY - 44;
           const cx = (x0 + target.x) / 2 + (x0 - target.x) * 0.1;
           const cy = y0 - 150;
-          const d = `M${x0},${y0} Q${cx},${cy} ${target.x},${target.y + 40}`;
+          const ty = target.y + 60;
+          const d = `M${x0},${y0} Q${cx},${cy} ${target.x},${ty}`;
           const fly = prog(t, w + 0.08, w + 0.55, E.in);
           const trail = clamp(fly);
           const fadeTrail = 1 - prog(t, w + 0.55, w + 1.4);
           if (t < w + 0.05) return null;
-          // point along the quadratic
           const q = (k: number) => ({
             x: (1 - k) * (1 - k) * x0 + 2 * (1 - k) * k * cx + k * k * target.x,
-            y: (1 - k) * (1 - k) * y0 + 2 * (1 - k) * k * cy + k * k * (target.y + 40),
+            y: (1 - k) * (1 - k) * y0 + 2 * (1 - k) * k * cy + k * k * ty,
           });
           const head = q(trail);
           return (
@@ -401,16 +429,18 @@ const Principles: React.FC<{t: number; words: number[]; stamp: number[]; on: num
         const s = stamp[i];
         if (s <= 0) return null;
         const hot = Math.exp(-Math.max(0, t - words[i]) * 2.2);
+        const tr = W_TRACK + 0.14 * (1 - s);
         return (
-          <div key={word} style={{position: 'absolute', left: WX[i] - 260, width: 520, top: WY - 38, height: 76, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+          <div key={word} style={{position: 'absolute', left: WX[i] - 300, width: 600, top: WY - 38, height: 76, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
             <div
               style={{
                 fontFamily: F.serif,
-                fontSize: 56,
+                fontSize: W_SIZE,
                 fontWeight: 380,
-                letterSpacing: `${0.28 - 0.12 * s}em`,
-                paddingLeft: `${0.28 - 0.12 * s}em`,
+                letterSpacing: `${tr}em`,
+                marginRight: `-${tr}em`,
                 lineHeight: '76px',
+                whiteSpace: 'nowrap',
                 color: hot > 0.4 ? '#FFF3E2' : C.ivory,
                 fontVariationSettings: '"opsz" 144, "SOFT" 50',
                 opacity: clamp(s * 1.6),
@@ -420,13 +450,14 @@ const Principles: React.FC<{t: number; words: number[]; stamp: number[]; on: num
             >
               {word}
             </div>
-            <div style={{width: 240 * s + 120 * hot, height: 1.5, marginTop: 2, background: `linear-gradient(90deg, rgba(0,0,0,0), ${rgba(C.gold, 0.4 + 0.6 * hot)}, rgba(0,0,0,0))`}} />
+            <div style={{width: WW[i] * s + 120 * hot, height: 1.5, marginTop: 2, background: `linear-gradient(90deg, rgba(0,0,0,0), ${rgba(C.gold, 0.4 + 0.6 * hot)}, rgba(0,0,0,0))`}} />
           </div>
         );
       })}
-      {[0, 1].map((i) => (
-        <div key={i} style={{position: 'absolute', left: (WX[i] + WX[i + 1]) / 2 - 4, top: WY - 4, width: 8, height: 8, borderRadius: 4, background: rgba(C.gold, 0.6 * clamp(stamp[i + 1] * 2))}} />
-      ))}
+      {[0, 1].map((i) => {
+        const sx = WX[i] + WW[i] / 2 + SEP_GAP;
+        return <div key={i} style={{position: 'absolute', left: sx - 4, top: WY - 6, width: 8, height: 8, borderRadius: 4, background: rgba(C.gold, 0.7 * clamp(stamp[i + 1] * 2))}} />;
+      })}
     </AbsoluteFill>
   );
 };
@@ -448,7 +479,7 @@ const Labels: React.FC<{
 }> = ({t, B, fireY, sph, flyK}) => {
   // L10
   const y1 = prog(t, B.y2021, B.y2021 + 0.8, E.out) * (1 - prog(t, B.c11 + 0.2, B.c11 + 0.9));
-  const y2 = prog(t, B.anthropic - 0.1, B.anthropic + 0.8, E.out) * (1 - prog(t, B.c11 + 0.2, B.c11 + 0.9));
+  const y2 = prog(t, B.anthropic - 0.45, B.anthropic + 0.5, E.out) * (1 - prog(t, B.c11 + 0.2, B.c11 + 0.9));
   // L11
   const pw = prog(t, B.powerful - 0.1, B.powerful + 0.6, E.out) * (1 - prog(t, B.c12 - 0.3, B.c12 + 0.2));
   const sf = prog(t, B.safely - 0.05, B.safely + 0.6, E.out) * (1 - prog(t, B.c12 - 0.3, B.c12 + 0.2));
@@ -476,7 +507,7 @@ const Labels: React.FC<{
       )}
       {sf > 0 && <Callout x={sph.x + sph.r + 18} y={sph.y} dir={1} text="SAFE" color={C.gold} p={sf} />}
       {since > 0 && nm > 0 && (
-        <div style={{position: 'absolute', left: 0, right: 0, top: 628, display: 'flex', justifyContent: 'center'}}>
+        <div style={{position: 'absolute', left: 0, right: 0, top: 640, display: 'flex', justifyContent: 'center'}}>
           <div
             style={{
               fontFamily: F.serif,
@@ -497,7 +528,7 @@ const Labels: React.FC<{
         </div>
       )}
       {dt > 0 && (
-        <div style={{position: 'absolute', left: 0, right: 0, top: since > 0 ? 812 : 800, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 22, opacity: dt}}>
+        <div style={{position: 'absolute', left: 0, right: 0, top: since > 0 ? 826 : 812, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 22, opacity: dt}}>
           <div style={{width: 70 * dt, height: 1, background: rgba(C.gold, 0.6)}} />
           <div style={{fontFamily: F.mono, fontSize: 26, fontWeight: 500, letterSpacing: '0.42em', paddingLeft: '0.42em', color: rgba(C.gold, 0.95), textShadow: halo}}>{FACTS.launch}</div>
           <div style={{width: 70 * dt, height: 1, background: rgba(C.gold, 0.6)}} />

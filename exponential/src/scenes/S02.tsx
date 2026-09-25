@@ -286,8 +286,9 @@ export const S02: React.FC = () => {
             float z = -c.z;
             float big = step(.975, aSeed2.y);
             size = (.8 + 2.2 * pow(aSeed.w, 3.)) * (1. + big * 5.);
+            size = min(size, 6. * z); // cap the sprite at ~60 px (huge sprites show square edges)
             color = mix(vec3(.74, .82, .9), vec3(.45, .56, .67), aSeed2.z);
-            alpha = smoothstep(.2, 1.1, z) * (1. - smoothstep(16., 38., z)) * (.3 + .5 * aSeed2.w) * (1. - big * .75) * uDust;
+            alpha = smoothstep(.7, 1.8, z) * (1. - smoothstep(16., 38., z)) * (.3 + .5 * aSeed2.w) * (1. - big * .75) * uDust;
           `}
         />
       </ThreeCanvas>

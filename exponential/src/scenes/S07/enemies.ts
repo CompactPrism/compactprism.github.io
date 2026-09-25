@@ -4,13 +4,13 @@
 export const ENEMY_U = {uT: 0, uRv: -9, uG: 0, uFl: 0, uS: 1, uC: [0, 0, 0] as number[]};
 
 const CONVERGE = /* glsl */ `
-  vec3 rel0 = (aSeed.xyz - .5) * vec3(4.6, 3.0, 3.0) * uS;
+  vec3 rel0 = (aSeed.xyz - .5) * vec3(3.2, 2.4, 2.4) * uS;
   rel0.xz = rot(uT * (.35 + aSeed2.z * .35)) * rel0.xz;
   rel0 *= mix(1.25, .7, uG);
   vec3 scat = uC + rel0 + curl(rel0 * .35 + uT * .12) * .35 * uS;
   float k = clamp((uRv + .22 - aSeed2.w * .5) / .75, 0., 1.);
   k = 1. - pow(1. - k, 3.);
-  float dustA = (.05 + .07 * uG) * (1. - k) * step(.45, aSeed2.z);
+  float dustA = (.07 + .1 * uG) * (1. - k) * step(.45, aSeed2.z);
 `;
 
 // DISEASE: three spiked virions with RNA-like tangles, toxic green-grey, rim-lit.
@@ -49,8 +49,8 @@ export const DISEASE = /* glsl */ `
   float lit = (cls < .58 ? (.22 + 1.2 * pow(rim, 2.2)) : br) * (1. + uFl * 2.5);
   vec3 cA = vec3(.49, .60, .42), cB = vec3(.74, .80, .64);
   color = mix(mix(cA, cB, rim * rim), vec3(.34, .42, .40), cls > .9 ? .6 : 0.);
-  size = (cls < .58 ? 2.0 : 2.4) * uS * .8;
-  alpha = mix(dustA, .30 * lit, k);
+  size = (cls < .58 ? 3.0 : 3.4) * uS;
+  alpha = mix(dustA, .34 * lit * (1. - .8 * clamp((uRv - .2) / .8, 0., 1.)), k);
   color = mix(vec3(.55, .6, .66), color, k);
 `;
 
@@ -85,15 +85,15 @@ export const POVERTY = /* glsl */ `
   float lip = 1. - smoothstep(.075, .16, edge);
   float lum = (on * fl * mix(1., .12, die) + .18 + lip * .5) * crack;
   color = mix(vec3(.28, .34, .44), vec3(.74, .84, .96), on * (1. - die));
-  size = (1.6 + on * 1.2) * uS * .8;
-  alpha = mix(dustA, .34 * lum * (1. + uFl * 2.), k);
+  size = (2.6 + on * 1.4) * uS;
+  alpha = mix(dustA, .34 * lum * (1. + uFl * 2.) * (1. - .85 * clamp((uRv - .2) / .8, 0., 1.)), k);
   color = mix(vec3(.55, .6, .66), color, k);
 `;
 
 // IGNORANCE: occluding dark fog (normal blending) swirling into a vortex.
 export const FOG = /* glsl */ `
   ${CONVERGE}
-  float r = pow(aSeed.x, .6) * 1.7;
+  float r = pow(aSeed.x, .6) * 1.15;
   float a = aSeed.y * TAU + uT * (.55 / (r + .35));
   vec3 tg = vec3(cos(a) * r, (aSeed.z - .5) * .9 * (1.2 - r * .4), sin(a) * r * .45);
   tg += curl(tg * .8 + uT * .15) * .18;
@@ -101,21 +101,21 @@ export const FOG = /* glsl */ `
   pos = mix(scat, target, k);
   color = vec3(.006, .008, .012);
   size = (26. + aSeed.w * 34.) * uS;
-  alpha = .26 * k * smoothstep(1.8, .6, r);
+  alpha = .3 * k * smoothstep(1.25, .45, r);
   occ = 1.;
 `;
 
 // IGNORANCE wisps: faint cold filaments being pulled in.
 export const WISP = /* glsl */ `
   ${CONVERGE}
-  float r = mix(1.9, .25, fract(aSeed.x + uT * .18));
+  float r = mix(1.35, .2, fract(aSeed.x + uT * .18));
   float a = aSeed.y * TAU + uT * (.8 / (r + .25));
   vec3 tg = vec3(cos(a) * r, (aSeed.z - .5) * .5, sin(a) * r * .45);
   vec3 target = uC + tg * uS;
   pos = mix(scat, target, k);
   color = vec3(.55, .66, .82);
-  size = 1.6 * uS;
-  alpha = mix(dustA, .16 * smoothstep(.25, .9, r) * (1. + uFl * 2.), k);
+  size = 3.2 * uS;
+  alpha = mix(dustA, .2 * smoothstep(.25, .9, r) * (1. + uFl * 2.), k);
 `;
 
 // WARMING PLANET: bruise smog shell swirling around the globe (the globe itself is a mesh).
@@ -123,13 +123,13 @@ export const SMOG = /* glsl */ `
   ${CONVERGE}
   float zz = aSeed.x * 2. - 1.; float aa = aSeed.y * TAU + uT * (.25 + aSeed.w * .2);
   vec3 dir = vec3(sqrt(1. - zz * zz) * cos(aa), zz, sqrt(1. - zz * zz) * sin(aa));
-  float rr = 1.04 + pow(aSeed.w, 2.) * .55;
+  float rr = .93 + pow(aSeed.w, 2.) * .42;
   vec3 tg = dir * rr + curl(dir * 2. + uT * .2) * .08;
   tg.y += fract(aSeed.z + uT * .12) * .25 * (rr - 1.);
   vec3 target = uC + tg * uS;
   pos = mix(scat, target, k);
   color = mix(vec3(.36, .22, .42), vec3(.52, .30, .50), aSeed2.x);
-  size = (2.2 + aSeed2.y * 4.) * uS;
+  size = (3. + aSeed2.y * 5.) * uS;
   alpha = mix(dustA, .12 * (1. + uFl * 2.), k);
 `;
 
@@ -147,7 +147,7 @@ export const RAIN = /* glsl */ `
   pos = vec3(x + 4., 11., z) + dir * (fall + kk * .55);
   float near = smoothstep(-18., 4., z);
   size = 1.1 + near * .9;
-  alpha = sin(kk * PI) * (.05 + .1 * near) * uRain * smoothstep(-1.2, 0., pos.y);
+  alpha = sin(kk * PI) * (.08 + .17 * near) * uRain * smoothstep(-1.2, 0., pos.y);
   float wd = length(pos - uHero);
   float w = exp(-wd * wd / (2.2 + 4. * uCharge)) * (.6 + uCharge * 1.6);
   color = mix(vec3(.62, .72, .86), vec3(1., .72, .45), clamp(w, 0., 1.));

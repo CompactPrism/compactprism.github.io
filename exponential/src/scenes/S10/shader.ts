@@ -65,11 +65,12 @@ void main(){
     vec3 n = normalize(pc);
     float sunward = dot(n, uLightDir);
     float litA = smoothstep(-.35, .25, sunward);
-    float fwd = pow(max(sd, 0.), 10.);
-    vec3 blue = vec3(.22, .48, 1.);
-    vec3 warm = mix(vec3(1., .62, .36), vec3(1., .8, .55), fwd);
-    vec3 limbCol = mix(blue * .18, mix(blue * .9, warm * 1.4, clamp(fwd * 1.5 + litA * .35, 0., 1.)), litA);
-    col += limbCol * (exp(-hgt / .0065) * 1.1 + exp(-hgt / .03) * .22) * (1. + fwd * 3.);
+    float fwd = pow(max(sd, 0.), 14.);
+    float fwd2 = pow(max(sd, 0.), 3.);
+    vec3 blue = vec3(.2, .45, 1.);
+    vec3 warm = mix(vec3(1., .58, .34), vec3(1., .82, .58), fwd);
+    vec3 limbCol = mix(blue * (.25 + .5 * litA), warm * 1.5, clamp(fwd * 1.6 + fwd2 * .35, 0., 1.));
+    col += limbCol * (exp(-hgt / .0055) * (.5 + .6 * litA) + exp(-hgt / .028) * .12) * (1. + fwd * 4.);
   } else {
     // ---------- the planet
     vec3 N = normalize(ro + rd * tHit);
@@ -82,7 +83,7 @@ void main(){
     float tv = snoise(Np * 7.3) * .5 + .5;
     vec3 landCol = mix(vec3(.07, .09, .05), vec3(.30, .23, .14), tv);
     landCol = mix(landCol, vec3(.42, .40, .38), smoothstep(.6, .85, abs(Np.y)));
-    vec3 oceanCol = vec3(.008, .026, .06);
+    vec3 oceanCol = vec3(.015, .05, .115);
     vec3 surf = mix(oceanCol, landCol, land);
     float cl = fbm4(Np * 3.1 + vec3(uSpin * .4, 2., 0.));
     float clouds = smoothstep(.08, .55, cl) * .9;
@@ -103,10 +104,13 @@ void main(){
 
     // night side: faint cold ambient + city lights
     vec3 night = surf * vec3(.05, .08, .15) * .3 + clouds * vec3(.04, .06, .1) * .25;
-    float c1 = snoise(Np * 34.) * .5 + .5;
-    float c2 = snoise(Np * 120.) * .5 + .5;
-    float city = smoothstep(.6, .92, c1 * .5 + c2 * .55 + coast * .3) * land;
-    city *= smoothstep(.05, .3, mu);
+    float c0 = snoise(Np * 11. + 5.) * .5 + .5;
+    float c1 = snoise(Np * 85.) * .5 + .5;
+    float c2 = snoise(Np * 330.) * .5 + .5;
+    float pop = smoothstep(.35, .75, c0 + coast * .35);
+    float city = smoothstep(.62, .95, c1 * .45 + c2 * .55 + coast * .12) * land * pop;
+    city += smoothstep(.93, .99, c2) * land * .5;
+    city *= smoothstep(.06, .32, mu);
     float front = ndl + uIgn + (c1 - .5) * .16;
     float ign = smoothstep(0., .04, front);
     float flare = exp(-pow(front / .03, 2.)) * step(.001, uIgn);
@@ -115,18 +119,19 @@ void main(){
     vec3 cityCol = mix(coldCity, warmCity, ign) * city * (1. - clouds * .75) * uNightCity;
     cityCol += vec3(1., .78, .5) * flare * (city * 2.5 + land * .05) * (1. - clouds * .6);
     col = mix(night + cityCol, colDay, day) + cityCol * .15 * day;
+    col += vec3(.08, .17, .4) * day * .1 * (1. - .5 * mu);
 
     // atmosphere haze on the disc (thin blue rim, warm on the sun side)
     float rim = pow(1. - mu, 3.5);
-    float fwd = pow(max(sd, 0.), 6.);
-    col += mix(vec3(.18, .38, .95) * .22, vec3(1., .66, .42) * 1.1, clamp(fwd + day * .4, 0., 1.)) * rim * (.25 + 1.4 * day);
+    float fwd = pow(max(sd, 0.), 8.);
+    col += mix(vec3(.18, .38, .95) * .3, vec3(1., .66, .42) * 1.2, clamp(fwd * 1.4, 0., 1.)) * rim * (.2 + .9 * day + 1.2 * fwd);
   }
 
   // ---------- the hero's sun: core, bloom, veil (hidden behind the planet)
   float vis = hit ? 0. : 1.;
   col += sunC * uSunI * vis * (7. * exp(-sAng / .0035) + 1.3 * exp(-sAng / .018) * uBloom);
-  col += sunC * uSunI * (.45 * exp(-sAng / .075) * vis + .09 * exp(-sAng / .3)) * uBloom;
-  col += COL_EMBER * uSunI * .05 * exp(-sAng / .6) * uBloom;
+  col += sunC * uSunI * (.4 * exp(-sAng / .06) * vis + .025 * exp(-sAng / .25)) * uBloom;
+  col += COL_EMBER * uSunI * .012 * exp(-sAng / .5) * uBloom;
 
   // corona: the emblem's own 12 rays, as light
   vec2 d = px - uSunPx;
@@ -135,7 +140,7 @@ void main(){
   float rays = 0.;
   for (int i = 0; i < 12; i++) {
     float da = abs(mod(a - uRayA[i] - uRayRot + PI, TAU) - PI);
-    float w = 1.6 + r * .012;
+    float w = 2.2 + 9. * exp(-r / 55.);
     float len = uRayL[i] * uRayLen;
     rays += exp(-pow(da * r / w, 2.)) * exp(-r / len) * smoothstep(0., 14., r);
   }
@@ -155,7 +160,7 @@ void main(){
       acc += skyVis(camRay(q)) * w;
     }
     acc /= 18.;
-    col += vec3(1., .72, .45) * acc * uGod * (hit ? .35 : 1.);
+    col += vec3(1., .72, .45) * acc * uGod * (hit ? .1 : .8);
   }
 
   // lens: anamorphic streak + ghosts along the optical axis

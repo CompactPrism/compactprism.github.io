@@ -21,8 +21,8 @@ export const DUST = /* glsl */ `
   P += vec3(sin(uTime * .07 + aSeed.w * 6.), cos(uTime * .05 + aSeed2.x * 6.), 0.) * .35;
   P.x += uTime * .04 * (aSeed2.y - .3);
   pos = P;
-  vec4 mv = modelViewMatrix * vec4(P, 1.);
-  float dz = -mv.z;
+  vec4 mvq = modelViewMatrix * vec4(P, 1.);
+  float dz = -mvq.z;
   color = mix(vec3(.55, .66, .80), vec3(.96, .70, .48), clamp(uWarmD + (aSeed2.z - .5) * .3, 0., 1.));
   float near = smoothstep(4., .8, dz);
   size = (1.3 + 2.2 * aSeed2.w) * (1. + near * 4.) * clamp(dz / 1.2, .15, 1.);
@@ -78,8 +78,8 @@ export const HERO_PTS = /* glsl */ `
   }
   pos = P;
 
-  vec4 mv = modelViewMatrix * vec4(P, 1.);
-  float dz = -mv.z;
+  vec4 mvq = modelViewMatrix * vec4(P, 1.);
+  float dz = -mvq.z;
   vec3 coldC = mix(vec3(.50, .78, 1.), vec3(.72, .80, .87), aSeed.w);
   vec3 warmC = mix(vec3(.93, .54, .37), vec3(.96, .76, .48), aSeed.z);
   color = mix(coldC, warmC, smoothstep(.2, .85, e)) ;

@@ -57,23 +57,23 @@ void main(){
     vec2 q = vec2(fbm3v(cp * .45 + vec2(0., t * .05)), fbm3v(cp * .45 + vec2(5.2, 1.3) - vec2(t * .04, 0.)));
     vec2 wp = cp * .8 + q * 2.6 + vec2(t * .09, -t * .03);
     d = fbm2(wp);
-    float thick = smoothstep(.28, .78, d);
+    float thick = smoothstep(.32, .72, d);
     // brighter where thin (light from above leaks through), dark and heavy where thick
-    vec3 hiC = vec3(.075, .09, .118);
-    vec3 loC = vec3(.012, .015, .024);
+    vec3 hiC = vec3(.085, .10, .13);
+    vec3 loC = vec3(.003, .004, .009);
     col = mix(hiC, loC, thick);
     // billow ridges: a second look at the density for rolling structure
     float ridge = 1. - abs(fbm3v(wp * 2.1 + 3.) * 2. - 1.);
-    col += vec3(.03, .036, .05) * pow(ridge, 3.) * (1. - thick) ;
+    col += vec3(.05, .06, .08) * pow(ridge, 4.) * (1. - thick * .7);
     // distance haze towards the horizon (cold, faintly lit band)
     float haze = 1. - exp(-dist * .22);
-    col = mix(col, vec3(.07, .085, .11), haze * .85);
+    col = mix(col, vec3(.05, .062, .085), haze * .75);
     // lightning: scattered inside the cloud mass
     if (Lsum > .002) {
       vec2 dir = normalize(uL0.xy - p + 1e-4);
       float d2 = fbm2(wp + vec2(dir.x, -dir.y) * .12);
       float lining = clamp((d - d2) * 5. + .45, 0., 1.4);
-      col += ICE * Lsum * (.18 + 1.25 * d * d + .55 * lining * (1. - thick * .5));
+      col += ICE * Lsum * (.05 + 2.6 * pow(d, 3.) + .9 * pow(lining, 2.) * (1. - thick * .5));
     }
     // hero warm light on the cloud bases above it (grows with charge)
     vec2 hq = (p - uHero.xy) * vec2(.55, 1.);
@@ -97,10 +97,10 @@ void main(){
     float gdh = .16 / (-(hy - uHz) + .008);
     vec2 gph = vec2((uHero.x + uCam.x * .6) * gdh * 1.3, gdh + uCam.z * 1.4);
     vec2 dg = (gp - gph) * vec2(1., .55);
-    float pool = exp(-dot(dg, dg) * 2.2);
+    float pool = exp(-dot(dg, dg) * 6.);
     float streak = exp(-abs(p.x + rip * 1.4 - uHero.x) * 55.) * smoothstep(uHero.y + .01, uHero.y - .03, p.y);
     float warmI = uHero.z * (1. + 1.8 * uHero.w);
-    col += vec3(.95, .5, .3) * warmI * (pool * .22 + streak * (.10 + .2 * g) * exp((p.y - uHz) * 4.));
+    col += vec3(.95, .5, .3) * warmI * (pool * .16 + streak * (.10 + .2 * g) * exp((p.y - uHz) * 4.));
   }
 
   // visible bolts
@@ -149,7 +149,7 @@ void main(){
       float dd = abs(p.x - x);
       col += (vec3(1., .93, .8) * smoothstep(.006, .0, dd) * 2.2 + vec3(1., .6, .32) * exp(-dd * 45.) * .7) * smoothstep(0., .2, uWarm);
     }
-    col += vec3(.95, .6, .35) * uWarm * uWarm * (.25 + .6 * d) * exp(-length(p - uHero.xy) * 1.5);
+    col += vec3(1., .82, .58) * uWarm * uWarm * (.6 + 1.2 * d) * exp(-length(p - uHero.xy) * 1.2);
   }
 
   col = tm(col * uFade);

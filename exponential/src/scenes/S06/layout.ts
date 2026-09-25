@@ -4,7 +4,7 @@ export const GAUGE = {x: 960, y: 486, r: 150} as const;
 export const EMBLEM_HUD_SIZE = 118; // ClaudeSpark size inside the gauge
 
 // The hero pose at the end of S05's reveal (emblem at rest just before it pulls back into the HUD).
-export const HERO = {x: 960, y: 470, size: 290} as const;
+export const HERO = {x: 960, y: 455, size: 330} as const;
 export const HERO_ROT_END = 18; // degrees: rotation the emblem settles to at the end of the move
 
 // The pull-back spans the S05/S06 cut: FLY_S05 seconds at the end of S05, FLY_S06 at the start of S06.

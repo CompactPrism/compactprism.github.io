@@ -9,22 +9,40 @@ import {useScene} from '../lib/timing';
 import {C, F, rgba} from '../theme';
 import {E, clamp, drift, prog, ramp, rnd, shake} from '../lib/anim';
 import {STORM} from './S07/storm';
+import * as THREE from 'three';
 import {Cam, CamSpec, GPoints, makeCamera, project, pxPerUnit, V3} from './S07/gl';
 import {ASH, DISEASE, FOG, POVERTY, RAIN, SMOG, WISP} from './S07/enemies';
+import {Shards, Virus} from './S07/enemyMeshes';
 import {Globe} from './S07/globe';
 import {BEATS, at} from './S07/beats';
 
 // No statistics are shown in this scene (names only), so there is nothing to fact-check here.
 
-type Enemy = {name: string; world: V3; scale: number; beat: number};
-const ENEMIES: Enemy[] = [
-  {name: 'DISEASE', world: [-9.6, 3.0, -10], scale: 2.1, beat: BEATS.L18.disease},
-  {name: 'IGNORANCE', world: [-3.4, 5.1, -14], scale: 2.0, beat: BEATS.L18.ignorance},
-  {name: 'POVERTY', world: [3.4, 5.1, -14], scale: 2.1, beat: BEATS.L18.poverty},
-  {name: 'A WARMING PLANET', world: [9.6, 3.0, -10], scale: 2.0, beat: BEATS.L18.planet},
-];
 const HERO: V3 = [0, -0.32, 4];
 const PITCH = 0.1078; // keeps the horizon ~160 px below centre
+const camAt = (push: number, dx = 0, dy = 0): CamSpec => {
+  const z = 12.6 - 1.4 * push;
+  const pos: V3 = [dx, 0.2 + dy, z];
+  return {pos, target: [dx * 0.6, pos[1] + PITCH * 14, z - 14], fov: 40};
+};
+
+// The lineup: four evenly spaced slots on one baseline, placed by unprojecting from the camera as it is
+// when the enemies are on screen (so the labels stay inside x 120..1800).
+const SLOTS_X = [345, 755, 1165, 1575];
+const ROW_Y = 432;
+const R_PX = 128;
+const DEPTH = 28;
+const REF = makeCamera(camAt(0.93));
+const unproject = (x: number, y: number, depth: number): V3 => {
+  const v = new THREE.Vector3(x / 960 - 1, 1 - y / 540, 0.5).unproject(REF).sub(REF.position).normalize();
+  const fwd = new THREE.Vector3();
+  REF.getWorldDirection(fwd);
+  return REF.position.clone().add(v.multiplyScalar(depth / v.dot(fwd))).toArray() as V3;
+};
+type Enemy = {name: string; world: V3; scale: number; beat: number};
+const NAMES = ['DISEASE', 'IGNORANCE', 'POVERTY', 'A WARMING PLANET'];
+const BEAT = [BEATS.L18.disease, BEATS.L18.ignorance, BEATS.L18.poverty, BEATS.L18.planet];
+const ENEMIES: Enemy[] = SLOTS_X.map((x, i) => ({name: NAMES[i], world: unproject(x, ROW_Y, DEPTH), scale: R_PX / pxPerUnit(REF, DEPTH), beat: BEAT[i]}));
 
 // Lightning: deterministic strobing flashes.
 type Flash = {t: number; x: number; y: number; peak: number; r: number; bolt?: {x: number; top: number; bot: number}};
@@ -56,9 +74,9 @@ export const S07: React.FC = () => {
     {x: 0, y: 0}
   );
   const endShake = shake(t, dur - 0.34, 0.09, 5);
-  const camZ = 12.6 - 1.7 * push;
-  const camPos: V3 = [dr.x + sh.x + endShake.x, 0.2 + dr.y * 0.6 + sh.y + endShake.y, camZ];
-  const spec: CamSpec = {pos: camPos, target: [camPos[0] * 0.6, camPos[1] + PITCH * 14, camZ - 14], fov: 40};
+  const spec = camAt(push, dr.x + sh.x + endShake.x, dr.y * 0.6 + sh.y + endShake.y);
+  const camPos = spec.pos;
+  const camZ = camPos[2];
   const cam = makeCamera(spec);
   const toUv = (x: number, y: number): [number, number] => [(x - 960) / 1080, (540 - y) / 1080];
 
@@ -74,8 +92,8 @@ export const S07: React.FC = () => {
   const gather = prog(t, l18 - 0.2, tW[0], E.inOut);
   const heroDraw = prog(t, l17 - 0.15, l17 + 1.4, E.out);
   const charge = prog(t, l18e - 0.3, dur - 0.42, E.inOut);
-  const warm = prog(t, dur - 0.42, dur - 0.05, E.linear);
-  const whiteout = prog(t, dur - 0.28, dur - 0.03, E.in);
+  const warm = prog(t, dur - 0.42, dur - 0.2, E.linear);
+  const whiteout = prog(t, dur - 0.3, dur - 0.14, E.in); // fully white for the last ~4 frames
   const rvl = tW.map((w) => t - w);
   const shown = rvl.map((r) => prog(r, -0.25, 0.9, E.out));
 
@@ -114,7 +132,7 @@ export const S07: React.FC = () => {
   const eU = en.map((p, i) => {
     const [x, y] = toUv(p.x, p.y);
     const back = shown[i] * (0.55 + 0.25 * Math.sin(t * 2.3 + i)) + localFl[i] * 0.8 + gather * 0.12;
-    return [x, y, back, (p.rpx / 1080) * 1.5];
+    return [x, y, back, (p.rpx / 1080) * (i === 1 ? 1.08 : 1.5)];
   });
 
   const uniforms = {
@@ -135,6 +153,7 @@ export const S07: React.FC = () => {
     uHz: horizon.visible ? toUv(0, horizon.y)[1] : -0.15,
   };
 
+  const labelY = en.reduce((m, p) => m + p.y / 4, 0) + R_PX + 34;
   const eu = (i: number) => ({uT: t, uRv: rvl[i], uG: gather, uFl: localFl[i] + flashTotal * 0.15, uS: ENEMIES[i].scale, uC: ENEMIES[i].world as number[]});
   const heroSize = 50 + 18 * charge + 10 * warm;
 
@@ -148,11 +167,11 @@ export const S07: React.FC = () => {
           {GLYPHS.map((g, i) => {
             const period = 3.4;
             const ph = (((rnd(`gp${i}`) + (t - tW[1] + 0.3) / period) % 1) + 1) % 1;
-            const R0 = en[1].rpx * 1.05;
+            const R0 = en[1].rpx * 1.25;
             const r = R0 * (1.08 - 0.95 * ph);
             const a = rnd(`ga${i}`) * Math.PI * 2 + t * (0.5 + 1.6 * ph);
             const op = clamp(ph / 0.14) * (1 - clamp((ph - 0.5) / 0.4)) * shown[1];
-            const size = 24 + rnd(`gs${i}`) * 18;
+            const size = 28 + rnd(`gs${i}`) * 20;
             return (
               <div
                 key={i}
@@ -180,17 +199,19 @@ export const S07: React.FC = () => {
         <GPoints count={2600} seed={71} body={ASH} uniforms={{uT: t, uAsh: fade, uFlash: flashTotal * 0.3}} />
         {shown[3] > 0.001 && (
           <Globe
-            radius={ENEMIES[3].scale * 0.98}
+            radius={ENEMIES[3].scale * 0.9}
             position={ENEMIES[3].world}
             u={{uT: t, uSmog: 1, uClean: 0, uHalo: 0, uOpacity: prog(rvl[3], 0.05, 0.8, E.out), uSpin: t * 0.12, uSun: [-0.6, 0.5, 0.6], uLights: 0}}
           />
         )}
+        {shown[0] > 0.001 && <Virus t={t} rv={rvl[0]} fl={localFl[0]} dis={prog(rvl[0], -0.12, 0.62, E.out)} position={ENEMIES[0].world} scale={ENEMIES[0].scale * 0.72} />}
+        {shown[2] > 0.001 && <Shards t={t} rv={rvl[2]} fl={localFl[2]} dis={prog(rvl[2], -0.12, 0.62, E.out)} position={ENEMIES[2].world} scale={ENEMIES[2].scale * 0.78} />}
         {gather > 0 && (
           <>
             <GPoints count={9000} seed={11} body={DISEASE} uniforms={eu(0)} />
             <GPoints count={1400} seed={12} body={FOG} uniforms={eu(1)} blending="normal" sprite="soft" />
             <GPoints count={2600} seed={13} body={WISP} uniforms={eu(1)} />
-            <GPoints count={4900} seed={14} body={POVERTY} uniforms={eu(2)} />
+            <GPoints count={4900} seed={14} body={POVERTY} uniforms={{...eu(2), uS: ENEMIES[2].scale * 0.78}} />
             <GPoints count={4200} seed={15} body={SMOG} uniforms={eu(3)} />
           </>
         )}
@@ -203,15 +224,14 @@ export const S07: React.FC = () => {
         if (s <= 0.001) return null;
         const slam = prog(rvl[i], -0.02, 0.55, E.out);
         const glint = ramp(rvl[i], [0, 0.9], [-40, 140], E.inOut);
-        const track = 0.62 - 0.3 * slam;
-        const long = ENEMIES[i].name.length > 10;
+        const track = (ENEMIES[i].name.length > 10 ? 0.36 : 0.5) - 0.2 * slam;
         return (
           <div
             key={i}
             style={{
               position: 'absolute',
               left: p.x,
-              top: p.y + p.rpx * (i === 3 ? 1.3 : 1.12) + 8,
+              top: labelY,
               transform: `translate(-50%, 0) scale(${1.22 - 0.22 * slam})`,
               opacity: clamp(rvl[i] / 0.12) * (1 - whiteout),
               display: 'flex',
@@ -227,7 +247,7 @@ export const S07: React.FC = () => {
               style={{
                 fontFamily: F.sans,
                 fontWeight: 800,
-                fontSize: long ? 34 : 40,
+                fontSize: 34,
                 letterSpacing: `${track}em`,
                 paddingLeft: `${track}em`,
                 color: 'transparent',
@@ -253,15 +273,16 @@ export const S07: React.FC = () => {
       )}
 
       {/* the hero's warm strike whites out the frame; S08 decays from it */}
-      {whiteout > 0 && (
+      {warm > 0 && (
         <AbsoluteFill
           style={{
-            background: `radial-gradient(ellipse at ${(hero.x / 19.2).toFixed(1)}% ${(hero.y / 10.8).toFixed(1)}%, #FFFBF2 0%, ${C.gold} ${20 + 80 * whiteout}%, ${rgba(C.ember, 0.9)} 100%)`,
-            opacity: whiteout,
+            background: `radial-gradient(circle at ${(hero.x / 19.2).toFixed(1)}% ${(hero.y / 10.8).toFixed(1)}%, #FFFFFF 0%, #FFF4DC ${8 + 70 * whiteout}%, ${rgba(C.gold, 0.85)} ${22 + 90 * whiteout}%, ${rgba(C.gold, 0)} ${45 + 120 * whiteout}%)`,
+            opacity: Math.min(1, warm * 0.8 + whiteout),
+            mixBlendMode: 'screen',
           }}
         />
       )}
-      {whiteout > 0.6 && <AbsoluteFill style={{background: '#FFF7EA', opacity: prog(whiteout, 0.6, 1, E.in)}} />}
+      {whiteout > 0 && <AbsoluteFill style={{background: '#FFF9EF', opacity: whiteout}} />}
     </AbsoluteFill>
   );
 };

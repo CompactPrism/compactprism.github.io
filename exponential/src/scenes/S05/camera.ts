@@ -5,7 +5,7 @@ import {useThree} from '@react-three/fiber';
 export type CamPose = {pos: [number, number, number]; target: [number, number, number]; roll?: number; fov?: number};
 
 // Principal point is shifted up so the look-at target lands at y = VIEW_Y (not 540).
-export const VIEW_Y = 470;
+export const VIEW_Y = 455;
 
 export const applyPose = (cam: THREE.PerspectiveCamera, p: CamPose, w = 1920, h = 1080) => {
   cam.fov = p.fov ?? 45;
