@@ -110,17 +110,18 @@ void main(){
     float coastN = 1. - smoothstep(0., .035, abs(cont - .045));
     float hub = smoothstep(.72, .9, c1) * smoothstep(.45, .8, c0);
     float fil = (1. - smoothstep(0., .035, abs(snoise(Np * 24. + 9.)))) * smoothstep(.4, .7, c0);
-    float dens = land * clamp(coastN * .8 + hub + fil * .45 + smoothstep(.55, .85, c0) * .12, 0., 1.);
-    float spark = smoothstep(.78 - dens * .3, .98 - dens * .2, c2);
-    float city = spark * dens + hub * land * .25;
+    float dens = land * clamp(coastN * 1.1 + hub + fil * .6 + smoothstep(.4, .8, c0) * .38, 0., 1.);
+    float spark = smoothstep(.72 - dens * .32, .9 - dens * .25, c2);
+    float city = spark * (.25 + .75 * dens) * land + hub * land * .3;
     city *= smoothstep(.06, .32, mu);
     float front = ndl + uIgn + (c1 - .5) * .16;
     float ign = smoothstep(0., .04, front);
     float flare = exp(-pow(front / .03, 2.)) * step(.001, uIgn);
-    vec3 coldCity = vec3(.45, .58, .8) * .22;
-    vec3 warmCity = vec3(1., .7, .36) * 1.9;
+    vec3 coldCity = vec3(.5, .62, .85) * .5;
+    vec3 warmCity = vec3(1., .7, .36) * 2.6;
     vec3 cityCol = mix(coldCity, warmCity, ign) * city * (1. - clouds * .75) * uNightCity * 1.4;
     cityCol += vec3(1., .78, .5) * flare * (city * 2.5 + land * .05) * (1. - clouds * .6);
+    cityCol += vec3(1., .62, .32) * hub * land * smoothstep(.06, .32, mu) * ign * .22 * (1. - clouds * .6);
     col = mix(night + cityCol, colDay, day) + cityCol * .15 * day;
     col += vec3(.08, .17, .4) * day * .1 * (1. - .5 * mu);
 

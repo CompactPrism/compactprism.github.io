@@ -157,8 +157,8 @@ export const S10: React.FC = () => {
   const psi = beta + eSun;
   const sunDir: V3 = [0, Math.sin(psi), -Math.cos(psi)];
   const sun = project(cam, sunDir);
-  const eLight = (-4 + 36 * prog(t, B.l26 + 0.5, B.l26e + 2.2, E.inOut) + 8 * crane) * DEG;
-  const lightDir = norm([0.3, Math.sin(beta + eLight), -Math.cos(beta + eLight)]);
+  const eLight = (-4 + 20 * prog(t, B.l26 + 0.5, B.l26e + 2.2, E.inOut) + 6 * crane) * DEG;
+  const lightDir = norm([0.45, Math.sin(beta + eLight), -Math.cos(beta + eLight)]);
 
   // How far the sun has cleared the limb (px) and a circle fit of the limb around it.
   const ly = limbY(cam, sun.x);
