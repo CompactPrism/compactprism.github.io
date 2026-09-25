@@ -74,3 +74,22 @@ Never invent statistics. When in doubt, show fewer numbers and more light.
    Critique like a demanding creative director (composition, hierarchy, legibility, depth, colour story, polish), then iterate. Do at least 3 rounds.
 5. Only edit your own scene files. If you believe a shared file needs a change, say so in your final report instead.
 6. Final report: what the scene shows beat by beat (with times), the facts used and where from, per-frame render time, any known issues.
+
+## Benchmark: the film we must beat (read this)
+Two frames from the reference film are in `out/reference/` (look at them once). What it does well:
+- **Information density with authentic micro-content.** Every shot carries 4–7 layers of *real, specific* detail:
+  an era stamp, a model card (name · lab · date · params), a micro-chart or formula with its citation, a real prompt/completion,
+  real code (`def attention(q, k, v): ...`), a real terminal line (`$ pytest -q … 42 passed in 1.21s`), sub-agent cards.
+- Editorial HUD layout (corners used deliberately), thin warm line-work, glass UI panels, glowing curved connectors with data packets.
+- A recurring protagonist (a token called "the") and big serif captions with italic emphasis.
+Where it is weak, and where we win: it is flat 2D (no real light, depth or camera), one amber hue throughout, generic network graphs.
+**We must match its information density AND beat it on light, depth, motion and story.** So:
+1. Every key shot has 3–5 layers of verified micro-content (from FACTS.md), in clear hierarchy: one hero visual, then cards/labels/micro-charts.
+2. UI, if shown, is glass panels floating in 3D space with parallax, depth-of-field (blur on far panels) and light spill: never flat.
+3. Do NOT copy its beats (no unicorns, no "the" token, no Kaplan formula, no pytest line). Our protagonist is the ClaudeSpark.
+4. The Film now draws an era stamp + chapter + a progress curve + frame counter in the TOP bar, and serif captions (with *italic* emphasis) in the BOTTOM bar. Don't duplicate an era stamp inside your scene.
+5. Timing in `src/timing.json` is now FINAL (generated from the real voiceover). Scene lengths: S01 13, S02 15, S03 19, S04 18, S05 27, S06 23, S07 14, S08 34, S09 21, S10 21, S11 16 s.
+
+## Usage budget (we hit an account rate limit once, so be economical)
+- Contact sheets with `--n=6` to `--n=9`, at most 2 full-res stills per round, at most 3 review rounds per scene.
+- Don't re-read files you have already read. Keep reports short.

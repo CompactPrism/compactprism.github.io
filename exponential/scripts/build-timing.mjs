@@ -22,16 +22,22 @@ const f = (s) => Math.round(s * fps);
 let cursor = 0;
 const scenes = [];
 for (const sc of script.scenes) {
-  let t = sc.lead;
+  // Natural length from the voice; if the scene needs more time (min), spread the extra:
+  // 25% before the first line, 50% across the gaps between lines, 25% at the end.
+  const natural = sc.lead + sc.tail + sc.lines.reduce((a, l, i) => a + (i > 0 ? l.gap ?? 0.5 : 0) + (durations[l.id] ?? est(l.text)), 0);
+  const extra = Math.max(0, sc.min - natural);
+  const nGaps = sc.lines.length - 1;
+  const leadX = extra * (nGaps > 0 ? 0.25 : 0.4);
+  const gapX = nGaps > 0 ? (extra * 0.5) / nGaps : 0;
+  let t = sc.lead + leadX;
   const lines = [];
   sc.lines.forEach((l, i) => {
-    if (i > 0) t += l.gap ?? 0.5;
+    if (i > 0) t += (l.gap ?? 0.5) + gapX;
     const d = durations[l.id] ?? est(l.text);
     lines.push({id: l.id, text: l.text, start: f(t), duration: f(d), startS: +t.toFixed(3), durationS: +d.toFixed(3)});
     t += d;
   });
-  let total = t + sc.tail;
-  if (total < sc.min) total = sc.min;
+  let total = t + sc.tail + (extra - leadX - gapX * nGaps);
   const duration = f(total);
   scenes.push({
     id: sc.id,

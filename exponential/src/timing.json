@@ -2,9 +2,9 @@
   "fps": 30,
   "width": 1920,
   "height": 1080,
-  "totalFrames": 7246,
-  "totalSeconds": 241.53,
-  "estimated": true,
+  "totalFrames": 6630,
+  "totalSeconds": 221,
+  "estimated": false,
   "scenes": [
     {
       "id": "S01",
@@ -16,20 +16,20 @@
         {
           "id": "L01",
           "text": "Every hero has an origin story.",
-          "start": 66,
-          "duration": 76,
-          "startS": 2.2,
-          "durationS": 2.528,
-          "globalStart": 66
+          "start": 83,
+          "duration": 61,
+          "startS": 2.773,
+          "durationS": 2.02,
+          "globalStart": 83
         },
         {
           "id": "L02",
-          "text": "Ours begins with an idea, and a curve.",
-          "start": 163,
-          "duration": 105,
-          "startS": 5.428,
-          "durationS": 3.487,
-          "globalStart": 163
+          "text": "Ours begins with an idea, and a *curve*.",
+          "start": 199,
+          "duration": 72,
+          "startS": 6.638,
+          "durationS": 2.39,
+          "globalStart": 199
         }
       ]
     },
@@ -37,332 +37,332 @@
       "id": "S02",
       "name": "FlatLine",
       "start": 390,
-      "duration": 480,
+      "duration": 450,
       "letterbox": 1,
       "lines": [
         {
           "id": "L03",
           "text": "For almost all of human history, progress crawled.",
-          "start": 57,
-          "duration": 105,
-          "startS": 1.9,
-          "durationS": 3.487,
-          "globalStart": 447
+          "start": 71,
+          "duration": 85,
+          "startS": 2.38,
+          "durationS": 2.83,
+          "globalStart": 461
         },
         {
           "id": "L04",
           "text": "Writing. The printing press. Electricity. The computer. Each took generations to reshape the world.",
-          "start": 177,
-          "duration": 191,
-          "startS": 5.887,
-          "durationS": 6.365,
-          "globalStart": 567
+          "start": 200,
+          "duration": 200,
+          "startS": 6.67,
+          "durationS": 6.65,
+          "globalStart": 590
         }
       ]
     },
     {
       "id": "S03",
       "name": "Attention",
-      "start": 870,
-      "duration": 600,
+      "start": 840,
+      "duration": 570,
       "letterbox": 1,
       "lines": [
         {
           "id": "L05",
           "text": "Then, in 2017, eight researchers at Google published a paper with an unusual title.",
-          "start": 18,
-          "duration": 180,
-          "startS": 0.6,
-          "durationS": 6.015,
-          "globalStart": 888
+          "start": 34,
+          "duration": 183,
+          "startS": 1.14,
+          "durationS": 6.11,
+          "globalStart": 874
         },
         {
           "id": "L06",
-          "text": "Attention Is All You Need.",
-          "start": 213,
-          "duration": 64,
-          "startS": 7.115,
-          "durationS": 2.136,
-          "globalStart": 1083
+          "text": "*Attention* Is All You Need.",
+          "start": 249,
+          "duration": 45,
+          "startS": 8.29,
+          "durationS": 1.49,
+          "globalStart": 1089
         },
         {
           "id": "L07",
           "text": "It let a machine weigh every word against every other word, all at once. They called it the Transformer.",
-          "start": 299,
-          "duration": 239,
-          "startS": 9.951,
-          "durationS": 7.976,
-          "globalStart": 1169
+          "start": 331,
+          "duration": 181,
+          "startS": 11.02,
+          "durationS": 6.04,
+          "globalStart": 1171
         }
       ]
     },
     {
       "id": "S04",
       "name": "Scale",
-      "start": 1470,
-      "duration": 630,
+      "start": 1410,
+      "duration": 540,
       "letterbox": 1,
       "lines": [
         {
           "id": "L08",
           "text": "Then came a discovery. Make the models bigger. Give them more data, more compute. And new abilities emerge.",
-          "start": 18,
-          "duration": 238,
-          "startS": 0.6,
-          "durationS": 7.934,
-          "globalStart": 1488
+          "start": 37,
+          "duration": 203,
+          "startS": 1.217,
+          "durationS": 6.78,
+          "globalStart": 1447
         },
         {
           "id": "L09",
           "text": "The compute used to train frontier AI has grown four to five times every year, for more than a decade.",
-          "start": 274,
-          "duration": 246,
-          "startS": 9.134,
-          "durationS": 8.193,
-          "globalStart": 1744
+          "start": 295,
+          "duration": 191,
+          "startS": 9.832,
+          "durationS": 6.35,
+          "globalStart": 1705
         }
       ]
     },
     {
       "id": "S05",
       "name": "HeroBorn",
-      "start": 2100,
-      "duration": 873,
+      "start": 1950,
+      "duration": 810,
       "letterbox": 1,
       "lines": [
         {
           "id": "L10",
           "text": "In 2021, a small team founded Anthropic, with a simple conviction.",
-          "start": 57,
-          "duration": 145,
-          "startS": 1.9,
-          "durationS": 4.839,
-          "globalStart": 2157
+          "start": 62,
+          "duration": 153,
+          "startS": 2.05,
+          "durationS": 5.11,
+          "globalStart": 2012
         },
         {
           "id": "L11",
-          "text": "If this was going to be the most powerful technology in history, it had to be built safely.",
-          "start": 214,
-          "duration": 222,
-          "startS": 7.139,
-          "durationS": 7.409,
-          "globalStart": 2314
+          "text": "If this was going to be the most powerful technology in history, it had to be built *safely*.",
+          "start": 230,
+          "duration": 154,
+          "startS": 7.66,
+          "durationS": 5.14,
+          "globalStart": 2180
         },
         {
           "id": "L12",
           "text": "So they gave their creation something new: a constitution. Principles to be helpful, honest, and harmless.",
-          "start": 460,
-          "duration": 214,
-          "startS": 15.348,
-          "durationS": 7.15,
-          "globalStart": 2560
+          "start": 411,
+          "duration": 200,
+          "startS": 13.7,
+          "durationS": 6.66,
+          "globalStart": 2361
         },
         {
           "id": "L13",
-          "text": "In March 2023, the world met Claude.",
-          "start": 702,
-          "duration": 93,
-          "startS": 23.397,
-          "durationS": 3.095,
-          "globalStart": 2802
+          "text": "In March 2023, the world met *Claude*.",
+          "start": 641,
+          "duration": 87,
+          "startS": 21.36,
+          "durationS": 2.89,
+          "globalStart": 2591
         }
       ]
     },
     {
       "id": "S06",
       "name": "Powers",
-      "start": 2973,
-      "duration": 749,
+      "start": 2760,
+      "duration": 690,
       "letterbox": 1,
       "lines": [
         {
           "id": "L14",
-          "text": "And like every hero, it grew stronger.",
-          "start": 24,
-          "duration": 93,
-          "startS": 0.8,
-          "durationS": 3.095,
-          "globalStart": 2997
+          "text": "And like every hero, it grew *stronger*.",
+          "start": 45,
+          "duration": 66,
+          "startS": 1.492,
+          "durationS": 2.2,
+          "globalStart": 2805
         },
         {
           "id": "L15",
           "text": "It learned to read a whole novel in seconds. To see. To write code. To use a computer. To work for hours on its own.",
-          "start": 129,
-          "duration": 320,
-          "startS": 4.295,
-          "durationS": 10.679,
-          "globalStart": 3102
+          "start": 144,
+          "duration": 229,
+          "startS": 4.785,
+          "durationS": 7.64,
+          "globalStart": 2904
         },
         {
           "id": "L16",
-          "text": "The length of tasks AI can complete on its own has doubled roughly every seven months. Lately, even faster.",
-          "start": 467,
-          "duration": 239,
-          "startS": 15.574,
-          "durationS": 7.976,
-          "globalStart": 3440
+          "text": "The length of tasks AI can complete on its own has doubled roughly every seven months. Lately, even *faster*.",
+          "start": 412,
+          "duration": 216,
+          "startS": 13.718,
+          "durationS": 7.19,
+          "globalStart": 3172
         }
       ]
     },
     {
       "id": "S07",
       "name": "Enemies",
-      "start": 3722,
-      "duration": 450,
+      "start": 3450,
+      "duration": 420,
       "letterbox": 1,
       "lines": [
         {
           "id": "L17",
-          "text": "But a hero is defined by the battles it chooses.",
-          "start": 57,
-          "duration": 123,
-          "startS": 1.9,
-          "durationS": 4.097,
-          "globalStart": 3779
+          "text": "But a hero is defined by the battles it *chooses*.",
+          "start": 64,
+          "duration": 89,
+          "startS": 2.122,
+          "durationS": 2.98,
+          "globalStart": 3514
         },
         {
           "id": "L18",
           "text": "And humanity's oldest enemies were still waiting. Disease. Ignorance. Poverty. A warming planet.",
-          "start": 198,
-          "duration": 179,
-          "startS": 6.597,
-          "durationS": 5.973,
-          "globalStart": 3920
+          "start": 184,
+          "duration": 199,
+          "startS": 6.147,
+          "durationS": 6.63,
+          "globalStart": 3634
         }
       ]
     },
     {
       "id": "S08",
       "name": "Battles",
-      "start": 4172,
-      "duration": 1140,
+      "start": 3870,
+      "duration": 1020,
       "letterbox": 1,
       "lines": [
         {
           "id": "L19",
           "text": "Against disease, Claude is helping scientists decode the machinery of life, and even discover new biology.",
-          "start": 15,
-          "duration": 204,
-          "startS": 0.5,
-          "durationS": 6.8,
-          "globalStart": 4187
+          "start": 48,
+          "duration": 198,
+          "startS": 1.598,
+          "durationS": 6.6,
+          "globalStart": 3918
         },
         {
           "id": "L20",
           "text": "Against ignorance, a patient tutor for every curious mind. At any hour, in their own language.",
-          "start": 243,
-          "duration": 209,
-          "startS": 8.1,
-          "durationS": 6.975,
-          "globalStart": 4415
+          "start": 292,
+          "duration": 178,
+          "startS": 9.729,
+          "durationS": 5.94,
+          "globalStart": 4162
         },
         {
           "id": "L21",
           "text": "Against poverty, the kind of expert help once reserved for the few, within reach of anyone who asks.",
-          "start": 476,
-          "duration": 228,
-          "startS": 15.874,
-          "durationS": 7.584,
-          "globalStart": 4648
+          "start": 516,
+          "duration": 185,
+          "startS": 17.201,
+          "durationS": 6.16,
+          "globalStart": 4386
         },
         {
           "id": "L22",
           "text": "And for our planet, new tools to discover better materials, cleaner energy, and smarter ways to use what we have.",
-          "start": 728,
-          "duration": 256,
-          "startS": 24.258,
-          "durationS": 8.543,
-          "globalStart": 4900
+          "start": 747,
+          "duration": 210,
+          "startS": 24.892,
+          "durationS": 7.01,
+          "globalStart": 4617
         }
       ]
     },
     {
       "id": "S09",
       "name": "Exponential",
-      "start": 5312,
-      "duration": 720,
+      "start": 4890,
+      "duration": 630,
       "letterbox": 1,
       "lines": [
         {
           "id": "L23",
-          "text": "And now, the curve is bending upward.",
-          "start": 57,
-          "duration": 93,
-          "startS": 1.9,
-          "durationS": 3.095,
-          "globalStart": 5369
+          "text": "And now, the curve is bending *upward*.",
+          "start": 99,
+          "duration": 66,
+          "startS": 3.295,
+          "durationS": 2.19,
+          "globalStart": 4989
         },
         {
           "id": "L24",
-          "text": "Imagine a country of geniuses in a datacenter. Working not against us, but for us.",
-          "start": 174,
-          "duration": 192,
-          "startS": 5.795,
-          "durationS": 6.407,
-          "globalStart": 5486
+          "text": "Imagine a country of geniuses in a datacenter. Working not against us, but *for* us.",
+          "start": 230,
+          "duration": 157,
+          "startS": 7.68,
+          "durationS": 5.22,
+          "globalStart": 5120
         },
         {
           "id": "L25",
-          "text": "Decades of scientific progress, compressed into years.",
-          "start": 387,
-          "duration": 93,
-          "startS": 12.902,
-          "durationS": 3.095,
-          "globalStart": 5699
+          "text": "Decades of scientific progress, compressed into *years*.",
+          "start": 450,
+          "duration": 96,
+          "startS": 14.995,
+          "durationS": 3.21,
+          "globalStart": 5340
         }
       ]
     },
     {
       "id": "S10",
       "name": "Finale",
-      "start": 6032,
-      "duration": 720,
+      "start": 5520,
+      "duration": 630,
       "letterbox": 0,
       "lines": [
         {
           "id": "L26",
-          "text": "Power was never the hardest part. The hardest part is choosing to use it for good.",
-          "start": 24,
-          "duration": 199,
-          "startS": 0.8,
-          "durationS": 6.625,
-          "globalStart": 6056
+          "text": "Power was never the hardest part. The hardest part is choosing to use it *for good*.",
+          "start": 63,
+          "duration": 142,
+          "startS": 2.103,
+          "durationS": 4.72,
+          "globalStart": 5583
         },
         {
           "id": "L27",
-          "text": "That is what makes a hero.",
-          "start": 250,
-          "duration": 76,
-          "startS": 8.325,
-          "durationS": 2.528,
-          "globalStart": 6282
+          "text": "That is what makes a *hero*.",
+          "start": 271,
+          "duration": 43,
+          "startS": 9.025,
+          "durationS": 1.42,
+          "globalStart": 5791
         },
         {
           "id": "L28",
-          "text": "And this story is only just beginning.",
-          "start": 356,
-          "duration": 88,
-          "startS": 11.852,
-          "durationS": 2.92,
-          "globalStart": 6388
+          "text": "And this story is only just *beginning*.",
+          "start": 382,
+          "duration": 59,
+          "startS": 12.748,
+          "durationS": 1.95,
+          "globalStart": 5902
         }
       ]
     },
     {
       "id": "S11",
       "name": "Credits",
-      "start": 6752,
-      "duration": 494,
+      "start": 6150,
+      "duration": 480,
       "letterbox": 0,
       "lines": [
         {
           "id": "L29",
-          "text": "Every frame you just watched was written in code, by Claude.",
-          "start": 24,
-          "duration": 140,
-          "startS": 0.8,
-          "durationS": 4.664,
-          "globalStart": 6776
+          "text": "Every frame you just watched was written in code, by *Claude*.",
+          "start": 36,
+          "duration": 96,
+          "startS": 1.196,
+          "durationS": 3.21,
+          "globalStart": 6186
         }
       ]
     }

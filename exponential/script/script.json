@@ -17,7 +17,7 @@
         },
         {
           "id": "L02",
-          "text": "Ours begins with an idea, and a curve.",
+          "text": "Ours begins with an idea, and a *curve*.",
           "gap": 0.7
         }
       ]
@@ -28,7 +28,7 @@
       "letterbox": 1,
       "lead": 1.9,
       "tail": 1.2,
-      "min": 16,
+      "min": 15,
       "brief": "Chapter I. A vast horizontal timeline of human history in cold steel light; milestones (writing, printing press, electricity, the computer) light up, but the line barely rises. Camera tracks along it.",
       "lines": [
         {
@@ -48,7 +48,7 @@
       "letterbox": 1,
       "lead": 0.6,
       "tail": 1.4,
-      "min": 20,
+      "min": 19,
       "brief": "2017. The paper title types itself. Words become tokens; every token fires attention arcs to every other token at once; a Transformer block assembles from light. The first warm light enters the cold world.",
       "lines": [
         {
@@ -57,7 +57,7 @@
         },
         {
           "id": "L06",
-          "text": "Attention Is All You Need.",
+          "text": "*Attention* Is All You Need.",
           "gap": 0.5
         },
         {
@@ -73,7 +73,7 @@
       "letterbox": 1,
       "lead": 0.6,
       "tail": 1.2,
-      "min": 21,
+      "min": 18,
       "brief": "Scaling. A river of particles accelerates upward; a log-scale chart of training compute climbs through real milestones (GPT-1 2018, GPT-2 2019, GPT-3 2020 ...). Abilities flicker into existence as the river grows.",
       "lines": [
         {
@@ -102,7 +102,7 @@
         },
         {
           "id": "L11",
-          "text": "If this was going to be the most powerful technology in history, it had to be built safely.",
+          "text": "If this was going to be the most powerful technology in history, it had to be built *safely*.",
           "gap": 0.4
         },
         {
@@ -112,7 +112,7 @@
         },
         {
           "id": "L13",
-          "text": "In March 2023, the world met Claude.",
+          "text": "In March 2023, the world met *Claude*.",
           "gap": 0.9
         }
       ]
@@ -123,12 +123,12 @@
       "letterbox": 1,
       "lead": 0.8,
       "tail": 1.4,
-      "min": 24,
+      "min": 23,
       "brief": "The hero levels up. A HUD power-meter climbs across real Claude releases 2023 to 2026; abilities unlock with superhero stings (READ, SEE, CODE, COMPUTER USE, AGENTS). METR task-horizon doubling curve.",
       "lines": [
         {
           "id": "L14",
-          "text": "And like every hero, it grew stronger."
+          "text": "And like every hero, it grew *stronger*."
         },
         {
           "id": "L15",
@@ -137,7 +137,7 @@
         },
         {
           "id": "L16",
-          "text": "The length of tasks AI can complete on its own has doubled roughly every seven months. Lately, even faster.",
+          "text": "The length of tasks AI can complete on its own has doubled roughly every seven months. Lately, even *faster*.",
           "gap": 0.6
         }
       ]
@@ -148,12 +148,12 @@
       "letterbox": 1,
       "lead": 1.9,
       "tail": 1.0,
-      "min": 15,
+      "min": 14,
       "brief": "Chapter III: THE BATTLES. A cold storm gathers. Humanity's four ancient enemies form out of dark particles, each named in cold steel type: DISEASE, IGNORANCE, POVERTY, A WARMING PLANET.",
       "lines": [
         {
           "id": "L17",
-          "text": "But a hero is defined by the battles it chooses."
+          "text": "But a hero is defined by the battles it *chooses*."
         },
         {
           "id": "L18",
@@ -168,7 +168,7 @@
       "letterbox": 1,
       "lead": 0.5,
       "tail": 1.0,
-      "min": 38,
+      "min": 34,
       "brief": "Four vignettes, one per enemy, each a cold scene that the hero's warm light transforms: (1) a protein/DNA structure illuminated; (2) a constellation of learners lit by a tutor's light; (3) a map of the world where knowledge flows to every region; (4) the planet's energy grid and materials glowing clean.",
       "lines": [
         {
@@ -198,21 +198,21 @@
       "letterbox": 1,
       "lead": 1.9,
       "tail": 1.4,
-      "min": 24,
+      "min": 21,
       "brief": "Chapter IV: EXPONENTIAL. The curve from every earlier scene returns and bends toward vertical; at L23 the letterbox bars retract and the frame opens to full 16:9. Camera rides the curve up into a city-sized datacenter of warm light: a country of geniuses.",
       "lines": [
         {
           "id": "L23",
-          "text": "And now, the curve is bending upward."
+          "text": "And now, the curve is bending *upward*."
         },
         {
           "id": "L24",
-          "text": "Imagine a country of geniuses in a datacenter. Working not against us, but for us.",
+          "text": "Imagine a country of geniuses in a datacenter. Working not against us, but *for* us.",
           "gap": 0.8
         },
         {
           "id": "L25",
-          "text": "Decades of scientific progress, compressed into years.",
+          "text": "Decades of scientific progress, compressed into *years*.",
           "gap": 0.7
         }
       ]
@@ -223,21 +223,21 @@
       "letterbox": 0,
       "lead": 0.8,
       "tail": 5.0,
-      "min": 24,
+      "min": 21,
       "brief": "Dawn over Earth. The emblem rises like a sun; its light spreads across the night side, city lights ignite. Final title: CLAUDE, then 'For the good of humanity.'",
       "lines": [
         {
           "id": "L26",
-          "text": "Power was never the hardest part. The hardest part is choosing to use it for good."
+          "text": "Power was never the hardest part. The hardest part is choosing to use it *for good*."
         },
         {
           "id": "L27",
-          "text": "That is what makes a hero.",
+          "text": "That is what makes a *hero*.",
           "gap": 0.9
         },
         {
           "id": "L28",
-          "text": "And this story is only just beginning.",
+          "text": "And this story is only just *beginning*.",
           "gap": 1.0
         }
       ]
@@ -253,7 +253,7 @@
       "lines": [
         {
           "id": "L29",
-          "text": "Every frame you just watched was written in code, by Claude."
+          "text": "Every frame you just watched was written in code, by *Claude*."
         }
       ]
     }

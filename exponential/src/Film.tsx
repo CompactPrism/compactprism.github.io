@@ -6,6 +6,7 @@ import {TIMING, sceneById} from './lib/timing';
 import {SCENES} from './scenes';
 import {Caption, Grain, Letterbox, Vignette} from './lib/FilmFX';
 import {ChapterCard} from './lib/ChapterCard';
+import {EraBar} from './lib/EraBar';
 import {E, prog} from './lib/anim';
 
 ensureFonts();
@@ -29,7 +30,8 @@ const captionAt = (g: number, fps: number) => {
       const b = l.globalStart + l.duration + Math.round(0.35 * fps);
       if (g >= a && g < b) {
         const op = Math.min(1, (g - a) / 5, (b - g) / 6);
-        return {text: l.text, op};
+        const rise = Math.min(1, (g - a) / 9);
+        return {text: l.text, op, rise: 1 - Math.pow(1 - rise, 3)};
       }
     }
   }
@@ -48,7 +50,8 @@ export const Overlays: React.FC<{g: number}> = ({g}) => {
       <Vignette strength={0.5} />
       <Grain amount={0.085} />
       <Letterbox amount={lb} />
-      {cap && <Caption text={cap.text} opacity={cap.op} />}
+      <EraBar g={g} amount={lb} />
+      {cap && <Caption text={cap.text} opacity={cap.op} rise={cap.rise} />}
     </>
   );
 };

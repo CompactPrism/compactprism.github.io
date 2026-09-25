@@ -39,30 +39,47 @@ export const Letterbox: React.FC<{amount: number}> = ({amount}) => {
   );
 };
 
-// One subtitle line centred in the lower letterbox bar. opacity handled by caller.
-export const Caption: React.FC<{text: string; opacity: number; lift?: number}> = ({text, opacity, lift = 0}) => (
-  <div
-    style={{
-      position: 'absolute',
-      left: 160,
-      right: 160,
-      top: H - LETTERBOX + 22 - lift,
-      height: LETTERBOX - 44,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      textAlign: 'center',
-      fontFamily: F.sans,
-      fontSize: 29,
-      lineHeight: 1.32,
-      fontWeight: 450,
-      letterSpacing: 0.2,
-      color: rgba(C.ivory, 0.9),
-      opacity,
-      textShadow: '0 2px 12px rgba(0,0,0,0.9)',
-      textWrap: 'balance',
-    }}
-  >
-    {text}
-  </div>
-);
+// One subtitle line centred in the lower letterbox bar: editorial serif, with *emphasis* words set in
+// warm italic. `rise` (0..1) animates the line in. opacity handled by caller.
+export const Caption: React.FC<{text: string; opacity: number; rise?: number}> = ({text, opacity, rise = 1}) => {
+  const parts = text.split(/(\*[^*]+\*)/g).filter(Boolean);
+  const long = text.replace(/\*/g, '').length > 78;
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        left: 150,
+        right: 150,
+        top: H - LETTERBOX + 16,
+        height: LETTERBOX - 32,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
+        fontFamily: F.serif,
+        fontSize: long ? 33 : 38,
+        lineHeight: 1.18,
+        fontWeight: 360,
+        fontVariationSettings: '"opsz" 48, "SOFT" 30',
+        letterSpacing: '0.005em',
+        color: rgba(C.ivory, 0.94),
+        opacity,
+        transform: `translateY(${(1 - rise) * 10}px)`,
+        textShadow: '0 2px 14px rgba(0,0,0,0.95), 0 0 2px rgba(0,0,0,0.6)',
+        textWrap: 'balance',
+      }}
+    >
+      <span>
+        {parts.map((p, i) =>
+          p.startsWith('*') ? (
+            <span key={i} style={{fontStyle: 'italic', color: C.gold, fontWeight: 380}}>
+              {p.slice(1, -1)}
+            </span>
+          ) : (
+            <span key={i}>{p}</span>
+          )
+        )}
+      </span>
+    </div>
+  );
+};
