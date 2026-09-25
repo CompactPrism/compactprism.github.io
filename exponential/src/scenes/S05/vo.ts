@@ -30,6 +30,19 @@ export const wordAt = (text: string, word: string, t0: number, dur: number, frac
   return t0 + dur * 0.5;
 };
 
+// Word/phrase positions MEASURED from the final VO audio (public/vo/Lxx.wav, pause detection), stored as a
+// fraction of the line's duration so they follow cue()/end() if the line is ever re-timed.
+export const VO_FRAC = {
+  L10: {y2021: 0.05, anthropic: 0.54, conviction: 0.8},
+  L11: {powerful: 0.37, history: 0.57, built: 0.8, safely: 0.885},
+  L12: {constitution: 0.36, principles: 0.57, helpful: 0.705, honest: 0.796, harmless: 0.912},
+  L13: {march: 0.08, claude: 0.834},
+  L14: {stronger: 0.62},
+  // L15 phrases start at 0, .344, .452, .613, .785 (pauses in the audio); stings on the key verb
+  L15: {read: 0.075, see: 0.36, code: 0.47, computer: 0.63, agents: 0.8},
+  L16: {doubled: 0.42, months: 0.62, lately: 0.775, faster: 0.9},
+} as const;
+
 // Split a line into sentences/phrases (on . ! ?) and time them in proportion to their WORD count.
 // Returns the start time of each phrase plus its word boundaries.
 export const phrases = (text: string, t0: number, dur: number) => {

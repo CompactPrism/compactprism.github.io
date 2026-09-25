@@ -16,7 +16,7 @@ export const applyPose = (cam: THREE.PerspectiveCamera, p: CamPose, w = 1920, h 
   cam.up.set(Math.sin(p.roll ?? 0), Math.cos(p.roll ?? 0), 0);
   cam.lookAt(new THREE.Vector3(...p.target));
   // shift the image so the target projects to (w/2, VIEW_Y)
-  cam.setViewOffset(w, h, 0, (h / 2 - VIEW_Y) * -1 * -1 * -1 + 0, w, h);
+  cam.setViewOffset(w, h, 0, h / 2 - VIEW_Y, w, h);
   cam.updateProjectionMatrix();
   cam.updateMatrixWorld(true);
 };
