@@ -287,7 +287,7 @@ export const S01: React.FC = () => {
   const titleGlow = slamOn ? (0.8 + 0.2 * Math.sin(t * 1.9)) * (1 - prog(t, B.dis, B.dis + wave, E.inOut)) + 1.5 * Math.exp(-age * 3) : 0;
   const slamFrame = Math.round(B.slam * fps);
   const sub = frame - slamFrame;
-  const emblemOp = sub >= 0 && sub < 4 ? [0.42, 0.36, 0.24, 0.12][sub] : 0;
+  const emblemOp = sub >= 0 && sub < 4 ? [0.3, 0.26, 0.17, 0.08][sub] : 0;
 
   // ------------------------------------------------------------ nebula / star parallax
   const nebK = ppu(cam.z + 26);
