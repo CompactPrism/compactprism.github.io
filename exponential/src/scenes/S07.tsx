@@ -93,7 +93,8 @@ export const S07: React.FC = () => {
   const heroDraw = prog(t, l17 - 0.15, l17 + 1.4, E.out);
   const charge = prog(t, l18e - 0.3, dur - 0.42, E.inOut);
   const warm = prog(t, dur - 0.42, dur - 0.2, E.linear);
-  const whiteout = prog(t, dur - 0.3, dur - 0.14, E.in); // fully white for the last ~4 frames
+  const burst = prog(t, dur - 0.33, dur - 0.14, E.in); // white-gold disc expanding from the hero
+  const whiteout = prog(t, dur - 0.2, dur - 0.13, E.in); // fully white for the last ~4 frames
   const rvl = tW.map((w) => t - w);
   const shown = rvl.map((r) => prog(r, -0.25, 0.9, E.out));
 
@@ -273,12 +274,10 @@ export const S07: React.FC = () => {
       )}
 
       {/* the hero's warm strike whites out the frame; S08 decays from it */}
-      {warm > 0 && (
+      {burst > 0 && (
         <AbsoluteFill
           style={{
-            background: `radial-gradient(circle at ${(hero.x / 19.2).toFixed(1)}% ${(hero.y / 10.8).toFixed(1)}%, #FFFFFF 0%, #FFF4DC ${8 + 70 * whiteout}%, ${rgba(C.gold, 0.85)} ${22 + 90 * whiteout}%, ${rgba(C.gold, 0)} ${45 + 120 * whiteout}%)`,
-            opacity: Math.min(1, warm * 0.8 + whiteout),
-            mixBlendMode: 'screen',
+            background: `radial-gradient(circle ${Math.round(40 + 2300 * burst)}px at ${hero.x.toFixed(0)}px ${hero.y.toFixed(0)}px, #FFFFFF 0%, #FFFCF5 52%, ${rgba(C.gold, 0.95)} 78%, ${rgba(C.gold, 0)} 100%)`,
           }}
         />
       )}

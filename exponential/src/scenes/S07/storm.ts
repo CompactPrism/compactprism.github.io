@@ -149,7 +149,7 @@ void main(){
       float dd = abs(p.x - x);
       col += (vec3(1., .93, .8) * smoothstep(.006, .0, dd) * 2.2 + vec3(1., .6, .32) * exp(-dd * 45.) * .7) * smoothstep(0., .2, uWarm);
     }
-    col += vec3(1., .82, .58) * uWarm * uWarm * (.6 + 1.2 * d) * exp(-length(p - uHero.xy) * 1.2);
+    col += vec3(1., .8, .55) * uWarm * (.25 + 1.6 * d * d) * exp(-length((p - uHero.xy) * vec2(1.4, .8)) * 2.6);
   }
 
   col = tm(col * uFade);
