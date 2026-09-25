@@ -38,7 +38,7 @@ void main(){
     vec2 d = p - uFire.xy;
     float r = length(d);
     float pool = exp(-length(d * vec2(1., 3.2)) / 150.);
-    col += COL_EMBER * uFire.z * (exp(-r * r / 3200.) * .9 + exp(-r / 120.) * .55 + pool * .35);
+    col += COL_EMBER * uFire.z * (exp(-r * r / 2400.) * .9 + exp(-r / 70.) * .45 + pool * .3);
     col += COL_GOLD * uFire.z * exp(-r * r / 500.) * .8;
   }
 

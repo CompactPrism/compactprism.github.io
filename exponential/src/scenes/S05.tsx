@@ -251,11 +251,11 @@ export const S05: React.FC = () => {
             const k = pxPerUnit(cam, s.depth) / 150;
             const fl = 0.8 + 0.2 * Math.sin(t * 9 + i * 2.3) * Math.sin(t * 5.3 + i);
             const on = teamOn * prog(t, 1.4 + TEAM[i].delay * 0.6, 2.4 + TEAM[i].delay * 0.6);
-            const sz = 46 * k * TEAM[i].size;
+            const sz = 64 * k * TEAM[i].size;
             return (
               <div key={i} style={{position: 'absolute', left: s.x - sz / 2, top: s.y - sz / 2, width: sz, height: sz, opacity: on * fl}}>
                 <div style={{position: 'absolute', inset: 0, borderRadius: '50%', background: `radial-gradient(circle, ${rgba(C.gold, 0.9)} 0%, ${rgba(C.ember, 0.45)} 18%, ${rgba(C.coral, 0.12)} 45%, rgba(0,0,0,0) 70%)`}} />
-                <div style={{position: 'absolute', left: sz / 2 - 3.5 * k, top: sz / 2 - 3.5 * k, width: 7 * k, height: 7 * k, borderRadius: '50%', background: '#FFF6E6'}} />
+                <div style={{position: 'absolute', left: sz / 2 - 5 * k, top: sz / 2 - 5 * k, width: 10 * k, height: 10 * k, borderRadius: '50%', background: '#FFF6E6', boxShadow: `0 0 ${8 * k}px ${C.gold}`}} />
               </div>
             );
           })}
@@ -280,7 +280,7 @@ export const S05: React.FC = () => {
                 );
               })}
             <div style={{position: 'absolute', left: emb.x - emb.size / 2, top: emb.y - emb.size / 2, opacity: emb.op}}>
-              <ClaudeSpark size={emb.size} draw={emb.draw} glow={emb.glow} rotate={emb.rot} pulse={emb.pulse} />
+              <ClaudeSpark size={emb.size} draw={emb.draw} glow={emb.glow} rotate={emb.rot} pulse={emb.pulse} color={ignK && !flying ? C.coral : C.coral} core={ignK ? '#FFE9C7' : C.gold} />
             </div>
           </>
         )}

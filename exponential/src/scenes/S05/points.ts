@@ -9,9 +9,9 @@ export const GROUND = /* glsl */ `
   pos = P;
   float dist = length(P.xz - uFireXZ.xy);
   float w = exp(-dist * dist / 3.2) * uFireXZ.z;
-  color = mix(vec3(.30, .38, .50), vec3(.96, .58, .38), clamp(w, 0., 1.));
+  color = mix(vec3(.42, .54, .70), vec3(.98, .62, .40), clamp(w, 0., 1.));
   float far = smoothstep(-44., -8., P.z) * smoothstep(7., 3.5, P.z);
-  alpha = uGround * far * (.16 + .55 * aSeed.y * aSeed.y + 1.1 * w);
+  alpha = uGround * far * (.42 + .6 * aSeed.y * aSeed.y + 1.2 * w);
   size = 4.2 + 2.2 * aSeed.z + 4. * w;
 `;
 
@@ -62,18 +62,18 @@ export const HERO_PTS = /* glsl */ `
   P += curl(P * .18 + aSeed.xyz * 3.) * (1. - e) * 1.4;
 
   // after ignition
-  float kind = aSeed2.x; // <.62 absorbed, <.84 burst, else orbit
+  float kind = aSeed2.x; // <.62 absorbed, <.9 burst, else orbit
   vec3 outd = normalize(vec3(T.xy, T.z * .2) + vec3(0., 0., .001)) ;
-  if (kind > .62 && kind < .84) {
+  if (kind > .62 && kind < .9) {
     P += outd * uBurst * (.6 + 1.6 * aSeed.w) + vec3(0., 0., (aSeed.x - .5) * uBurst * 1.2);
   }
-  if (kind >= .84) {
+  if (kind >= .9) {
+    // three thin orbital rings (an atom / gyroscope around the hero)
     float fam = floor(aSeed.w * 3.);
-    float ro = 1.25 + 1.5 * aSeed.z;
-    float a0 = aSeed.x * TAU + uTime * (.9 / ro) * (fam == 1. ? -1. : 1.);
-    vec3 O = vec3(cos(a0) * ro, 0., sin(a0) * ro * .35);
-    O.yz = rot(.35 + fam * .5) * O.yz;
-    O.xy = rot(fam * 1.9 + .3) * O.xy;
+    float ro = (uSz * .5) * (1.36 + fam * .06) + (aSeed.z - .5) * .05;
+    float a0 = aSeed.x * TAU + uTime * (.55 + fam * .12) * (fam == 1. ? -1. : 1.);
+    vec3 O = vec3(cos(a0) * ro, sin(a0) * ro * .3, sin(a0) * ro * .95);
+    O.xy = rot(radians(fam * 60. - 60.)) * O.xy;
     P = mix(P, O, smoothstep(0., 1., uPost));
   }
   pos = P;
@@ -85,8 +85,8 @@ export const HERO_PTS = /* glsl */ `
   color = mix(coldC, warmC, smoothstep(.2, .85, e)) ;
   color = mix(color, vec3(1., .93, .82), smoothstep(.9, 1., e) * .5 * (1. - uPost));
   float fadeIn = smoothstep(0., .12, l) * uOn;
-  float post = kind < .62 ? (1. - smoothstep(0., .25, uPost)) : (kind < .84 ? (1. - smoothstep(.1, 1., uPost)) : 1.);
+  float post = kind < .62 ? (1. - smoothstep(0., .25, uPost)) : (kind < .9 ? (1. - smoothstep(.05, .8, uPost)) : 1.);
   alpha = fadeIn * post * (.55 + .45 * e) ;
   size = (3.4 + 4. * aSeed2.y) * (1. + (1. - e) * 1.1) * clamp(dz / 2.5, .15, 1.);
-  if (kind >= .84) { size *= 1. + uPost * .8; alpha *= 1. + uPost * .6; }
+  if (kind >= .9) { size *= 1. - uPost * .25; alpha *= 1. + uPost * .5 * (.5 + .5 * sin(uTime * 3. + aSeed.y * 40.)); }
 `;
