@@ -159,7 +159,7 @@ export const S01: React.FC = () => {
       curveEnd: slam - 0.2,
       slam,
       pan0: cue('L02') - 0.3,
-      dis: dur - 1.5,
+      dis: dur - 1.65,
       coll0: dur - 1.2,
       coll1: dur - 0.32,
       l02end: end('L02'),
@@ -281,7 +281,7 @@ export const S01: React.FC = () => {
   const titleOp = slamOn ? prog(age, 0, 0.07, E.linear) : 0;
   const track = TITLE.spacingEm + 0.16 * (1 - prog(age, 0, 1.2, E.out));
   const sweep = -25 + 150 * prog(age, 0.25, 2.1, E.inOut);
-  const wave = 0.55;
+  const wave = 0.7;
   const maskA = -14 + 114 * clamp((t - B.dis) / wave);
   const subOp = prog(age, 0.35, 1.1, E.out) * (1 - prog(t, B.dis - 0.05, B.dis + 0.35, E.inOut));
   const titleGlow = slamOn ? (0.8 + 0.2 * Math.sin(t * 1.9)) * (1 - prog(t, B.dis, B.dis + wave, E.inOut)) + 1.5 * Math.exp(-age * 3) : 0;
@@ -523,20 +523,20 @@ export const S01: React.FC = () => {
           />
         )}
         {emblemOp > 0 &&
-          [1.16, 1.07, 1].map((s, i) => (
+          [1.12, 1].map((s, i) => (
             <div
               key={i}
               style={{
                 position: 'absolute',
-                left: titleP.x - 290,
-                top: titleP.y - 290,
-                opacity: emblemOp * [0.22, 0.4, 1][i],
-                transform: `scale(${s + sub * 0.02})`,
+                left: titleP.x - 145,
+                top: titleP.y - 145,
+                opacity: emblemOp * [0.45, 1][i],
+                transform: `scale(${2 * (s + sub * 0.025)})`,
                 mixBlendMode: 'multiply',
-                filter: `blur(${[14, 9, 5][i]}px)`,
+                filter: `blur(${[5, 2.5][i]}px)`,
               }}
             >
-              <ClaudeSpark size={580} draw={1} glow={0} color={C.clay} core={rgba(C.clay, 0.6)} rotate={-8 + sub * 1.5} />
+              <ClaudeSpark size={290} draw={1} glow={0} color="#4A2416" core="#5A2C1A" rotate={-8 + sub * 1.5} />
             </div>
           ))}
       </AbsoluteFill>

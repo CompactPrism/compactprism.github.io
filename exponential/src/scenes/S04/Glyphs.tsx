@@ -70,7 +70,7 @@ export const Glyphs: React.FC<{t: number; t0: number; out0: number; warm: number
         const spark = prog(lt, 0, 0.3, E.out);
         const link = prog(lt, 0.12, 0.62, E.out);
         const res = prog(lt, 0.35, 1.05, E.inOut);
-        const lab = prog(lt, 0.7, 1.2, E.out);
+        const lab = prog(lt, 0.4, 0.8, E.out);
         const [cx, cy0] = SPOTS[gi];
         const cy = cy0 - lt * 10 - outP * 40;
         const op = 1 - outP;
@@ -108,17 +108,20 @@ export const Glyphs: React.FC<{t: number; t0: number; out0: number; warm: number
             ))}
             {/* label */}
             <g opacity={lab}>
-              <line x1={cx - 70} y1={cy + S + 22} x2={cx + 70} y2={cy + S + 22} stroke={rgba(C.gold, 0.5 * lab)} strokeWidth={1} />
+              <line x1={cx - 70} y1={cy + S + 22} x2={cx + 70} y2={cy + S + 22} stroke={rgba(C.gold, 0.7 * lab)} strokeWidth={1.2} />
               <text
                 x={cx}
                 y={cy + S + 54}
                 textAnchor="middle"
                 fill={C.ivory}
-                style={{fontFamily: F.sans, fontWeight: 650, fontSize: 23, letterSpacing: `${lerp(0.4, 0.24, lab)}em`}}
+                stroke="rgba(3,4,8,0.8)"
+                strokeWidth={7}
+                paintOrder="stroke"
+                style={{fontFamily: F.sans, fontWeight: 720, fontSize: 25, letterSpacing: `${lerp(0.4, 0.22, lab)}em`}}
               >
                 {g.label}
               </text>
-              <text x={cx} y={cy + S + 82} textAnchor="middle" fill={rgba(C.gold, 0.8)} style={{fontFamily: F.mono, fontSize: 22}}>
+              <text x={cx} y={cy + S + 82} textAnchor="middle" fill={C.gold} stroke="rgba(3,4,8,0.8)" strokeWidth={6} paintOrder="stroke" style={{fontFamily: F.mono, fontSize: 22}}>
                 {g.tag}
               </text>
             </g>

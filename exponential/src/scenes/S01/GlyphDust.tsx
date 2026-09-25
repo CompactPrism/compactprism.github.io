@@ -120,8 +120,8 @@ void main(){
     pos += v * a * 1.1 + v * age * .25;
     pos.x += sin(age * 2.3 + aS.z * 20.) * .05 * a;
     pos.y += cos(age * 1.9 + aS.w * 17.) * .05 * a;
-    alpha = smoothstep(0., .04, age) * (.35 + .65 * exp(-age * 3.)) * (.6 + .4 * sin(age * 9. + aS.z * 30.));
-    col = mix(vec3(1., .96, .9), mix(vec3(.96, .76, .48), vec3(.93, .54, .37), aS.y), clamp(age * 1.4, 0., 1.));
+    alpha = smoothstep(0., .04, age) * (.65 + .6 * exp(-age * 2.5)) * (.65 + .35 * sin(age * 9. + aS.z * 30.));
+    col = mix(vec3(1., .93, .8), mix(vec3(1., .8, .5), vec3(.95, .56, .38), aS.y), clamp(age * 1.2, 0., 1.)) * 1.2;
   }
   float k = clamp(uColl * 1.35 - aS.x * .35, 0., 1.);
   k = k * k * k;
@@ -132,7 +132,7 @@ void main(){
   alpha *= 1. - .3 * k;
   vec4 mv = modelViewMatrix * vec4(pos, 1.);
   gl_Position = projectionMatrix * mv;
-  gl_PointSize = (1.5 + aS.w * 2.2) * (8.5 / max(.001, -mv.z));
+  gl_PointSize = (2.2 + aS.w * 2.6) * (8.5 / max(.001, -mv.z));
   vColor = col; vAlpha = alpha;
 }`;
 

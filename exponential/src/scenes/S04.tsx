@@ -38,7 +38,7 @@ const RIVER = `
   float fy = fract(aSeed.y + tr * rate);
   float yy = mix(-11., 17., fy);
   vec3 rp = vec3(sc.x + off.x, yy, sc.y * .9 + off.y - 1.5);
-  rp += curl(vec3(sc * .2 + lane * 3.1, yy * .08 - tr * .012, 1.3)) * (1.0 + .5 * uWidth);
+  rp += curl(vec3(sc * .2 + lane * 3.1, yy * .08 - tr * .012)) * (1.0 + .5 * uWidth);
   float ra = smoothstep(0., .1, fy) * smoothstep(1., .8, fy);
   vec3 cold = mix(ELEC, ICE, aSeed2.y * .7);
   vec3 warm = mix(CORAL, GOLD, aSeed2.y);
@@ -51,8 +51,8 @@ const CLOUD = `
   ${CHART_GLSL}
   float tr = uTravel;
   ${RIVER}
-  float rsize = mix(1.3, 3.2, pow(aSeed.w, 3.)) * (1. + mist * .6) * (1. + uPulse * .35);
-  float rA = ra * mix(.5, .2, mist) * (1. + uPulse * .7);
+  float rsize = mix(2.6, 7.5, pow(aSeed.w, 3.)) * (1. + mist * .4) * (1. + uPulse * .35);
+  float rA = ra * mix(.85, .35, mist) * (1. + uPulse * .7);
 
   vec3 cp = rp; vec3 cc = rc; float cA = 0.; float cS = 2.;
   float role = aSeed2.x;
@@ -64,7 +64,7 @@ const CLOUD = `
     cp = vec3(CH_X(yr) + j.x, CH_Y(TREND_V(yr), uMorph) + j.y, (aSeed2.w - .5) * .3);
     cA = .45 * smoothstep(0., .08, f) * step(.001, uDraw);
     cc = mix(EMBER, GOLD, aSeed2.w);
-    cS = mix(1.3, 2.8, pow(aSeed.w, 4.));
+    cS = mix(2.4, 5.2, pow(aSeed.w, 4.));
     if (aSeed2.z < .12) {
       vec3 hp = vec3(CH_X(headYr), CH_Y(TREND_V(headYr), uMorph), 0.);
       float an = aSeed.x * TAU + uTime * (1.5 + aSeed.y * 3.);
@@ -72,7 +72,7 @@ const CLOUD = `
       cp = hp + vec3(cos(an) * r, sin(an) * r * .8, (aSeed.w - .5) * .5);
       cA = .6 * step(.001, uDraw);
       cc = mix(GOLD, vec3(1., .95, .86), aSeed.w);
-      cS = mix(1.4, 3.6, aSeed.w);
+      cS = mix(2.6, 7., aSeed.w);
     }
   } else if (role < .7) {
     float dec = floor(aSeed2.y * 12.);
@@ -80,19 +80,19 @@ const CLOUD = `
     cp = vec3(mix(CH_X(2010.), CH_X(2026.), xx), CH_Y(16. + dec, uMorph), 0.);
     cA = .13 * step(xx, uGrid) * (1. - .75 * uMorph);
     cc = mix(ICE, ELEC, .35);
-    cS = 1.2;
+    cS = 2.2;
   } else if (role < .76) {
     float along = aSeed2.y;
     cp = aSeed2.z < .45 ? vec3(CH_X(2010.), mix(CH_Y(16., 0.), CH_Y(27., 0.), along), 0.)
                         : vec3(mix(CH_X(2010.), CH_X(2026.), along), CH_Y(16., 0.), 0.);
     cA = .3 * step(along, uAxes);
-    cc = ICE; cS = 1.4;
+    cc = ICE; cS = 2.6;
   } else {
     float dz = aSeed.z;
     cp = vec3((aSeed.x - .5) * 34., mod(aSeed.y * 22. + uTime * (.12 + .2 * aSeed2.y), 22.) - 11., 4. - dz * 30.);
     cA = .22 * (.4 + .6 * dz);
     cc = mix(mix(COLD, ICE, .5), mix(CORAL, GOLD, aSeed2.y), uWarm);
-    cS = mix(1.4, 5., pow(aSeed2.y, 5.));
+    cS = mix(2.6, 9., pow(aSeed2.y, 5.));
   }
   float k = smoothstep(0., 1., clamp(uRes * 1.7 - aSeed2.w * .7, 0., 1.));
   pos = mix(rp, cp, k);
@@ -109,7 +109,7 @@ const STREAK = `
   float wrapped = step(fyH, fyT);
   pos = rp;
   color = mix(rc, vec3(1.), .25);
-  alpha = ra * (1. - wrapped) * .55 * (1. - uRes) * uFade * (1. + uPulse);
+  alpha = ra * (1. - wrapped) * .8 * (1. - uRes) * uFade * (1. + uPulse);
 `;
 
 const BG = /* glsl */ `
@@ -125,9 +125,9 @@ void main(){
   float n = fbm(vec3(uv.x * 2.4, uv.y * .35 - uTravel * .06, uTime * .05));
   float shafts = smoothstep(-.15, .8, n) * exp(-uv.x * uv.x * 2.2);
   vec3 col = COL_VOID + vec3(.004, .006, .012) * (1. - uv.y);
-  col += tint * shafts * .16 * river;
+  col += tint * shafts * .07 * river;
   vec2 vp = uv - vec2(0., .42);
-  col += tint * exp(-dot(vp, vp) * 2.5) * .16 * river;
+  col += tint * exp(-dot(vp, vp) * 2.5) * .1 * river;
   // hit pulse: expanding ring + bloom
   float r = length(uv * vec2(.9, 1.2));
   float rad = (1. - uPulse) * 1.3;
@@ -214,7 +214,7 @@ export const S04: React.FC = () => {
       <ShaderCanvas frag={BG} scale={0.5} uniforms={{uWarm: warm, uTravel: travel, uPulse: Math.min(1, pulse), uChart: res, uFade: 1, uHead: head}} />
       <ThreeCanvas width={1920} height={1080} camera={CAM_INIT} gl={GL} style={{position: 'absolute', inset: 0}}>
         <CameraRig cam={cam} />
-        <PointCloud count={60000} seed={41} uniforms={U} body={CLOUD} />
+        <PointCloud count={60000} seed={41} uniforms={U} body={CLOUD} sprite="spark" />
         {res < 0.999 && <Streaks count={9000} seed={7} uniforms={{...U, uTrail: 0.05 + speed * 0.11}} body={STREAK} />}
       </ThreeCanvas>
 
@@ -226,11 +226,11 @@ export const S04: React.FC = () => {
       {WORDS.map((wd, i) => {
         const h = hits[i];
         const next = i < 2 ? hits[i + 1] : tEmerge - 0.15;
-        if (t < h - 0.06 || t > next + 0.45) return null;
-        const pin = prog(t, h - 0.05, h + 0.32, E.out);
-        const pout = prog(t, next - 0.04, next + 0.4, E.in);
-        const scale = lerp(1.3, 1, pin) * (1 + pout * 1.4);
-        const op = clamp(pin * 1.6) * (1 - pout);
+        if (t < h - 0.02 || t > next) return null;
+        const pin = prog(t, h - 0.02, h + 0.3, E.out);
+        const pout = prog(t, next - 0.2, next - 0.02, E.in);
+        const scale = lerp(1.3, 1, pin) * (1 + pout * 0.9);
+        const op = clamp(pin * 1.8) * (1 - pout);
         const track = lerp(0.62, 0.22, pin);
         const sweep = lerp(-20, 120, prog(t, h, h + 0.9, E.inOut));
         const ruleW = 1500 * prog(t, h - 0.02, h + 0.45, E.out);
@@ -262,7 +262,7 @@ export const S04: React.FC = () => {
       })}
 
       {/* scale HUD panel: three dials that fill as each keyword lands */}
-      <ScalePanel t={t} hits={hits} out0={b8 - 0.2} warm={warm} />
+      <ScalePanel t={t} hits={hits} out0={tEmerge - 0.15} warm={warm} />
 
       <AbsoluteFill style={{background: '#000', opacity: Math.max(1 - fadeIn, dip), pointerEvents: 'none'}} />
     </AbsoluteFill>
@@ -285,9 +285,9 @@ const ScalePanel: React.FC<{t: number; hits: number[]; out0: number; warm: numbe
     <div
       style={{
         position: 'absolute',
-        left: 150,
+        left: 140,
         top: 716 - (1 - on) * 14,
-        width: 430,
+        width: 600,
         opacity: on,
         padding: '12px 18px 14px',
         borderRadius: 6,
@@ -301,7 +301,7 @@ const ScalePanel: React.FC<{t: number; hits: number[]; out0: number; warm: numbe
         const p = prog(t, hits[i] - 0.05, hits[i] + 0.7, E.out);
         return (
           <div key={r.k} style={{marginTop: i ? 8 : 0, opacity: 0.35 + 0.65 * clamp(p * 3)}}>
-            <div style={{display: 'flex', justifyContent: 'space-between', fontFamily: F.mono, fontSize: 22, color: rgba(C.ice, 0.85)}}>
+            <div style={{display: 'flex', justifyContent: 'space-between', gap: 24, whiteSpace: 'nowrap', fontFamily: F.mono, fontSize: 22, color: rgba(C.ice, 0.85)}}>
               <span style={{textTransform: 'uppercase', letterSpacing: '0.06em'}}>{r.k}</span>
               <span style={{color: rgba(C.ivory, 0.85)}}>{r.v}</span>
             </div>

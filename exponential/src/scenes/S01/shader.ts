@@ -37,10 +37,10 @@ void main(){
   float wisp = smoothstep(.40, .80, n2) * smoothstep(.22, .72, n1);
   float fil = smoothstep(.45, .95, vnoise(q * .55 + n2 * 3.));
   vec2 ds = (p - uSpark) / 1080.;
-  float lit = uSparkI / (1. + dot(ds, ds) * 16.);
+  float lit = uSparkI / (1. + dot(ds, ds) * 9.);
   vec3 cold = COL_STEEL * .7 + COL_BRUISE * .25;
   vec3 warm = mix(COL_CLAY, COL_EMBER, .3);
-  col += mix(cold, warm, clamp(lit * 1.3, 0., 1.)) * wisp * (.7 + .5 * fil) * (.03 + lit * .42) * uNeb;
+  col += mix(cold, warm, clamp(lit * 1.3, 0., 1.)) * wisp * (.7 + .5 * fil) * (.04 + lit * .75) * uNeb;
 
   // ---- far stars (cold, faint)
   vec2 sq = (p - vec2(960., 540.)) / uStarK + uStarOff;
@@ -82,7 +82,7 @@ void main(){
   if (uFlash > .001) {
     vec2 fq = (p - uFlashC) / 1080.;
     float fr = length(fq * vec2(.75, 1.5));
-    col += mix(COL_IVORY, COL_GOLD, .5) * uFlash * (1.4 * exp(-fr * 2.8) + .22);
+    col += mix(COL_IVORY, COL_GOLD, .5) * uFlash * (1.4 * exp(-fr * 2.8) + .14);
     col += COL_GOLD * uFlash * exp(-abs(p.y - uFlashC.y) / 9.) * 1.6;
   }
   if (uRingI > .001) {
