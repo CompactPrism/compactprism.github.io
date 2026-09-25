@@ -1,0 +1,6 @@
+{
+  "_comment": "word -> Kokoro/misaki phonemes, applied to every line by tts.py (possessive 's handled). Value: string, or {\"us\": ..., \"gb\": ...}. Symbols: A=eɪ I=aɪ O=oʊ Q=əʊ(GB) W=aʊ Y=ɔɪ T=flap-t ᵊ=light schwa; stress ˈ primary, ˌ secondary.",
+  "AlphaFold": {"us": "ˈælfəfˌOld", "gb": "ˈalfəfˌQld"},
+  "Dario": {"us": "dˈɑɹiˌO", "gb": "dˈɑːɹiˌQ"},
+  "Amodei": {"us": "ˌɑmOdˈA", "gb": "ˌamQdˈA"}
+}

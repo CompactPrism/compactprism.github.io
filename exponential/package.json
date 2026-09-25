@@ -1,0 +1,33 @@
+{
+  "name": "exponential-film",
+  "private": true,
+  "version": "1.0.0",
+  "description": "EXPONENTIAL: a film made 100% in code by Claude in Claude Code",
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "node scripts/render.mjs",
+    "stills": "node scripts/stills.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/fraunces": "^5.3.0",
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@fontsource/anton": "^5.3.0",
+    "@react-three/fiber": "^9.3.0",
+    "@remotion/bundler": "^4.0.529",
+    "@remotion/cli": "^4.0.529",
+    "@remotion/media-utils": "^4.0.529",
+    "@remotion/noise": "^4.0.529",
+    "@remotion/paths": "^4.0.529",
+    "@remotion/renderer": "^4.0.529",
+    "@remotion/shapes": "^4.0.529",
+    "@remotion/three": "^4.0.529",
+    "@types/react": "^19.3.0",
+    "@types/three": "^0.186.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "remotion": "^4.0.529",
+    "three": "^0.186.1",
+    "typescript": "^7.0.2"
+  }
+}
