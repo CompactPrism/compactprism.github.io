@@ -10,10 +10,10 @@ import {ShaderCanvas} from '../lib/ShaderCanvas';
 import {PointCloud} from '../lib/PointCloud';
 import {useScene} from '../lib/timing';
 import {C, F, rgba} from '../theme';
-import {E, clamp, lerp, prog, rnd} from '../lib/anim';
+import {E, clamp, lerp, prog} from '../lib/anim';
 import {Cam, V3, add, camUniforms, lookAt, mix3, project} from './S02/cam';
 import {S03_FRAG} from './S03/frag';
-import {ARCS, ARC_N, AUTHOR_X, AUTHOR_Y, BLOCK_LINES, BLOCK_SAMPLED, BOX, PAPER_BARS, PAPER_HH, PAPER_HW, TOKENS, TOKEN_SP, WEIGHTS, arcPoint, tokenPos} from './S03/geo';
+import {ARCS, ARC_N, AUTHOR_X, AUTHOR_Y, BLOCK_LINES, BLOCK_SAMPLED, BOX, PAPER_BARS, PAPER_HH, PAPER_HW, TOKENS, WEIGHTS, arcPoint, tokenPos} from './S03/geo';
 import {Dot, LightCanvas, Quad, RGB, Stroke} from './S03/LightCanvas';
 
 // Every displayed fact. Source: research/FACTS.md §1 ("Attention Is All You Need": arXiv 1706.03762,
@@ -214,10 +214,9 @@ export const S03: React.FC = () => {
       for (let s = 0; s < n; s++) {
         const u = s / (ARC_N - 1);
         const pa = arcPoint(a, u, 1 + 0.08 * Math.sin(t * 1.3 + a.seed * 6) * (1 - m));
-        const shifted: V3 = [pa[0] + (tokenWorld(a.i)[0] - tokenPos(a.i)[0]) * 0, pa[1], pa[2]];
         const bl = BLOCK_SAMPLED[L][s];
         const pb = blockW(bl[0], bl[1], 0);
-        pts.push(P(mix3(shifted, pb, m)));
+        pts.push(P(mix3(pa, pb, m)));
       }
       const wk = clamp((warm - (1 - kw) * 0.35) / 0.65);
       const col = mixc(mixc(ELEC, [200, 230, 250], 0.2), mixc(EMBER, GOLD, kw), wk);
@@ -432,7 +431,7 @@ export const S03: React.FC = () => {
                   fontFamily: F.mono,
                   fontSize: 30,
                   color: C.ivory,
-                  background: `linear-gradient(180deg, ${rgba(hex(pillCol).replace(/rgb\((\d+),(\d+),(\d+)\)/, (_, r, g, b) => '#' + [r, g, b].map((v: string) => Number(v).toString(16).padStart(2, '0')).join('')), 0.2)}, rgba(8,10,16,0.82))`,
+                  background: `linear-gradient(180deg, rgba(${pillCol.map(Math.round).join(',')},0.2), rgba(8,10,16,0.82))`,
                   border: `1.5px solid ${hex(pillCol)}`,
                   boxShadow: `0 0 26px ${hex(pillCol)}66, inset 0 0 14px ${hex(pillCol)}33`,
                   opacity: pillA,
@@ -575,5 +574,3 @@ export const S03: React.FC = () => {
     </AbsoluteFill>
   );
 };
-void rnd;
-void TOKEN_SP;
