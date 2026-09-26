@@ -123,6 +123,8 @@ const camAt = (keys: K[], t: number): Cam => {
 };
 
 const GL = {antialias: false, alpha: true, powerPreference: 'high-performance' as const};
+// Render the 3D world at 0.75x device pixels (the glow ribbon and points are resolution-independent): ~45% fewer fragments.
+const DPR = typeof window === 'undefined' ? 0.75 : (window.devicePixelRatio || 1) * 0.75;
 
 export const S09: React.FC = () => {
   const {t, dur, cue, end, lines, fps} = useScene('S09');
@@ -176,7 +178,7 @@ export const S09: React.FC = () => {
 
   return (
     <AbsoluteFill style={{background: C.void}}>
-      <ThreeCanvas width={1920} height={1080} camera={CAM_INIT} gl={GL} style={{position: 'absolute', inset: 0}}>
+      <ThreeCanvas width={1920} height={1080} camera={CAM_INIT} gl={GL} dpr={DPR} style={{position: 'absolute', inset: 0}}>
         <CameraRig cam={cam} near={0.5} far={4000} />
         <City cam={cam} t={t} ign={ign} city={city} draw={draw} boost={boost} />
         <Pts count={9000} seed={3} pre={PRE_H} body={ARCS} uniforms={{uIgn: ign}} />

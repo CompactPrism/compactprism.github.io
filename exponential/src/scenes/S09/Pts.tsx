@@ -2,7 +2,7 @@
 // for GLSL helper functions, and `screen` sizing (body sets `screen = 1.` to give size in px).
 import React, {useMemo} from 'react';
 import * as THREE from 'three';
-import type {} from '@react-three/fiber';
+import {useThree} from '@react-three/fiber';
 import {useCurrentFrame, useVideoConfig} from 'remotion';
 import {NOISE1} from '../S04/noise';
 
@@ -26,7 +26,8 @@ export const Pts: React.FC<{count: number; seed?: number; body: string; pre?: st
   order = 0,
 }) => {
   const frame = useCurrentFrame();
-  const {fps, height} = useVideoConfig();
+  const {fps} = useVideoConfig();
+  const dpr = useThree((s) => s.viewport.dpr); // points sized in drawing-buffer px: keep them constant on screen
   const geometry = useMemo(() => {
     const r = mulberry(seed * 9973 + 17);
     const a = new Float32Array(count * 4);
@@ -82,7 +83,7 @@ export const Pts: React.FC<{count: number; seed?: number; body: string; pre?: st
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [body, pre, keys, depthTest]);
   material.uniforms.uTime.value = frame / fps;
-  material.uniforms.uPx.value = height / 1080;
+  material.uniforms.uPx.value = dpr;
   for (const [k, v] of Object.entries(uniforms)) {
     const cur = material.uniforms[k];
     if (!cur) continue;

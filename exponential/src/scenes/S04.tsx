@@ -38,7 +38,8 @@ const RIVER = `
   float fy = fract(aSeed.y + tr * rate);
   float yy = mix(-11., 17., fy);
   vec3 rp = vec3(sc.x + off.x, yy, sc.y * .9 + off.y - 1.5);
-  rp += curl(vec3(sc * .2 + lane * 3.1, yy * .08 - tr * .012)) * (1.0 + .5 * uWidth);
+  vec3 fq = vec3(sc * .2 + lane * 3.1, yy * .08 - tr * .012);
+  rp += vec3(snoise(fq), snoise(fq + 17.3), snoise(fq + 41.7)) * (1.15 + .55 * uWidth); // cheap flow field (3 noise taps)
   float ra = smoothstep(0., .1, fy) * smoothstep(1., .8, fy);
   vec3 cold = mix(ELEC, ICE, aSeed2.y * .7);
   vec3 warm = mix(CORAL, GOLD, aSeed2.y);
@@ -134,7 +135,8 @@ void main(){
   vec3 tint = mix(cold, warm, uWarm);
   float river = 1. - uChart;
   // rising light shafts
-  float n = fbm(vec3(uv.x * 2.4, uv.y * .35 - uTravel * .06, uTime * .05));
+  vec3 q = vec3(uv.x * 2.4, uv.y * .35 - uTravel * .06, uTime * .05);
+  float n = .65 * snoise(q) + .35 * snoise(q * 2.03 + 11.);
   float shafts = smoothstep(-.15, .8, n) * exp(-uv.x * uv.x * 2.2);
   vec3 col = COL_VOID + vec3(.004, .006, .012) * (1. - uv.y);
   col += tint * shafts * .07 * river;
