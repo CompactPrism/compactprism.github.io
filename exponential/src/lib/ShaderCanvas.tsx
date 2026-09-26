@@ -36,6 +36,7 @@ type GLState = {
   gl: WebGL2RenderingContext;
   prog: WebGLProgram;
   locs: Map<string, WebGLUniformLocation | null>;
+  types: Map<string, {type: number; size: number}>; // active uniforms by base name (arrays: size > 1)
   frag: string;
 };
 
@@ -101,10 +102,16 @@ export const ShaderCanvas: React.FC<Props> = ({
       const loc = gl.getAttribLocation(prog, 'p');
       gl.enableVertexAttribArray(loc);
       gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-      s = {gl, prog, locs: new Map(), frag};
+      const types = new Map<string, {type: number; size: number}>();
+      const n = gl.getProgramParameter(prog, gl.ACTIVE_UNIFORMS) as number;
+      for (let i = 0; i < n; i++) {
+        const info = gl.getActiveUniform(prog, i);
+        if (info) types.set(info.name.replace(/\[0\]$/, ''), {type: info.type, size: info.size});
+      }
+      s = {gl, prog, locs: new Map(), types, frag};
       st.current = s;
     }
-    const {gl, prog, locs} = s;
+    const {gl, prog, locs, types} = s;
     const L = (name: string) => {
       if (!locs.has(name)) locs.set(name, gl.getUniformLocation(prog, name));
       return locs.get(name)!;
@@ -118,11 +125,14 @@ export const ShaderCanvas: React.FC<Props> = ({
     for (const [k, v] of Object.entries(uniforms)) {
       const l = L(k);
       if (l === null) continue;
+      // Upload by the uniform's declared GLSL type, so `float x[4]` and `vec4 x` both work.
+      const ty = types.get(k)?.type;
       if (typeof v === 'number') gl.uniform1f(l, v);
-      else if (v.length === 2) gl.uniform2fv(l, v);
-      else if (v.length === 3) gl.uniform3fv(l, v);
-      else if (v.length === 4) gl.uniform4fv(l, v);
-      else gl.uniform1fv(l, v); // float array: declare `uniform float uArr[N];`
+      else if (ty === gl.FLOAT) gl.uniform1fv(l, v); // float array: `uniform float uArr[N];`
+      else if (ty === gl.FLOAT_VEC2 || (ty === undefined && v.length === 2)) gl.uniform2fv(l, v);
+      else if (ty === gl.FLOAT_VEC3 || (ty === undefined && v.length === 3)) gl.uniform3fv(l, v);
+      else if (ty === gl.FLOAT_VEC4 || (ty === undefined && v.length === 4)) gl.uniform4fv(l, v);
+      else gl.uniform1fv(l, v);
     }
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   });

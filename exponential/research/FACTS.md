@@ -286,3 +286,10 @@ Prologue ("human leaps") labels:
 - Any SWE-bench Verified score for Opus 4.8 or later (none published).
 - Resolution, fps, voice or scene list for the @kimmonismus film.
 - "Sonnet 5.5" or "Haiku 5.5" as released models.
+
+### 1b. Transformer paper details (added by director; verified against the NeurIPS 2017 paper PDF via search, papers.neurips.cc/paper/7181-attention-is-all-you-need.pdf)
+- Encoder and decoder are stacks of **N = 6** identical layers (base and big models).
+- Base model: d_model = 512, h = 8 attention heads (d_k = d_v = 64).
+- **28.4 BLEU** on WMT 2014 English→German (big model), improving on prior best results, including ensembles, by over 2 BLEU.
+- Big model trained for 300,000 steps, **3.5 days on 8 P100 GPUs** (base models: 12 hours).
+- Scaled dot-product attention: Attention(Q, K, V) = softmax(QKᵀ / √d_k) V.
