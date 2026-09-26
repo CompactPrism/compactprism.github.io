@@ -5,9 +5,10 @@ import * as THREE from 'three';
 import {GMesh, V3} from './gl';
 
 const VERT = /* glsl */ `
-varying vec3 vN; varying vec3 vObj; varying vec3 vW;
+varying vec3 vN; varying vec3 vObj; varying vec3 vW; varying float vCamD;
 void main(){
   vObj = position;
+  vCamD = length(cameraPosition - (modelMatrix * vec4(0., 0., 0., 1.)).xyz) / length((modelMatrix * vec4(1., 0., 0., 0.)).xyz);
   vN = normalize(mat3(modelMatrix) * normal);
   vec4 w = modelMatrix * vec4(position, 1.);
   vW = w.xyz;
@@ -15,7 +16,7 @@ void main(){
 }`;
 
 const FRAG = /* glsl */ `
-varying vec3 vN; varying vec3 vObj; varying vec3 vW;
+varying vec3 vN; varying vec3 vObj; varying vec3 vW; varying float vCamD;
 float fbmG(vec3 p){ return snoise(p) * .5 + snoise(p * 2.03 + 17.1) * .25 + snoise(p * 4.1 + 31.7) * .125; }
 void main(){
   vec3 n = normalize(vN);
@@ -57,7 +58,7 @@ void main(){
   // atmosphere at the limb
   float fr = pow(1. - max(dot(n, V), 0.), 2.4);
   vec3 atmo = mix(vec3(.46, .26, .52) * uSmog, mix(vec3(.32, .58, 1.), vec3(1., .74, .44), uHalo), cln);
-  col += atmo * fr * ((1. - night) * .9 + .3 + uHalo * .5);
+  col += atmo * fr * ((1. - night) * .9 + .3 + uHalo * .5) * smoothstep(1.25, 2.2, vCamD);
   gl_FragColor = vec4(col * uOpacity, uOpacity);
 }`;
 

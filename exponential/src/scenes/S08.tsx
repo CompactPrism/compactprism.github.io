@@ -50,11 +50,11 @@ const GREET: {w: string; f: string; u: number; v: number; lift: number}[] = [
 // V3 long-haul arcs: from the edge of the lit region to remote nodes (sphere-local directions)
 const sd = (th: number, ph: number): V3 => [Math.sin(th) * Math.cos(ph), Math.cos(th), Math.sin(th) * Math.sin(ph)];
 const ARCS = [
-  {from: sd(1.55, 1.2), to: sd(2.35, 1.55)},
-  {from: sd(1.55, 0.6), to: sd(2.05, 0.35)},
-  {from: sd(1.55, 1.9), to: sd(2.55, 2.3)},
-  {from: sd(1.55, 2.6), to: sd(1.95, 3.1)},
-  {from: sd(1.55, 0.1), to: sd(2.75, 0.9)},
+  {from: sd(1.0, 1.2), to: sd(2.35, 1.55)},
+  {from: sd(1.0, 0.6), to: sd(2.05, 0.35)},
+  {from: sd(1.0, 1.9), to: sd(2.55, 2.3)},
+  {from: sd(1.0, 2.6), to: sd(1.95, 3.1)},
+  {from: sd(1.0, 0.1), to: sd(2.75, 0.9)},
 ];
 const CHIPS = ['DOCTOR', 'LAWYER', 'FINANCIAL ADVISOR'];
 
@@ -181,14 +181,15 @@ export const S08: React.FC = () => {
   const rx = ramp(t, [c21 + 0.2, c22 + 0.6], [0, 0.72], E.inOut);
   const ry = (t - c21) * 0.05 * prog(t, c21, c21 + 1, E.linear);
   const worldOp = Math.min(prog(t, c20 - 0.95, c20 + 0.1, E.out), 1 - prog(t, c22 - 0.3, c22 + 0.55, E.inOut));
-  const wU = worldUniforms(wave, curv, O, rx, ry, t, lerp(0.085, 0, curv), worldOp);
+  const wU = worldUniforms(wave, curv, O, rx, ry, t, lerp(0.055, 0, curv), worldOp);
   const arcs = React.useMemo(() => buildArcs(ARCS.map((a, k) => ({from: a.from, to: a.to, t: help + 0.1 + k * 0.42}))), [help]);
   const arcU = {uArcDur: 0.9, uArcFade: reach + 0.8};
   // V2 spark: arrives from the dive, touches down, skims forward riding the wave front
   const touch: V3 = [O[0], O[1] + 0.12, O[2] - 0.8];
   const skimEnd: V3 = [O[0] + 0.4, O[1] + 0.35, O[2] - 0.8 - 9.2];
   let spark2: V3 = touch;
-  if (t < wave.tA) spark2 = lerp3(hover, touch, prog(t, c20 - 0.8, wave.tA, E.inOut));
+  const lead: V3 = [cam.position.x + fwd.x * 4.2, cam.position.y + fwd.y * 4.2 - 0.35, cam.position.z + fwd.z * 4.2];
+  if (t < wave.tA) spark2 = lerp3(lerp3(hover, lead, prog(t, c20 - 0.95, c20 - 0.45, E.inOut)), touch, prog(t, c20 + 0.15, wave.tA, E.inOut));
   else if (t < wave.tB) spark2 = lerp3(touch, skimEnd, prog(t, wave.tA, wave.tB, E.inOut));
   else spark2 = lerp3(skimEnd, [skimEnd[0], skimEnd[1] + 1.4, skimEnd[2] - 1], prog(t, wave.tB, c21, E.inOut));
   // V3 spark: rides the first long-haul arc, then hovers at the far side
@@ -198,16 +199,16 @@ export const S08: React.FC = () => {
   // ---------------- V4: planet ----------------
   const globeOn = t > c22 - 0.45;
   const globeOp = prog(t, c22 - 0.4, c22 + 0.5, E.inOut);
-  const clearAng = ramp(t, [energy - 0.35, smarter + 0.2, smarter + 1.6], [0, 1.0, Math.PI + 0.6], E.inOut);
-  const clean = prog(t, smarter + 0.2, e22 + 0.4, E.inOut);
-  const halo = prog(t, smarter + 0.5, e22 + 1, E.inOut);
+  const clearAng = ramp(t, [energy - 0.35, smarter + 0.3, e22 - 0.55, e22 + 0.75], [0, 0.95, 1.15, Math.PI + 0.6], E.inOut);
+  const clean = prog(t, e22 - 0.2, e22 + 0.9, E.inOut);
+  const halo = prog(t, e22 - 0.3, e22 + 1.1, E.inOut);
   // lattice placed in front of the camera as it is at "materials"
   const camMat = makeCamera({pos: hermite(posKeys, mats + 0.9), target: hermite(tgtKeys, mats + 0.9), fov: 40});
   const latC = React.useMemo(() => unprojectAt(camMat, 620, 500, 6.2), [mats]); // eslint-disable-line react-hooks/exhaustive-deps
   const latP = prog(t, mats - 0.1, mats + 1.9, E.linear);
   const latOp = Math.min(prog(t, mats - 0.25, mats + 0.2, E.out), 1 - prog(t, energy - 0.2, energy + 0.35, E.inOut));
   const sweep = ramp(t, [energy - 0.3, smarter + 0.6], [-1.3, 1.35], E.inOut);
-  const landOp = Math.min(prog(t, energy - 0.8, energy - 0.2, E.out), 1 - prog(t, smarter + 1.1, smarter + 1.8, E.inOut));
+  const landOp = Math.min(prog(t, energy - 0.4, energy + 0.05, E.out), 1 - prog(t, smarter + 0.9, smarter + 1.6, E.inOut));
   const camDir4: V3 = [-t0v.x, -t0v.y, -t0v.z];
   const ringProg = prog(t, smarter + 0.9, dur - 0.3, E.inOut);
   const ringR = R * 1.32;
@@ -225,7 +226,8 @@ export const S08: React.FC = () => {
   const spark = t < c20 - 0.8 ? spark1 : t < c21 - 0.2 ? spark2 : t < c22 ? spark3 : spark4;
   const sp = project(cam, spark);
   const sparkOp = Math.min(prog(t, 0.15, 0.7, E.out), sp.visible ? 1 : 0) * (t > c21 - 0.6 && t < help ? 1 - prog(t, c21 - 0.6, c21 - 0.2) + prog(t, help - 0.4, help) : 1);
-  const sparkSize = clamp(pxPerUnit(cam, Math.max(sp.depth, 0.5)) * 0.2, 30, 64);
+  const flare = Math.sin(Math.PI * prog(t, c20 - 0.95, c20 + 0.75, E.linear));
+  const sparkSize = clamp(pxPerUnit(cam, Math.max(sp.depth, 0.5)) * 0.2, 30, 64) * (1 + 0.5 * flare);
 
   // ---------------- background ----------------
   const w1 = 1 - prog(t, c20 - 0.6, c20 + 0.4);
@@ -389,10 +391,16 @@ export const S08: React.FC = () => {
       {landOp > 0.01 &&
         (() => {
           const p = project(cam, V(surfDir(SITE, 0.48, -0.02).multiplyScalar(R + 0.34)));
-          return p.visible ? <Leader x={p.x} y={p.y} dx={-40} dy={-120} text="CLEAN ENERGY" op={landOp * prog(t, energy, energy + 0.4)} /> : null;
+          return p.visible ? <Leader x={p.x} y={p.y} dx={-40} dy={-120} text="CLEAN ENERGY" op={landOp * prog(t, energy, energy + 0.4) * (1 - prog(t, smarter + 0.2, smarter + 0.6))} /> : null;
         })()}
 
-      {/* ---------- the hero ---------- */}
+      {/* ---------- the hero (with an anamorphic streak while it leads the dive) ---------- */}
+      {flare > 0.01 && sp.visible && (
+        <>
+          <div style={{position: 'absolute', left: sp.x - 520 * flare, top: sp.y - 2, width: 1040 * flare, height: 4, borderRadius: 2, background: `linear-gradient(90deg, transparent, ${rgba(C.gold, 0.6)} 30%, #FFF6E6 50%, ${rgba(C.gold, 0.6)} 70%, transparent)`, opacity: flare}} />
+          <div style={{position: 'absolute', left: sp.x - 260, top: sp.y - 70, width: 520, height: 140, borderRadius: '50%', background: `radial-gradient(ellipse, ${rgba(C.ember, 0.35 * flare)} 0%, transparent 70%)`}} />
+        </>
+      )}
       {sparkOp > 0.01 && (
         <div style={{position: 'absolute', left: sp.x - sparkSize / 2, top: sp.y - sparkSize / 2, opacity: sparkOp}}>
           <ClaudeSpark size={sparkSize} glow={1.1} rotate={t * 30} pulse={0.5 + 0.5 * Math.sin(t * 5)} />
