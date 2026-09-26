@@ -27,20 +27,23 @@ void main(){
   float ndl = dot(n, L);
   float diff = clamp(ndl, 0., 1.);
   float night = 1. - smoothstep(-.12, .22, ndl);
-  vec3 ocean = mix(vec3(.04, .05, .065), vec3(.02, .10, .27), uClean);
-  vec3 landc = mix(vec3(.10, .095, .10), mix(vec3(.08, .17, .09), vec3(.30, .26, .17), smoothstep(.15, .45, c)), uClean);
+  float clr0 = smoothstep(uClr.w, uClr.w - .35, acos(clamp(dot(normalize(vObj), normalize(uClr.xyz)), -1., 1.)));
+  float cln = max(uClean, clr0);
+  vec3 ocean = mix(vec3(.04, .05, .065), vec3(.02, .10, .27), cln);
+  vec3 landc = mix(vec3(.10, .095, .10), mix(vec3(.08, .17, .09), vec3(.30, .26, .17), smoothstep(.15, .45, c)), cln);
   vec3 col = mix(ocean, landc, land) * (diff * 1.3 + .025);
   vec3 Hh = normalize(L + V);
-  col += vec3(1., .9, .78) * pow(max(dot(n, Hh), 0.), 50.) * (1. - land) * .55 * uClean * diff;
+  col += vec3(1., .9, .78) * pow(max(dot(n, Hh), 0.), 50.) * (1. - land) * .55 * cln * diff;
   float cl = smoothstep(.15, .6, fbm3(sp * 3.2 + vec3(uT * .03, 0., 0.)) + .1);
-  col = mix(col, vec3(.88, .9, .94) * (diff * .95 + .02), cl * .5 * uClean);
+  col = mix(col, vec3(.88, .9, .94) * (diff * .95 + .02), cl * .5 * cln);
   // warm lights of the connected world (night side)
   float grid = smoothstep(.55, .95, snoise(sp * 24.) * .6 + snoise(sp * 7.) * .6);
   col += vec3(1., .66, .36) * grid * land * night * uLights * 1.4;
   // smog with rising heat shimmer
   vec3 sh = sp + .05 * vec3(snoise(sp * 8. + vec3(0., uT * 1.7, 0.)), snoise(sp * 8. + 5. + vec3(0., uT * 1.7, 0.)), 0.);
   float sm = fbm3(sh * 2.3 + vec3(0., -uT * .15, uT * .06)) * .5 + .5;
-  float smog = clamp(uSmog * (smoothstep(.25, .7, sm) + .45), 0., .96);
+  float clr = smoothstep(uClr.w, uClr.w - .35, acos(clamp(dot(normalize(vObj), normalize(uClr.xyz)), -1., 1.)));
+  float smog = clamp(uSmog * (smoothstep(.25, .7, sm) + .45), 0., .96) * (1. - clr);
   vec3 smogC = mix(vec3(.13, .07, .17), vec3(.40, .24, .44), sm) * (.25 + diff * .95);
   col = mix(col, smogC, smog);
   // atmosphere at the limb
@@ -74,14 +77,15 @@ export type GlobeU = {
   uSpin: number;
   uSun: V3;
   uLights: number; // warm night-side lights
+  uClr?: number[]; // smog clearing: direction xyz (object space) + angular radius (rad)
 };
 
-export const Globe: React.FC<{u: GlobeU; radius: number; position: V3; tilt?: number}> = ({u, radius, position, tilt = 0.3}) => {
-  const geo = useMemo(() => new THREE.SphereGeometry(1, 96, 64), []);
-  const uni = {...u, uSun: u.uSun as number[]};
+export const Globe: React.FC<{u: GlobeU; radius: number; position: V3; rotation?: V3}> = ({u, radius, position, rotation = [0.3, 0, 0.2]}) => {
+  const geo = useMemo(() => new THREE.SphereGeometry(1, 128, 80), []);
+  const uni = {...u, uSun: u.uSun as number[], uClr: u.uClr ?? [0, 1, 0, -1]};
   return (
     <>
-      <GMesh geometry={geo} vert={VERT} frag={FRAG} uniforms={uni} transparent position={position} rotation={[tilt, 0, 0.2]} scale={radius} renderOrder={2} />
+      <GMesh geometry={geo} vert={VERT} frag={FRAG} uniforms={uni} transparent position={position} rotation={rotation} scale={radius} renderOrder={2} />
       <GMesh geometry={geo} vert={ATMO_VERT} frag={ATMO_FRAG} uniforms={{uSmog: u.uSmog, uClean: u.uClean, uHalo: u.uHalo, uOpacity: u.uOpacity}} additive depthWrite={false} side="back" position={position} scale={radius * 1.16} renderOrder={3} />
     </>
   );
