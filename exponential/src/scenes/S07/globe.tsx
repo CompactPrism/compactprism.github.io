@@ -25,6 +25,7 @@ void main(){
   sp.xz = rot(uSpin) * sp.xz;
   float c = fbmG(sp * 1.6 + 4.) + .06 * snoise(sp * 7.);
   float land = smoothstep(.05, .11, c);
+  land = max(land, smoothstep(.8, .4, acos(clamp(dot(normalize(vObj), normalize(uClr.xyz)), -1., 1.))) * step(0., uClr.w));
   float ndl = dot(n, L);
   float diff = clamp(ndl, 0., 1.);
   float night = 1. - smoothstep(-.12, .22, ndl);

@@ -27,8 +27,8 @@ import {Card, CardBody, CardHead, CardSource, CardTitle, CaseTag, Dial, HitRate,
 //  - Jan 2026: Teach For All, AI training for educators in 63 countries
 //  - Claude's constitution (Jan 2026): "a brilliant friend who happens to have the knowledge of a doctor, lawyer, financial advisor..."
 
-const O: V3 = [0, -14, 0]; // V2 field origin (north pole of the rolled-up globe)
-const CEN: V3 = [0, -14 - R, 0]; // globe centre
+const O: V3 = [0, -5.5, 0]; // V2 field origin (north pole of the rolled-up globe), just below the protein
+const CEN: V3 = [0, -5.5 - R, 0]; // globe centre
 const SITE = surfaceFrame([-0.22, 0.5, 0.84]); // where the energy landscape stands on the planet
 const SUN: V3 = [-0.75, 0.5, 0.35];
 
@@ -256,7 +256,7 @@ export const S08: React.FC = () => {
     uGBC: landOp > 0.01 ? mix3([0.5, 0.3, 0.55], [0.95, 0.62, 0.36], clamp((sweep + 1) / 2)) : [0.95, 0.55, 0.32],
     uStars: 0.15 * w1 + 0.35 * w2 + 0.9 * w34,
     uDrift: [spec.pos[0] * 0.01, spec.pos[1] * 0.004],
-    uSweep: [0, 0.2, 0, 0],
+    uSweep: [lerp(-1.1, 1.1, prog(t, c20 - 0.8, c20 + 0.4, E.inOut)), 0.16, 0.3 * Math.sin(Math.PI * prog(t, c20 - 0.8, c20 + 0.4)), 0],
   };
 
   // ---------------- overlays ----------------
