@@ -24,7 +24,7 @@ uniform float uCity; uniform vec3 uCamPos; uniform float uBoost;
 vec3 skyCol(vec3 d){
   float el = d.y;
   vec3 zen = vec3(.006, .008, .02);
-  vec3 hor = mix(vec3(.03, .032, .045), vec3(.2, .088, .05), uCity);
+  vec3 hor = mix(vec3(.025, .028, .04), vec3(.15, .066, .04), uCity);
   float hz = exp(-max(el, 0.) * 8.);
   vec3 c = mix(zen, hor, hz);
   vec2 pd = normalize(vec2(${PX}, ${PZ}) - uCamPos.xz + 1e-3);
@@ -60,28 +60,41 @@ void main(){
   if (vN.y > .5) {
     vec2 e = abs(vL.xz) * 2.;
     float rim = smoothstep(.88, 1., max(e.x, e.y));
-    col = vec3(.02, .017, .02) + vec3(.9, .45, .2) * rim * (.06 + .1 * on);
+    col = vec3(.008, .008, .011) + vec3(.9, .45, .2) * rim * (.08 + .14 * on) + vec3(.42, .58, .8) * rim * .06;
     float led = step(.93, h21(floor(vW.xz * .5) + vSeed * 91.));
     col += vec3(1., .7, .4) * led * on * (.5 + .5 * sin(uTime * 3. + vSeed * 50.)) * .5;
   } else {
+    // server racks: 1.5-unit bays, a status LED + activity bar every .5 units, light seams between bays and floors
     float along = abs(vN.x) > .5 ? vW.z : vW.x;
-    vec2 cell = vec2(along / .9, vW.y / 1.2);
+    vec2 cell = vec2(along / 1.5, vW.y / .5);
     vec2 id = floor(cell); vec2 fr = fract(cell);
-    float win = smoothstep(.12, .22, fr.x) * smoothstep(.88, .78, fr.x) * smoothstep(.18, .3, fr.y) * smoothstep(.84, .72, fr.y);
-    float fw = max(fwidth(cell.x), fwidth(cell.y));
-    float detail = 1. - smoothstep(.35, 1., fw);
+    vec2 fw2 = fwidth(cell);
+    float fw = max(fw2.x, fw2.y);
+    float detail = 1. - smoothstep(.3, .9, fw);
     float h = h21(id + vSeed * 137.);
-    float lit = step(.4, h) * step(.2, h21(vec2(id.y, vSeed * 71.)));
-    float fl = .7 + .3 * sin(uTime * (.6 + h * 5.) + h * 60.);
-    float blink = step(.992, h21(id * 1.7 + floor(uTime * 4. + h * 9.) * .37 + vSeed));
-    float wl = win * (lit * fl + blink);
-    float light = mix(.6 * .45 * .8, wl, detail);
-    vec3 wc = mix(vec3(1., .55, .26), vec3(1., .8, .5), h21(id.yx + 3.1));
-    wc = mix(wc, vec3(1., .95, .88), step(.95, h));
-    col = vec3(.022, .019, .024) * (.5 + .5 * clamp(vL.y, 0., 1.));
-    col += wc * light * (1.35 * on + .035);
-    col += vec3(1., .78, .5) * front * (.25 + .6 * win);
-    col += vec3(.7, .33, .16) * exp(-vW.y * .22) * .12 * on;
+    float h2 = h21(id.yx * 1.3 + vSeed * 17.);
+    float led = smoothstep(.22, .1, length((fr - vec2(.18, .5)) * vec2(1.6, 1.)));
+    float bar = step(.36, fr.x) * step(fr.x, .36 + .52 * h2) * step(.4, fr.y) * step(fr.y, .6);
+    float active = step(.28, h);
+    float fl = .55 + .45 * sin(uTime * (1. + h * 7.) + h * 60.);
+    float blink = step(.5, fract(uTime * (.6 + 2.5 * h2) + h));
+    float ledOn = active * mix(fl, blink, step(.75, h2));
+    float px = led * ledOn + bar * active * .5 * fl;
+    float light = mix(.16, px, detail);
+    float seamX = 1. - smoothstep(0., .05 + fw2.x, min(fr.x, 1. - fr.x));
+    float fy = vW.y / 6.; float fyf = fract(fy);
+    float seamY = 1. - smoothstep(0., .015 + fwidth(fy), min(fyf, 1. - fyf));
+    float seams = mix(.08, max(seamX * .3, seamY), detail);
+    vec3 ledC = mix(vec3(1., .6, .26), vec3(1., .86, .56), h2);
+    ledC = mix(ledC, vec3(.55, .84, 1.), step(.94, h));
+    ledC = mix(ledC, vec3(1.), step(.985, h));
+    col = vec3(.007, .007, .01);
+    col += ledC * light * (2.8 * on + .05);
+    col += vec3(1., .48, .2) * seams * (.4 * on + .012);
+    float e = abs(vN.x) > .5 ? abs(vL.z) : abs(vL.x);
+    col += vec3(.42, .58, .8) * smoothstep(.465, .5, e) * (.1 + .12 * on);
+    col += vec3(1., .78, .5) * front * (.25 + .8 * px);
+    col += vec3(.8, .36, .15) * exp(-vW.y * .3) * .14 * on;
   }
   float fog = 1. - exp(-dist * uFog);
   col = mix(col * (1. + uBoost), skyCol(normalize(V)), fog);
@@ -112,8 +125,8 @@ void main(){
   float tx = step(.82, fract(vW.x * .025 - uTime * (1.2 + 2. * h21(vec2(cid.y, 3.))) + h21(vec2(cid.y, 9.)))) * sz;
   float tz = step(.82, fract(vW.z * .025 + uTime * (1.2 + 2. * h21(vec2(cid.x, 5.))) + h21(vec2(cid.x, 1.)))) * sx;
   float traffic = mix(.03, max(tx, tz), detail);
-  vec3 col = vec3(.012, .011, .014);
-  col += vec3(.75, .36, .16) * street * .14 * on + vec3(1., .75, .45) * traffic * .55 * on;
+  vec3 col = vec3(.006, .006, .008);
+  col += vec3(.75, .36, .16) * street * .16 * on + vec3(1., .78, .5) * traffic * .9 * on;
   // light pooled under the curve along the avenue, and around the pillar's base
   float u = clamp((${f(CV.Z0)} - vW.z) / ${f(CV.L)}, 0., 1.);
   float yc = ${f(CV.Y0)} + ${f(CV.H)} * (exp(${f(CV.k)} * u) - 1.) / ${f(Math.exp(CV.k) - 1)};
@@ -162,13 +175,13 @@ export const City: React.FC<Props> = ({cam, t, ign, city, draw, boost}) => {
         if (Math.abs(x) < 18 && z > PILLAR[2] - 10) continue; // the avenue the curve runs along
         if (dp < 34) continue; // plaza round the pillar
         if (a < (iz < -95 ? 0.4 : 0.1)) continue;
-        const w = CELL * (0.5 + 0.34 * b);
-        const dd = CELL * (0.5 + 0.34 * c);
+        const w = CELL * 0.74;
+        const dd = CELL * (c < 0.25 ? 0.74 : 0.74);
         let h = 3 + 19 * Math.pow(d, 2.3);
         h *= 1 + 2.3 * Math.exp(-dp / 190);
         if (e > 0.985) h *= 2.1;
         m.makeScale(w, h, dd);
-        m.setPosition(x + (b - 0.5) * 1.2, 0, z + (c - 0.5) * 1.2);
+        m.setPosition(x, 0, z);
         mats.push(m.clone());
       }
     }
@@ -178,7 +191,7 @@ export const City: React.FC<Props> = ({cam, t, ign, city, draw, boost}) => {
   }, []);
 
   const mats = useMemo(() => {
-    const common = {uTime: {value: 0}, uIgn: {value: 0}, uFog: {value: 0.0021}, uCity: {value: 0}, uCamPos: {value: new THREE.Vector3()}, uBoost: {value: 0}};
+    const common = {uTime: {value: 0}, uIgn: {value: 0}, uFog: {value: 0.0019}, uCity: {value: 0}, uCamPos: {value: new THREE.Vector3()}, uBoost: {value: 0}};
     const tower = new THREE.ShaderMaterial({uniforms: {...common}, vertexShader: TOWER_V, fragmentShader: TOWER_F});
     const ground = new THREE.ShaderMaterial({uniforms: {...common, uDraw: {value: 0}}, vertexShader: GROUND_V, fragmentShader: GROUND_F});
     const sky = new THREE.ShaderMaterial({
