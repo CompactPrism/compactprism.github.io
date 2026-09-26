@@ -42,7 +42,7 @@ import soundfile as sf
 from scipy import signal
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from dsp import (F32, SR, biquad, bp, convolve_st, db, env_ar, env_pts, hp, hz,  # noqa: E402
+from dsp import (F32, SR, biquad, bp, convolve_st, db, env_ar, env_pts, hp, hz, zhp,  # noqa: E402
                  limiter, lp, make_ir, midi, nharm, ns, phase_of, smoothstep, true_peak_db,
                  tvec, tvfilt, wt, wtable, zbp, zlp, lufs_integrated)
 
@@ -104,6 +104,9 @@ def saw_stack(freqs, n, rng, det=12.0, nv=6, tilt=1.0, vib=0.0, vib_rate=5.2, vi
     return out
 
 
+BRIGHT = 1.35  # global string/brass brightness (the VO pocket protects the voice band)
+
+
 def pad(notes, dur, att=1.2, rel=2.0, fc=1400.0, fc_pts=None, fc_floor=None, follow=0.0, q=0.8,
         det=12.0, nv=6, tilt=1.0, vib=0.0, vib_rate=5.2, drift=3.0, width=0.9, scoop=0.0, drive=0.0,
         dec=None, sus=1.0, att_curve=1.0, amps=None, amp_pts=None, glide_pts=None, stages=2,
@@ -118,7 +121,7 @@ def pad(notes, dur, att=1.2, rel=2.0, fc=1400.0, fc_pts=None, fc_floor=None, fol
     glide = env_pts(glide_pts, n).astype(np.float64) if glide_pts else None
     x = saw_stack([hz(m) for m in notes], n, rng, det, nv, tilt, vib, vib_rate, drift=drift, width=width,
                   scoop=scoop, glide=glide, amps=amps, hlimit=hlimit)
-    fcc = env_pts(fc_pts, n) if fc_pts else np.full(n, fc, F32)
+    fcc = (env_pts(fc_pts, n) if fc_pts else np.full(n, fc, F32)) * BRIGHT
     if follow:
         lo = fc_floor if fc_floor is not None else 0.25 * fcc
         fcc = lo + (fcc - lo) * np.clip(e, 0, 1) ** follow
@@ -269,9 +272,9 @@ def impact(f0=110.0, f1=32.0, tau=1.6, ptau=0.09, crack=1.0, body=1.0, drive=2.5
     n = ns(length or max(2.5, 4 * tau))
     t = tvec(n)
     f = f1 + (f0 - f1) * np.exp(-t / ptau)
-    boom = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t / tau) * smoothstep(t / 0.003)
+    boom = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t / (0.55 * tau)) * smoothstep(t / 0.003)
     nz = rng.standard_normal((2, n)).astype(F32)
-    thump = lp(nz[0], 180, 2) * np.exp(-t / 0.1) * 3.0 * body
+    thump = bp(nz[0], 60, 320, 2) * np.exp(-t / 0.12) * 4.0 * body
     cr = hp(nz, 1800, 2) * np.exp(-t / 0.028) + 0.6 * bp(nz, 300, 2500) * np.exp(-t / 0.07)
     st = (boom + 0.5 * thump)[None] + crack * 0.35 * cr / (np.abs(cr).max() + 1e-9) * 2.0
     st = st / np.abs(st).max()
@@ -762,8 +765,8 @@ def sc03(sh, T):
     s, e = T.s('S03'), T.e('S03')
     tf = T.end('L07') - 0.5  # "Transformer"
     c6, c7, d7 = T.cue('L06'), T.cue('L07'), T.dur('L07')
-    sh.add(s, 'WARM FLASH impact', 'impact', -10, 0.25, huge=0.4, f0=95, f1=36, tau=1.3, crack=0.7)
-    sh.add(s, 'warm flash stab', 'brass', -13, 0.5, notes=['D3', 'A3', 'D4', 'F#4', 'A4'], dur=0.35, att=0.01, rel=2.6)
+    sh.add(s, 'WARM FLASH impact', 'impact', -8, 0.25, huge=0.4, f0=95, f1=36, tau=1.3, crack=0.7)
+    sh.add(s, 'warm flash stab', 'brass', -11, 0.5, notes=['D3', 'A3', 'D4', 'F#4', 'A4'], dur=0.35, att=0.01, rel=2.6)
     sh.add(s, 'warm flash bell', 'bell', -21, 0.6, note='F#5', **WARM_BELL)
     sh.add(s, 'flash sub', 'sub', -16, 0.0, notes=['D1'], dur=0.5, att=0.005, rel=2.5)
     mid = c7 + 0.5 * (tf - c7)
@@ -788,11 +791,11 @@ def sc03(sh, T):
     sh.add(tf - 1.3, 'rev swell > Transformer', 'revswell', -17, 0.0, notes=['D3', 'A3', 'F#4', 'A4', 'C#5'], dur=1.3)
     sh.add(tf, 'TRANSFORMER impact', 'impact', -14, 0.2, huge=0.4, f0=85, f1=36, tau=1.2, crack=0.35)
     ld = max(0.5, e - tf - 0.6)
-    sh.add(tf, 'TRANSFORMER brass', 'brass', -13, 0.45, notes=['D2', 'A2', 'D3', 'F#3', 'A3', 'C#4', 'E4'],
+    sh.add(tf, 'TRANSFORMER brass', 'brass', -11, 0.45, notes=['D2', 'A2', 'D3', 'F#3', 'A3', 'C#4', 'E4'],
            dur=ld, att=0.06, rel=2.2, bright=2000)
-    sh.add(tf, 'TRANSFORMER strings', 'pad', -17, 0.5, notes=['D3', 'A3', 'E4', 'F#4', 'A4', 'C#5'], dur=ld,
+    sh.add(tf, 'TRANSFORMER strings', 'pad', -15, 0.5, notes=['D3', 'A3', 'E4', 'F#4', 'A4', 'C#5'], dur=ld,
            att=0.25, rel=2.5, fc=2600, vib=8)
-    sh.add(tf, 'TRANSFORMER choir', 'choir', -18, 0.6, notes=['D4', 'F#4', 'A4', 'E5'], dur=ld, att=0.4, rel=2.5,
+    sh.add(tf, 'TRANSFORMER choir', 'choir', -16, 0.6, notes=['D4', 'F#4', 'A4', 'E5'], dur=ld, att=0.4, rel=2.5,
            vowel='oo', to_vowel='ah')
     sh.add(tf, 'TRANSFORMER sub', 'sub', -15, 0.0, notes=['D1', 'D2'], dur=ld, att=0.01, rel=2.0)
     sh.add(tf, 'TRANSFORMER bell', 'bell', -21, 0.6, note='A5', **WARM_BELL)
@@ -1061,15 +1064,15 @@ def sc09(sh, T):
            amp_pts=[(0, 0.35), (sw - s - 0.4, 0.6), (c24 - s - 0.4, 0.45), (e25 - s - 0.4, 0.8), (dur, 1.0)])
     # the massive swell as the letterbox opens
     swn = ['D2', 'A2', 'D3', 'F#3', 'A3', 'D4', 'F#4']
-    sh.add(sw, 'SWELL strings', 'pad', -9, 0.5, huge=0.2, notes=swn, dur=1.6 + 1.2, att=1.6, att_curve=2.5, rel=2.5,
+    sh.add(sw, 'SWELL strings', 'pad', -6, 0.5, huge=0.2, notes=swn, dur=1.6 + 1.2, att=1.6, att_curve=2.5, rel=2.5,
            fc_pts=[(0, 400), (1.6, 3200), (5, 1400)], vib=8)
-    sh.add(sw, 'SWELL brass', 'brass', -10, 0.4, notes=swn[:5], dur=1.6 + 0.8, att=1.6, rel=2.0, bright=2800)
-    sh.add(sw, 'SWELL choir', 'choir', -12, 0.6, notes=['D4', 'F#4', 'A4', 'D5'], dur=1.6 + 1.5, att=1.6, att_curve=2.0,
+    sh.add(sw, 'SWELL brass', 'brass', -7, 0.4, notes=swn[:5], dur=1.6 + 0.8, att=1.6, rel=2.0, bright=2800)
+    sh.add(sw, 'SWELL choir', 'choir', -9, 0.6, notes=['D4', 'F#4', 'A4', 'D5'], dur=1.6 + 1.5, att=1.6, att_curve=2.0,
            rel=2.5, vowel='oh', to_vowel='ah', morph=(0.1, 0.5))
-    sh.add(sw, 'SWELL rev cym', 'revcym', -13, 0.0, dur=1.6)
+    sh.add(sw, 'SWELL rev cym', 'revcym', -11, 0.0, dur=1.6)
     rt, rvel = roll(sw, pk - 0.03, 8, 24, 0.1, 1.0)
     sh.hits('SWELL timp roll', rt, 'timp', -14, 0.3, amps=rvel, note='D2', vel=0.8, dur=1.0)
-    sh.add(pk, 'SWELL bloom', 'impact', -8, 0.2, huge=0.6, f0=90, f1=32, tau=2.0, crack=0.4)
+    sh.add(pk, 'SWELL bloom', 'impact', -6, 0.2, huge=0.6, f0=90, f1=32, tau=2.0, crack=0.4)
     sh.add(pk, 'SWELL sub', 'sub', -12, 0.0, notes=['D1'], dur=1.5, att=0.01, rel=2.0)
     sh.add(pk, 'SWELL crash', 'crash', -17, 0.3, dur=4.0)
     # full hero theme with choir under L24 (phrase A + answer B)
@@ -1181,26 +1184,26 @@ def sc11(sh, T):
     b = 0.8
     a0 = s + 0.6
     evA = motif(a0, b, MOTIF_A, last=2.2)
-    sh.melody('piano reprise A', evA, 'piano', -14, 0.55, amps=[0.9, 1.0, 0.8, 0.9, 0.85], vel=0.45)
+    sh.melody('piano reprise A', evA, 'piano', -7, 0.55, amps=[0.9, 1.0, 0.8, 0.9, 0.85], vel=0.45)
     lh = [(a0, 'D2'), (a0 + 0.02, 'A2'), (a0 + 2.5 * b, 'G2'), (a0 + 2.5 * b + 0.02, 'D3'), (a0 + 4 * b, 'F#2'),
           (a0 + 4 * b + 0.02, 'A2')]
     for i, (t, m) in enumerate(lh):
-        sh.add(t, f'piano LH {i}', 'piano', -19, 0.55, note=m, dur=2.0 * b + 0.4, vel=0.35)
+        sh.add(t, f'piano LH {i}', 'piano', -12, 0.55, note=m, dur=2.0 * b + 0.4, vel=0.35)
     t1 = max(a0 + 7 * b, T.end('L29') + 0.4)
     bB = 0.85
     evB = motif(t1, bB, MOTIF_B, last=2.8)
-    sh.melody('piano reprise B', evB, 'piano', -15, 0.55, amps=[0.8, 0.9, 0.75, 0.95, 0.8, 0.9], vel=0.42)
+    sh.melody('piano reprise B', evB, 'piano', -8, 0.55, amps=[0.8, 0.9, 0.75, 0.95, 0.8, 0.9], vel=0.42)
     lh2 = [(t1, ['D2', 'A2']), (t1 + 2.5 * bB, ['G2', 'D3']), (t1 + 3 * bB, ['E2', 'B2']), (t1 + 4 * bB, ['A2', 'E3']),
            (t1 + 5 * bB, ['D2', 'A2', 'F#3'])]
     for i, (t, ms) in enumerate(lh2):
         for j, m in enumerate(ms):
-            sh.add(t + 0.03 * j, f'piano LH2 {i}.{j}', 'piano', -20, 0.55, note=m, dur=2.2, vel=0.33)
-    sh.add(s + 0.4, 'credits strings', 'pad', -29, 0.6, notes=['D3', 'A3', 'F#4', 'A4'], dur=typed - s - 1.5, att=2.5,
+            sh.add(t + 0.03 * j, f'piano LH2 {i}.{j}', 'piano', -13, 0.55, note=m, dur=2.2, vel=0.33)
+    sh.add(s + 0.4, 'credits strings', 'pad', -25, 0.6, notes=['D3', 'A3', 'F#4', 'A4'], dur=typed - s - 1.5, att=2.5,
            rel=2.5, fc=900, tilt=1.5, vib=5, nv=4)
     # one final soft note when the prompt finishes typing (the motif's rising fifth, as a question), ring out
-    sh.add(typed, 'HOW CAN I HELP note', 'piano', -18, 0.7, note='A5', dur=min(3.5, e - typed), vel=0.4)
-    sh.add(typed, 'HOW CAN I HELP glass', 'bell', -27, 0.8, note='A6', **dict(GLASS, dur=min(4.0, e - typed), tau=1.2))
-    sh.add(typed + 0.02, 'HOW CAN I HELP low', 'piano', -24, 0.7, note='D3', dur=min(3.5, e - typed), vel=0.3)
+    sh.add(typed, 'HOW CAN I HELP note', 'piano', -10, 0.7, note='A5', dur=min(3.5, e - typed), vel=0.4)
+    sh.add(typed, 'HOW CAN I HELP glass', 'bell', -22, 0.8, note='A6', **dict(GLASS, dur=min(4.0, e - typed), tau=1.2))
+    sh.add(typed + 0.02, 'HOW CAN I HELP low', 'piano', -17, 0.7, note='D3', dur=min(3.5, e - typed), vel=0.3)
 
 
 SCENES = [sc01, sc02, sc03, sc04, sc05, sc06, sc07, sc08, sc09, sc10, sc11]
@@ -1217,6 +1220,9 @@ def build_sheet(T):
 # =============================================================================
 # 3. MIXER
 # =============================================================================
+TRIM = {'sub': -7.0, 'piano': 3.0}  # per-instrument gain trims (dB), applied to seq cues via their inner instrument
+
+
 def _render(c):
     return INSTR[c.instr](**c.kw)
 
@@ -1258,7 +1264,7 @@ def mixdown(T, sh, jobs=3, log=print):
             m = min(y.shape[1], n - i0)
             if m <= 0:
                 continue
-            y = y[:, :m] * db(c.gain)
+            y = y[:, :m] * db(c.gain + TRIM.get(c.kw.get('inner', c.instr), 0.0))
             dry[:, i0:i0 + m] += y
             for k in sends:
                 lv = getattr(c, k)
@@ -1278,6 +1284,7 @@ def mixdown(T, sh, jobs=3, log=print):
     act = vo_activity(T, n)
     mid = zbp(mix, 1000, 4000, 2)
     mix = mix - (1 - db(-5.0)) * act[None] * mid
+    mix = zhp(mix, 28, 2)
     # mono below 110 Hz
     low = zlp(mix, 110, 2)
     mix = mix - low + low.mean(axis=0, keepdims=True)

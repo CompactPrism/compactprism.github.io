@@ -75,11 +75,11 @@ void main(){
     float h2 = h21(id.yx * 1.3 + vSeed * 17.);
     float led = smoothstep(.22, .1, length((fr - vec2(.18, .5)) * vec2(1.6, 1.)));
     float bar = step(.36, fr.x) * step(fr.x, .36 + .52 * h2) * step(.4, fr.y) * step(fr.y, .6);
-    float active = step(.28, h);
+    float act = step(.28, h);
     float fl = .55 + .45 * sin(uTime * (1. + h * 7.) + h * 60.);
     float blink = step(.5, fract(uTime * (.6 + 2.5 * h2) + h));
-    float ledOn = active * mix(fl, blink, step(.75, h2));
-    float px = led * ledOn + bar * active * .5 * fl;
+    float ledOn = act * mix(fl, blink, step(.75, h2));
+    float px = led * ledOn + bar * act * .5 * fl;
     float light = mix(.16, px, detail);
     float seamX = 1. - smoothstep(0., .05 + fw2.x, min(fr.x, 1. - fr.x));
     float fy = vW.y / 6.; float fyf = fract(fy);

@@ -227,7 +227,6 @@ export const Protein: React.FC<{t: number; front: number; hot: number; op: numbe
       const hN = hint.clone().sub(T.clone().multiplyScalar(hint.dot(T)));
       if (hN.lengthSq() > 1e-6) {
         hN.normalize();
-        if (hN.dot(N) < 0 && samples[i].w > 0.1 && false) hN.negate();
         N.lerp(hN, M[i]).normalize();
       }
     }

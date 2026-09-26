@@ -226,8 +226,9 @@ export const buildLandscape = (C: THREE.Vector3, f: Frame, camDir: THREE.Vector3
     {b: 0.31, g: -0.1},
     {b: 0.33, g: 0.16},
   ];
-  FIELDS.forEach((fd, fi) => {
+  FIELDS.forEach((fd) => {
     const dir = surfDir(f, fd.b, fd.g);
+    const local: THREE.BufferGeometry[] = [];
     for (let r = 0; r < 6; r++)
       for (let c = 0; c < 14; c++) {
         const pg = new THREE.PlaneGeometry(0.034, 0.02);
@@ -235,11 +236,9 @@ export const buildLandscape = (C: THREE.Vector3, f: Frame, camDir: THREE.Vector3
         pg.translate((c - 6.5) * 0.04, 0.006, (r - 2.5) * 0.034);
         const uvf = (x: number, _y: number, z: number): [number, number] => [(x + 0.017) / 0.034, (z + 0.01) / 0.02];
         tagGeo(pg, fd.g / 0.4 + (c - 6.5) * 0.012, 2, uvf);
-        panels.push(pg);
+        local.push(pg.toNonIndexed());
       }
-    const merged = mergeGeometries(panels.splice(0, panels.length).map((x) => x.toNonIndexed()))!;
-    panels.push(place(merged, C, dir, camDir));
-    void fi;
+    panels.push(place(mergeGeometries(local)!, C, dir, camDir));
   });
   return {towers: mergeGeometries(towers)!, panels: mergeGeometries(panels)!, hubs};
 };
@@ -277,11 +276,6 @@ export const Landscape: React.FC<{C: V3; frame: Frame; camDir: V3; t: number; sw
 // ---------- warm orbit ring ----------
 const RING_N = 240;
 export const ringAttrs = () => {
-  const a = new Float32Array(RING_N * 2);
-  for (let i = 0; i < RING_N; i++) {
-    a[i * 2] = i / RING_N;
-    a[i * 2 + 1] = (i + 1) / RING_N;
-  }
   const s = new Float32Array(RING_N * 2);
   for (let i = 0; i < RING_N; i++) {
     s[i * 2] = i / RING_N;
@@ -304,7 +298,6 @@ const RING = /* glsl */ `
   float behind = uProg - aS;
   float vis = step(0., behind);
   vec3 cc = uC;
-  float front = step(0., dot(normalize(pos - cc), normalize(cameraPosition - cc)) + .15 * 0.);
   float occl = 1. - step(length(cross(pos - cameraPosition, normalize(cc - cameraPosition))), uPR) * step(length(cc - cameraPosition), length(pos - cameraPosition));
   color = mix(vec3(.93, .54, .37), vec3(1., .86, .6), exp(-behind * 6.));
   alpha = vis * (.35 + .65 * exp(-behind * 4.)) * uOp * occl;
