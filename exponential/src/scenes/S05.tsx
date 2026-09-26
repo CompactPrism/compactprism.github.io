@@ -280,7 +280,7 @@ export const S05: React.FC = () => {
                 );
               })}
             <div style={{position: 'absolute', left: emb.x - emb.size / 2, top: emb.y - emb.size / 2, opacity: emb.op}}>
-              <ClaudeSpark size={emb.size} draw={emb.draw} glow={emb.glow} rotate={emb.rot} pulse={emb.pulse} color={ignK && !flying ? C.coral : C.coral} core={ignK ? '#FFE9C7' : C.gold} />
+              <ClaudeSpark size={emb.size} draw={emb.draw} glow={emb.glow} rotate={emb.rot} pulse={emb.pulse} core={ignK ? '#FFE9C7' : C.gold} />
             </div>
           </>
         )}

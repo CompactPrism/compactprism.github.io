@@ -176,7 +176,7 @@ export const S08: React.FC = () => {
   const warm1 = prog(t, dec0, foldEnd + 0.5, E.inOut);
 
   // ---------------- V2/V3: world ----------------
-  const worldOn = t > c20 - 0.4 && t < c22 + 0.7;
+  const worldOn = t > c20 - 1.0 && t < c22 + 0.7;
   const curv = prog(t, c21 - 0.6, c21 + 0.95, E.inOut);
   const rx = ramp(t, [c21 + 0.2, c22 + 0.6], [0, 0.72], E.inOut);
   const ry = (t - c21) * 0.05 * prog(t, c21, c21 + 1, E.linear);
