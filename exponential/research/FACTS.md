@@ -293,3 +293,7 @@ Prologue ("human leaps") labels:
 - **28.4 BLEU** on WMT 2014 English→German (big model), improving on prior best results, including ensembles, by over 2 BLEU.
 - Big model trained for 300,000 steps, **3.5 days on 8 P100 GPUs** (base models: 12 hours).
 - Scaled dot-product attention: Attention(Q, K, V) = softmax(QKᵀ / √d_k) V.
+
+### 7b. Added by director (verified directly on anthropic.com)
+- **May 11, 2023, 100K context:** "we loaded the entire text of The Great Gatsby into Claude-Instant (72K tokens) and modified one line … it responded with the correct answer in 22 seconds." Also: reading 100K tokens takes a person "~5+ hours … Claude can now do this in less than a minute." (anthropic.com/news/100k-context-windows)
+- **Mar 4, 2024, Claude 3 family:** "The Claude 3 models have sophisticated vision capabilities on par with other leading models … photos, charts, graphs and technical diagrams." (anthropic.com/news/claude-3-family)

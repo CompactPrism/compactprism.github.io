@@ -1294,7 +1294,7 @@ def mixdown(T, sh, jobs=3, log=print):
     mix = zhp(mix, 28, 2)
     # air: a gentle harmonic exciter (saturate the 2-6 kHz band, keep only what lands above 5 kHz)
     band = zbp(mix, 2000, 6000, 2)
-    env = np.sqrt(uniform_filter1d(np.mean(band.astype(np.float64) ** 2, axis=0), ns(0.05))) + 1e-5
+    env = np.sqrt(np.maximum(uniform_filter1d(np.mean(band.astype(np.float64) ** 2, axis=0), ns(0.05)), 0.0)) + 1e-5
     mix = mix + 0.12 * zhp((np.tanh(2.5 * band / env) * env).astype(F32), 5000, 2)
     # mono below 110 Hz
     low = zlp(mix, 110, 2)
@@ -1325,6 +1325,8 @@ def main():
     print(f'cue sheet: {len(sh.cues)} cues -> {ANALYSIS / "cuesheet.txt"}')
     mix = mixdown(T, sh, a.jobs)
     # gain staging: peak-normalise with ~2 dB of limiting on the very biggest hits, then true-peak limit
+    if not np.isfinite(mix).all():
+        raise SystemExit('non-finite samples in the mix')
     pk = float(np.abs(mix).max())
     mix *= db(1.0) / pk
     mix, g = limiter(mix, ceiling_db=-1.0, lookahead=0.003, release=0.06)

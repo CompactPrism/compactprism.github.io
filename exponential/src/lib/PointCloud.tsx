@@ -129,9 +129,9 @@ export const PointCloud: React.FC<Props> = ({
       void main(){
         vec3 pos = vec3(0.); float size = 2.0; vec3 color = vec3(1.); float alpha = 1.0;
         ${body}
-        vec4 mv = modelViewMatrix * vec4(pos, 1.0);
-        gl_Position = projectionMatrix * mv;
-        gl_PointSize = max(0.0, size * uPx * (10.0 / max(0.001, -mv.z)));
+        vec4 _mv = modelViewMatrix * vec4(pos, 1.0);
+        gl_Position = projectionMatrix * _mv;
+        gl_PointSize = max(0.0, size * uPx * (10.0 / max(0.001, -_mv.z)));
         vColor = color; vAlpha = alpha;
       }`;
     const fragmentShader =
