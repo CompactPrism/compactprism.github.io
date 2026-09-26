@@ -1,11 +1,11 @@
 // THE HERO EMBLEM: a warm, hand-drawn-feeling starburst: the film's stand-in for Claude.
 // Every scene that shows "the hero" should use this component so the emblem is identical everywhere.
-import React from 'react';
+import React, {useId} from 'react';
 import {C} from '../theme';
 import {clamp, E} from './anim';
 
 // 12 rays with slightly irregular lengths/angles (fixed so the emblem never changes between scenes).
-const RAYS = [
+export const RAYS = [
   {a: 0, l: 1.0},
   {a: 31, l: 0.8},
   {a: 58, l: 0.95},
@@ -66,7 +66,7 @@ export const ClaudeSpark: React.FC<Props> = ({
       </g>
     );
   });
-  const id = `spk${Math.round(size)}`;
+  const id = `spk${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
   return (
     <div style={{width: size, height: size, position: 'relative', ...style}}>
       {glow > 0 && (
