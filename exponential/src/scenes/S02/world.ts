@@ -20,7 +20,7 @@ export const WORLD_FRAG = /* glsl */ `
 ${GLSL_CAM}
 uniform float uXL; uniform float uXR; uniform float uLineI; uniform float uTipI;
 uniform float uX0; uniform float uPointI; uniform vec3 uPointCol;
-uniform float uIgn[4]; uniform float uIgnT[4];
+uniform vec4 uIgn; uniform vec4 uIgnT; // vec4, not float[4]: ShaderCanvas uploads length-4 arrays with uniform4fv
 uniform float uGlint; uniform float uPush; uniform float uEnv; uniform float uWake;
 
 const float YL = ${f(YL)};
@@ -138,7 +138,7 @@ void main(){
   if (rd.y > .01) col += COL_ICE * stars(vec2(atan(rd.x, -rd.z), rd.y) * 1.6, 70., uTime) * .22 * uEnv * smoothstep(.01, .12, rd.y);
   // --- glassy floor
   if (rd.y < 0.) {
-    float sF = -ro.y / rd.y;
+    float sF = min(-ro.y / rd.y, 600.);
     vec3 hp = ro + rd * sF;
     vec2 q = hp.xz;
     float n1 = snoise(vec3(q.x * .35, q.y * 1.1, 2.3));
@@ -148,7 +148,7 @@ void main(){
     float cosI = max(dot(-rd, nrm), 0.);
     float fres = .035 + .965 * pow(1. - cosI, 5.);
     float rough = .35 + .25 * (n1 * .5 + .5);
-    vec3 refl = emit(hp, rr, rough, pix);
+    vec3 refl = sF < 250. ? emit(hp, rr, rough, pix) : vec3(0.);
     // cold light spill from the filament onto the glass
     float inX = smoothstep(uXL - .8, uXL + .8, hp.x) * smoothstep(min(uXR, XEND) + .8, min(uXR, XEND) - .8, hp.x);
     float spill = uLineI * inX * smoothstep(-300., -25., hp.x) / (1. + hp.z * hp.z * 6.);

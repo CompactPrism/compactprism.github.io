@@ -130,11 +130,11 @@ const Card: React.FC<{i: number; cam: Cam; t: number; ti: number; out: number}> 
   const top = project(cam, [nx, YL + STEM, 0]);
   if (top.z < 0.5) return null;
   const k = clamp(top.s / 170, 0.94, 1.06);
-  const a = prog(t, ti + 0.18, ti + 0.7, E.out);
+  const a = prog(t, ti + 0.1, ti + 0.55, E.out);
   const op = a * (1 - out);
   if (op < 0.005) return null;
   const m = MILESTONES[i];
-  const txt = (d: number) => ({opacity: prog(t, ti + 0.3 + d, ti + 0.75 + d, E.out), transform: `translateY(${(1 - prog(t, ti + 0.3 + d, ti + 0.8 + d, E.out)) * 8}px)`});
+  const txt = (d: number) => ({opacity: prog(t, ti + 0.2 + d, ti + 0.6 + d, E.out), transform: `translateY(${(1 - prog(t, ti + 0.2 + d, ti + 0.65 + d, E.out)) * 8}px)`});
   return (
     <div
       style={{
@@ -172,8 +172,8 @@ export const S02: React.FC = () => {
   const e4 = end('L04');
   const d4 = e4 - c4;
   // four ignitions spread evenly over the first ~45% of L04 (the words come fast)
-  const tIgn = [0, 1, 2, 3].map((i) => c4 + 0.08 + (i / 3) * 0.45 * d4);
-  const tPull0 = c4 + 0.56 * d4; // "Each took generations to reshape the world"
+  const tIgn = [0, 1, 2, 3].map((i) => c4 + 0.06 + (i / 3) * 0.42 * d4);
+  const tPull0 = c4 + 0.6 * d4; // "Each took generations to reshape the world"
   const tPull1 = e4;
   const tPush = dur - 1.0;
 
@@ -235,14 +235,14 @@ export const S02: React.FC = () => {
   const tipI = clamp(grow / 0.2) * (1 - prog(tau, 1.0, 1.8, E.inOut)) * 1.3;
   const cool = prog(t, 0.1, 1.6, E.inOut);
   const pointCol = [0, 1, 2].map((k) => lerp(vec3(C.gold)[k] * 1.05, vec3(C.ice)[k], cool));
-  const pointI = (1.0 + 0.12 * Math.sin(t * 2.4)) * (1 - 0.75 * prog(tau, 0.2, 1.8, E.inOut));
+  const pointI = lerp(0.42, 0.95, prog(t, 0.2, 2.0, E.inOut)) * (1 + 0.1 * Math.sin(t * 2.4)) * (1 - 0.75 * prog(tau, 0.2, 1.8, E.inOut));
   const env = lerp(0.15, 1, prog(t, 1.2, c3 + 2.0, E.inOut));
 
   const ign = tIgn.map((ti) => (t < ti ? 0.12 : 0.8 + 2.2 * Math.exp(-(t - ti) * 3.2) + 0.08 * Math.sin(t * 2 + ti)));
   const glint =
     prog(t, tPull0 + 1.0, tPull1 + 0.2, E.inOut) * (0.8 + 0.15 * Math.sin(t * 5.1) * Math.sin(t * 3.3)) + prog(t, tPull1, tPush, E.linear) * 0.3 + Math.pow(up, 2) * 3.5;
   const push = Math.pow(up, 1.3);
-  const cardsOut = prog(t, tPull0 - 0.1, tPull0 + 0.9, E.inOut);
+  const cardsOut = prog(t, tPull0, tPull0 + 0.8, E.inOut);
 
   // flash: last ~0.22 s ramps to full-frame gold-white
   const flash = prog(t, dur - 0.24, dur - 1 / 30, E.in);
@@ -299,7 +299,7 @@ export const S02: React.FC = () => {
           {(() => {
             const p = project(cam, [X0, YL, 0]);
             const c = pointCol.map((v) => Math.round(clamp(v) * 255));
-            return <circle cx={p.x} cy={p.y} r={3.2} fill={`rgb(${c[0]},${c[1]},${c[2]})`} opacity={clamp(1 - tau / 1.2)} />;
+            return <circle cx={p.x} cy={p.y} r={3.2} fill={`rgb(${c[0]},${c[1]},${c[2]})`} opacity={clamp(1 - tau / 1.2) * lerp(0.45, 1, prog(t, 0.2, 2.0, E.inOut))} />;
           })()}
         </svg>
       )}
