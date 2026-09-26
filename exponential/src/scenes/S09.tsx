@@ -308,7 +308,7 @@ const Ruler: React.FC<{t: number; rIn: number; comp: number; op: number}> = ({t,
   );
   const fromOp = 1 - clamp(comp * 2.2);
   const toOp = clamp(comp * 2.2 - 1.1);
-  const pulse = Math.exp(-Math.max(0, comp - 0.98) * 0) * heat;
+  const pulse = heat;
   return (
     <div style={{position: 'absolute', inset: 0, opacity: op}}>
       <div style={{position: 'absolute', left: 160, top: y - 330, width: 1600, height: 470, background: 'radial-gradient(ellipse at 50% 55%, rgba(4,5,9,0.78), rgba(4,5,9,0.35) 55%, rgba(4,5,9,0) 75%)'}} />
@@ -332,7 +332,7 @@ const Ruler: React.FC<{t: number; rIn: number; comp: number; op: number}> = ({t,
         </div>
       </div>
       <div style={{position: 'absolute', left: 0, right: 0, top: y + 36, textAlign: 'center', ...mono, fontSize: 24, color: rgba(C.ice, 0.85), opacity: clamp(rIn * 1.5 - 0.5), textShadow: '0 2px 10px rgba(0,0,0,0.9)'}}>
-        {FACTS.fromBy} · {t > 0 ? 'on biology & medicine' : ''}
+        {FACTS.fromBy}
       </div>
     </div>
   );
