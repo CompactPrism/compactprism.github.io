@@ -161,7 +161,7 @@ export const S09: React.FC = () => {
   const city = prog(t, a24 - 1.0, a24 + 4, E.inOut);
   const rush = prog(t, b25 - 0.6, dur, E.in);
   const boost = 1.4 * prog(t, dur - 1.6, dur, E.in);
-  const lineI = lerp(0.35, 1, prog(t, 0.6, 2.4, E.inOut)) * (1 + 1.5 * rush);
+  const lineI = lerp(0.14, 1, prog(t, 1.7, 3.2, E.inOut)) * (1 + 1.5 * rush); // dim under the chapter card
   const grow = prog(t, b25 + 0.2, dur, E.in);
   const fadeIn = prog(t, 0, 0.5, E.out);
 
@@ -261,7 +261,7 @@ const Overlays: React.FC<OP> = ({t, cam, W, a24, b24, a25, b25}) => {
         if (op <= 0) return null;
         const p = project(cam, g.p);
         if (!p.vis || p.x < 60 || p.x > 1860 || p.y < 60 || p.y > 900) return null;
-        const hide = artIn > 0 && p.x > 1100 && p.y < 520 ? 1 - artIn : 1;
+        const hide = (artIn > 0 && p.x > 1100 && p.y < 520 ? 1 - artIn : 1) * (qOp > 0 && p.x < 980 && p.y < 560 ? 1 - qOp : 1);
         if (op * hide <= 0.01) return null;
         return (
           <div key={g.txt} style={{position: 'absolute', left: p.x, top: p.y, opacity: op * hide}}>
