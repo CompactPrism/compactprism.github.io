@@ -36,7 +36,7 @@ ANALYSIS = ROOT / 'audio' / 'analysis'
 TARGET_LUFS = -14.0
 CEILING = -1.0
 DUCK_DB, DUCK_LOW_DB = 7.0, 3.5
-VO_LUFS, MUSIC_LUFS = -16.0, -17.5  # pre-master balance (music measured before ducking)
+VO_LUFS, MUSIC_LUFS = -16.0, -15.5  # pre-master balance (music measured before ducking)
 
 
 def load_vo(T, n, vodir):

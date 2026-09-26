@@ -10,7 +10,7 @@ import {AbsoluteFill} from 'remotion';
 import {ShaderCanvas} from '../lib/ShaderCanvas';
 import {ClaudeSpark} from '../lib/ClaudeSpark';
 import {useScene} from '../lib/timing';
-import {C, rgba} from '../theme';
+import {C, F, rgba} from '../theme';
 import {E, clamp, lerp, prog, rnd} from '../lib/anim';
 import {BG6, WIND} from './S06/shaders';
 import {EMBLEM_HUD_SIZE, FLY_S05, FLY_S06, GAUGE, HERO_ROT_END, flyAt} from './S06/layout';
@@ -42,21 +42,40 @@ type PanelDef = {
 
 const PANELS: PanelDef[] = [
   {id: 'read', title: 'READ', chip: 'MAY 2023', X: -520, Y: -170, Z: -30, w: 480, h: 262, ry: 15, rx: -5, side: 1, ping: RELEASES[1].d},
-  {id: 'see', title: 'SEE', chip: 'MAR 2024', X: 520, Y: -170, Z: -110, w: 480, h: 262, ry: -15, rx: -5, side: -1, ping: RELEASES[4].d},
-  {id: 'code', title: 'CODE', chip: 'FEB 2025', X: -535, Y: 170, Z: 40, w: 520, h: 272, ry: 13, rx: 5, side: 1, ping: RELEASES[7].d},
-  {id: 'computer', title: 'COMPUTER USE', chip: 'OCT 2024', X: 535, Y: 170, Z: -50, w: 520, h: 272, ry: -13, rx: 5, side: -1, ping: RELEASES[6].d},
+  {id: 'see', title: 'SEE', chip: 'MAR 2024', X: 520, Y: -170, Z: -150, w: 480, h: 262, ry: -15, rx: -5, side: -1, ping: RELEASES[4].d},
+  {id: 'code', title: 'CODE', chip: 'FEB 2025', X: -545, Y: 170, Z: 50, w: 540, h: 290, ry: 13, rx: 5, side: 1, ping: RELEASES[7].d},
+  {id: 'computer', title: 'COMPUTER USE', chip: 'OCT 2024', X: 545, Y: 170, Z: -70, w: 540, h: 290, ry: -13, rx: 5, side: -1, ping: RELEASES[6].d},
   {id: 'agents', title: 'AGENTS', chip: 'HOURS', X: 0, Y: 296, Z: 20, w: 500, h: 205, ry: 0, rx: 9, side: 0, ping: RELEASES[12].d},
 ];
 const BODIES = {read: ReadBody, see: SeeBody, code: CodeBody, computer: ComputerBody, agents: AgentsBody};
 const LP = 1100; // per-panel CSS perspective
 
-const BOKEH = Array.from({length: 12}, (_, i) => ({
+const BOKEH = Array.from({length: 9}, (_, i) => ({
   x: rnd(`bx${i}`) * 1920,
   y: 190 + rnd(`by${i}`) * 700,
   r: 30 + rnd(`br${i}`) * 90,
   k: 1.3 + rnd(`bk${i}`) * 1.2,
-  a: 0.05 + rnd(`ba${i}`) * 0.09,
+  a: 0.025 + rnd(`ba${i}`) * 0.045,
 }));
+
+const MON = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+const Ticker: React.FC<{cursor: number; op: number; x: number; y: number}> = ({cursor, op, x, y}) => {
+  if (op <= 0.01) return null;
+  const idx = RELEASES.reduce((m, r, i) => (cursor >= r.d ? i : m), -1);
+  if (idx < 0) return null;
+  const r = RELEASES[idx];
+  const last = idx === RELEASES.length - 1;
+  const yr = Math.floor(r.d);
+  const date = last ? `${yr}` : `${MON[Math.min(11, Math.floor((r.d - yr) * 12))]} ${yr}`;
+  const hot = Math.exp(-(cursor - r.d) * 12);
+  return (
+    <div style={{position: 'absolute', left: x - 400, width: 800, top: y, display: 'flex', justifyContent: 'center', alignItems: 'baseline', gap: 16, opacity: op, whiteSpace: 'nowrap'}}>
+      <span style={{fontFamily: F.mono, fontSize: 22, color: rgba(C.gold, 0.9)}}>{date}</span>
+      <span style={{fontFamily: F.mono, fontSize: 22, color: rgba(C.ivory, 0.35)}}>·</span>
+      <span style={{fontFamily: F.sans, fontWeight: 600, fontSize: last ? 28 : 24, letterSpacing: '0.2em', color: hot > 0.4 ? '#FFF3E0' : C.ivory, textShadow: `0 0 ${6 + 16 * hot}px ${rgba(C.ember, 0.6)}`}}>{r.name}</span>
+    </div>
+  );
+};
 
 const bez = (p0: {x: number; y: number}, p1: {x: number; y: number}, p2: {x: number; y: number}, p3: {x: number; y: number}, k: number) => {
   const m = 1 - k;
@@ -148,7 +167,7 @@ export const S06: React.FC = () => {
     const Z = p.Z - 560 * (1 - inK) - 420 * out;
     const pr = proj(X, Y, Z);
     const op = clamp(inK * 1.8) * (1 - out);
-    const blur = Math.min(1.8, Math.max(0, Math.abs(p.Z - zFocus) - 50) * 0.011) + 2.5 * (1 - inK) + 2 * out;
+    const blur = Math.min(2, Math.max(0, Math.abs(p.Z - zFocus) - 50) * 0.016) + 2.5 * (1 - inK) + 2 * out;
     const ry = p.ry + yaw;
     // anchor on the edge facing the gauge (for connectors)
     let ax = 0;
@@ -191,7 +210,7 @@ export const S06: React.FC = () => {
       />
 
       {/* deep bokeh (behind the HUD) */}
-      {BOKEH.slice(0, 5).map((b, i) => (
+      {BOKEH.slice(0, 4).map((b, i) => (
         <div key={i} style={{position: 'absolute', left: b.x - b.r - camX * 0.3, top: b.y - b.r - camY * 0.3, width: b.r * 2, height: b.r * 2, borderRadius: '50%', background: `radial-gradient(circle, ${rgba(C.coral, b.a)} 0%, rgba(0,0,0,0) 70%)`}} />
       ))}
 
@@ -249,6 +268,7 @@ export const S06: React.FC = () => {
         <AbsoluteFill style={{transform: `translate(${g0.x - GAUGE.x}px, ${g0.y - GAUGE.y}px) scale(${gS * g0.s})`, transformOrigin: `${GAUGE.x}px ${GAUGE.y}px`}}>
           <Gauge t={t} cx={GAUGE.x} cy={GAUGE.y} r={GAUGE.r} boot={boot} cursor={cursor} swe={swe} unlocked={unlocked} ping={pings} op={1} />
         </AbsoluteFill>
+        <Ticker cursor={cursor} op={prog(t, B.sweep0, B.sweep0 + 0.3) * (1 - prog(t, B.stings[0] - 0.4, B.stings[0] + 0.1))} x={g0.x} y={g0.y + 214} />
         <Readout cursor={cursor} op={prog(t, B.sweep0 - 0.3, B.sweep0 + 0.3) * (1 - re)} x={g0.x} y={194 - camY * 0.2} />
 
         {/* the hero */}
@@ -304,12 +324,12 @@ export const S06: React.FC = () => {
                 position: 'absolute',
                 inset: 0,
                 borderRadius: 14,
-                background: `linear-gradient(160deg, ${rgba(C.ivory, 0.06)} 0%, ${rgba(C.ink, 0.74)} 35%, ${rgba(C.ink, 0.7)} 75%, ${rgba(C.clay, 0.12)} 100%)`,
+                background: `linear-gradient(160deg, ${rgba(C.ivory, 0.07)} 0%, ${rgba('#07080D', 0.9)} 22%, ${rgba('#07080D', 0.9)} 80%, ${rgba(C.clay, 0.14)} 100%)`,
                 border: `1px solid ${rgba(C.gold, 0.28)}`,
                 boxShadow: `0 30px 80px rgba(0,0,0,0.6), 0 0 60px ${rgba(C.coral, 0.12)}`,
               }}
             />
-            <div style={{position: 'absolute', inset: 0, borderRadius: 14, background: `linear-gradient(to right, ${rgba(C.ember, 0.14)}, rgba(0,0,0,0) 30%)`}} />
+            <div style={{position: 'absolute', inset: 0, borderRadius: 14, background: `linear-gradient(to right, ${rgba(C.ember, 0.1)}, rgba(0,0,0,0) 22%)`}} />
             <Chart t={t} w={CW} h={CH} tLine={[B.line0, B.line1]} tBig={B.big} tLately={B.lately} op={chartIn} />
           </div>
         )}
@@ -320,7 +340,7 @@ export const S06: React.FC = () => {
       </AbsoluteFill>
 
       {/* foreground bokeh: closest layer, strongest parallax */}
-      {BOKEH.slice(5).map((b, i) => (
+      {BOKEH.slice(4).map((b, i) => (
         <div
           key={i}
           style={{

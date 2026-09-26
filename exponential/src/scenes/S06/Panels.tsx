@@ -233,7 +233,7 @@ export const CodeBody: React.FC<{u: number; t: number}> = ({u}) => {
           let left = Math.floor((u * 1.6 - li * 0.2) * 34);
           return (
             <div key={li} style={{display: 'flex', ...mono(22), height: 27}}>
-              <span style={{color: rgba(C.ivory, 0.28), width: 50, flex: 'none'}}>{CODE_LN[li]}</span>
+              <span style={{color: rgba(C.ivory, 0.28), width: 46, flex: 'none'}}>{CODE_LN[li]}</span>
               {line.map((tk, i) => {
                 const n = Math.max(0, Math.min(tk.tk.length, left));
                 left -= tk.tk.length;
@@ -248,7 +248,7 @@ export const CodeBody: React.FC<{u: number; t: number}> = ({u}) => {
           );
         })}
       </div>
-      <div style={{height: 1, background: rgba(C.ivory, 0.12), margin: '8px 0 6px'}} />
+      <div style={{height: 1, background: rgba(C.ivory, 0.12), margin: '6px 0 4px'}} />
       <div style={{...mono(22, rgba(C.ivory, 0.8)), opacity: prog(u, 0.9, 1.1)}}>
         <span style={{color: C.gold}}>$</span> node scripts/render-film.mjs
       </div>

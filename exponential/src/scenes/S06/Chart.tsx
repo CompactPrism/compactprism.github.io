@@ -55,7 +55,7 @@ export const Chart: React.FC<Props> = ({t, w, h, tLine, tBig, tLately}) => {
           DOUBLING EVERY <span style={{color: C.gold}}>~7 MONTHS</span>
         </div>
         <div style={{display: 'flex', gap: 22, marginTop: 6, alignItems: 'center'}}>
-          <div style={{fontFamily: F.mono, fontSize: 22, color: rgba(C.ivory, 0.55), whiteSpace: 'nowrap'}}>TASK LENGTH AI COMPLETES · 50% SUCCESS</div>
+          <div style={{fontFamily: F.mono, fontSize: 22, color: rgba(C.ivory, 0.75), whiteSpace: 'nowrap'}}>TASK LENGTH AI COMPLETES · 50% SUCCESS</div>
           <div style={{fontFamily: F.sans, fontWeight: 700, fontSize: 22, letterSpacing: '0.22em', color: C.gold, opacity: late, whiteSpace: 'nowrap'}}>↗ AND ACCELERATING</div>
         </div>
       </div>
@@ -63,8 +63,8 @@ export const Chart: React.FC<Props> = ({t, w, h, tLine, tBig, tLately}) => {
         <g opacity={axis}>
           {yT.map((y) => (
             <g key={y.l}>
-              <line x1={L} x2={R} y1={sy(y.s)} y2={sy(y.s)} stroke={rgba(C.ivory, 0.1)} strokeWidth={1} />
-              <text x={L - 16} y={sy(y.s) + 8} textAnchor="end" fontFamily={F.mono} fontSize={22} fill={rgba(C.ivory, 0.62)}>
+              <line x1={L} x2={R} y1={sy(y.s)} y2={sy(y.s)} stroke={rgba(C.ivory, 0.14)} strokeWidth={1} />
+              <text x={L - 16} y={sy(y.s) + 8} textAnchor="end" fontFamily={F.mono} fontSize={22} fill={rgba(C.ivory, 0.88)}>
                 {y.l}
               </text>
             </g>
@@ -73,7 +73,7 @@ export const Chart: React.FC<Props> = ({t, w, h, tLine, tBig, tLately}) => {
           {years.map((y) => (
             <g key={y}>
               <line x1={sx(y)} x2={sx(y)} y1={BOT} y2={BOT + 8} stroke={rgba(C.ivory, 0.35)} />
-              <text x={sx(y)} y={BOT + 36} textAnchor="middle" fontFamily={F.mono} fontSize={22} fill={rgba(C.ivory, 0.55)}>
+              <text x={sx(y)} y={BOT + 36} textAnchor="middle" fontFamily={F.mono} fontSize={22} fill={rgba(C.ivory, 0.82)}>
                 {y}
               </text>
             </g>
@@ -109,7 +109,7 @@ export const Chart: React.FC<Props> = ({t, w, h, tLine, tBig, tLately}) => {
               <text x={x1 + 12} y={(y0 + y1) / 2 + 8} fontFamily={F.mono} fontSize={22} fill={C.ivory}>
                 ×2
               </text>
-              <text x={(x0 + x1) / 2} y={y0 + 30} textAnchor="middle" fontFamily={F.mono} fontSize={22} fill={rgba(C.ivory, 0.6)}>
+              <text x={(x0 + x1) / 2} y={y0 + 30} textAnchor="middle" fontFamily={F.mono} fontSize={22} fill={rgba(C.ivory, 0.8)}>
                 7 mo
               </text>
             </g>
@@ -122,17 +122,17 @@ export const Chart: React.FC<Props> = ({t, w, h, tLine, tBig, tLately}) => {
           if (k <= 0) return null;
           const x = sx(p.d);
           const y = sy(p.s);
-          const lx = i === 0 ? x - 18 : x - 18;
-          const anchor = 'end';
+          const lx = i === 0 ? x + 22 : x - 18;
+          const anchor = i === 0 ? 'start' : 'end';
           return (
             <g key={p.name} opacity={k}>
               <circle cx={x} cy={y} r={10 + 10 * (1 - k)} fill="none" stroke={rgba(C.gold, 0.7)} />
               <circle cx={x} cy={y} r={5.5} fill={p.noisy ? C.void : '#FFF3E0'} stroke={C.gold} strokeWidth={2} />
-              <text x={lx} y={y + (i === 0 ? 34 : i === 1 ? -8 : -30)} textAnchor={anchor} fontFamily={F.mono} fontSize={22} fill={C.ivory}>
+              <text x={lx} y={y + (i === 0 ? 46 : i === 1 ? -8 : -30)} textAnchor={anchor} fontFamily={F.mono} fontSize={22} fill={C.ivory}>
                 {p.name} <tspan fill={C.gold}>{p.val}</tspan>
               </text>
               {p.noisy && (
-                <text x={lx} y={y - 4} textAnchor={anchor} fontFamily={F.mono} fontSize={22} fill={rgba(C.ivory, 0.5)}>
+                <text x={lx} y={y - 4} textAnchor={anchor} fontFamily={F.mono} fontSize={22} fill={rgba(C.ivory, 0.7)}>
                   noisy estimate
                 </text>
               )}
@@ -140,7 +140,7 @@ export const Chart: React.FC<Props> = ({t, w, h, tLine, tBig, tLately}) => {
           );
         })}
       </svg>
-      <div style={{position: 'absolute', right: 40, bottom: 14, fontFamily: F.mono, fontSize: 22, color: rgba(C.ivory, 0.5), opacity: axis}}>SOURCE: METR, 2025–26</div>
+      <div style={{position: 'absolute', right: 40, top: 34, fontFamily: F.mono, fontSize: 22, color: rgba(C.ivory, 0.7), opacity: axis}}>SOURCE: METR, 2025–26</div>
     </div>
   );
 };

@@ -40,6 +40,7 @@ from pathlib import Path
 import numpy as np
 import soundfile as sf
 from scipy import signal
+from scipy.ndimage import uniform_filter1d
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from dsp import (F32, SR, biquad, bp, convolve_st, db, env_ar, env_pts, hp, hz, zhp,  # noqa: E402
@@ -723,6 +724,8 @@ def sc01(sh, T):
     sh.add(slam - 3.2, 'noise riser > title', 'riser', -21, 0.2, dur=3.2, f0=120, f1=5000, shape=3.0)
     sh.add(slam, 'TITLE SLAM impact', 'impact', -6, 0.2, huge=0.5, f0=110, f1=32, tau=1.5, crack=1.0)
     sh.add(slam, 'TITLE SLAM braam', 'braam', -11, 0.3, huge=0.35, notes=['D1', 'A1', 'D2', 'A2', 'F3'], dur=0.7, rel=2.6)
+    sh.add(slam, 'TITLE SLAM low brass', 'brass', -10, 0.4, huge=0.3, notes=['D2', 'A2', 'D3', 'F3', 'A3'], dur=0.5,
+           att=0.01, rel=2.0, bright=2200, drive=2.0)
     sh.add(slam, 'title sub', 'sub', -14, 0.0, notes=['D1'], dur=1.2, att=0.005, rel=1.8)
     sh.add(slam, 'title ring D5', 'bell', -19, 0.6, huge=0.3, note='D5', **dict(COLD_BELL, dur=e - slam))
     sh.add(slam + 0.02, 'title ring A5', 'bell', -22, 0.6, huge=0.3, note='A5', **dict(COLD_BELL, dur=e - slam))
@@ -1127,6 +1130,10 @@ def sc10(sh, T):
     sh.add(s, 'WHITE FLASH impact', 'impact', 0, 0.2, huge=0.8, f0=160, f1=28, tau=3.0, crack=1.3, drive=3.2)
     sh.add(s, 'WHITE FLASH braam', 'braam', -4, 0.3, huge=0.5, notes=['D1', 'A1', 'D2', 'F#2', 'A2', 'D3', 'A3'], dur=0.9,
            rel=3.0, bright=3200)
+    sh.add(s, 'WHITE FLASH tutti brass', 'brass', -5, 0.4, huge=0.4, notes=['D2', 'A2', 'D3', 'F#3', 'A3', 'D4'], dur=0.7,
+           att=0.01, rel=2.2, bright=3200, drive=2.0)
+    sh.add(s, 'WHITE FLASH tutti strings', 'pad', -7, 0.5, huge=0.4, notes=['D3', 'A3', 'D4', 'F#4', 'A4', 'D5'], dur=0.7,
+           att=0.02, rel=2.5, fc=3500, vib=8)
     sh.add(s, 'WHITE FLASH crash', 'crash', -12, 0.3, huge=0.4, dur=5.0)
     sh.add(s, 'WHITE FLASH choir', 'choir', -11, 0.6, huge=0.4, notes=['D4', 'F#4', 'A4', 'D5'], dur=0.25, att=0.02,
            rel=2.8, vowel='ah')
@@ -1287,8 +1294,8 @@ def mixdown(T, sh, jobs=3, log=print):
     mix = zhp(mix, 28, 2)
     # air: a gentle harmonic exciter (saturate the 2-6 kHz band, keep only what lands above 5 kHz)
     band = zbp(mix, 2000, 6000, 2)
-    k = 3.0 / (np.abs(band).max() + 1e-9)
-    mix = mix + 0.35 * zhp(np.tanh(k * band) / k, 5000, 2)
+    env = np.sqrt(uniform_filter1d(np.mean(band.astype(np.float64) ** 2, axis=0), ns(0.05))) + 1e-5
+    mix = mix + 0.12 * zhp((np.tanh(2.5 * band / env) * env).astype(F32), 5000, 2)
     # mono below 110 Hz
     low = zlp(mix, 110, 2)
     mix = mix - low + low.mean(axis=0, keepdims=True)

@@ -250,7 +250,7 @@ export const S04: React.FC = () => {
           <AbsoluteFill key={wd.w} style={{alignItems: 'center', justifyContent: 'center', opacity: op}}>
             <div style={{position: 'absolute', top: 540 + 88, left: 960 - ruleW / 2, width: ruleW, height: 1.5, background: `linear-gradient(90deg, transparent, ${rgba(C.gold, 0.8 * (1 - pin * 0.5))}, transparent)`}} />
             <div style={{transform: `scale(${scale})`, display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: -10}}>
-              <div style={{fontFamily: F.mono, fontSize: 24, color: rgba(warm > 0.4 ? C.gold : C.electric, 0.9), letterSpacing: '0.3em', marginBottom: 6, paddingLeft: '0.3em'}}>{wd.tag}</div>
+              <div style={{fontFamily: F.mono, fontSize: 24, fontWeight: 500, color: warm > 0.4 ? C.gold : C.electric, letterSpacing: '0.3em', marginBottom: 6, paddingLeft: '0.3em', textShadow: '0 0 8px rgba(3,4,8,0.95), 0 0 18px rgba(3,4,8,0.9)'}}>{wd.tag}</div>
               <div
                 style={{
                   fontFamily: F.sans,

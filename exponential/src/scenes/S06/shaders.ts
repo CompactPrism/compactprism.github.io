@@ -61,16 +61,19 @@ void main(){
   vec2 uv = gl_FragCoord.xy / uRes;
   float T = uTime;
   vec2 c = uv - .5;
-  float side = sign(c.x);
-  // haze streams inward from both sides, fast, streaky (wind), plus top/bottom creep
-  vec2 w = vec2(uv.x * 2.2 + side * T * 1.6, uv.y * 9.);
-  float streak = fbm2(w + vec2(0., T * .2));
-  float streak2 = fbm2(vec2(uv.x * 5. + side * T * 3.1, uv.y * 22.) + 5.);
-  float edge = max(abs(c.x) * 2., abs(c.y) * 2.4);           // 0 centre .. 1 edges
-  float front = 1. - uWind * 1.35;                              // front moves inward
+  // haze streams inward from both sides (blended across the centre, no seam), plus top/bottom creep
+  float sL = fbm2(vec2(uv.x * 2.2 + T * 1.6, uv.y * 9.));
+  float sR = fbm2(vec2(uv.x * 2.2 - T * 1.6, uv.y * 9.) + 3.7);
+  float wR = smoothstep(-.12, .12, c.x);
+  float streak = mix(sL, sR, wR);
+  float h2L = fbm2(vec2(uv.x * 5. + T * 3.1, uv.y * 22.) + 5.);
+  float h2R = fbm2(vec2(uv.x * 5. - T * 3.1, uv.y * 22.) + 9.);
+  float streak2 = mix(h2L, h2R, wR);
+  float edge = max(abs(c.x) * 2., abs(c.y) * 2.4);
+  float front = 1. - uWind * 1.35;
   float mask = smoothstep(front - .05, front + .35, edge + (streak - .5) * .35);
-  vec3 col = mix(COL_STEEL * .7, COL_ICE * .8, smoothstep(.42, .78, streak2)) * (.35 + .65 * streak);
-  float a = mask * (.7 + .3 * streak) * clamp(uWind * 1.8, 0., 1.);
-  col += COL_ICE * pow(smoothstep(.58, .8, streak2), 2.) * .6 * mask;
+  vec3 col = mix(COL_STEEL * .28, COL_COLD * .35, smoothstep(.45, .8, streak2)) * (.4 + .6 * streak);
+  col += COL_ICE * pow(smoothstep(.62, .82, streak2), 2.) * .45 * mask;
+  float a = mask * (.75 + .25 * streak) * clamp(uWind * 1.8, 0., 1.);
   fragColor = vec4(col * a, a);
 }`;
