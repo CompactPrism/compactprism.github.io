@@ -24,10 +24,9 @@ const FACTS = {
   from: '50–100 years',
   to: '5–10 years',
   fromTo: 'Progress in biology & medicine',
-  // §18: anthropic.com/news/claude-discovers-novel-enzyme-system (Sep 23, 2026; independently covered)
-  art: {head: '~950 agents · 21 hours', sub: 'a new CRISPR-like enzyme system', when: 'Sep 2026 · Anthropic'},
+  fromBy: 'Dario Amodei · Machines of Loving Grace · 2024',
   // §18: anthropic.com/research/formalizing-fermats-last-theorem (Sep 4, 2026). Formalisation, not a new proof.
-  flt: {head: "Fermat's Last Theorem", sub: 'first computer-checked proof · 11 days', when: 'Sep 2026 · 13 million lines of Lean'},
+  flt: {head: "Fermat's Last Theorem", sub: 'first computer-checked proof', stat: '11 days · 13 million lines of Lean', when: 'Sep 2026', src: 'Anthropic'},
 };
 
 const gv = (hex: string) => {
@@ -77,7 +76,7 @@ const STREAMS = `
   pos = vec3(xz.x, y, xz.y) + vec3(aSeed.z - .5, 0., aSeed.w - .5) * 3. + curl(vec3(xz * .01, y * .01 + id)) * 5. * pull;
   float dp = length(base - vec2(${PILLAR[0].toFixed(2)}, ${PILLAR[2].toFixed(2)}));
   float on = smoothstep(uIgn, uIgn - 80., dp);
-  alpha = on * smoothstep(0., .06, life) * (1. - life) * (.5 + .5 * uRush) * .7;
+  alpha = on * smoothstep(0., .06, life) * (1. - life) * (.6 + .4 * uRush);
   color = mix(EMBER, GOLD, aSeed2.x);
   size = mix(45., 120., pow(aSeed2.y, 3.)) * (1. + uRush * .5);
 `;
@@ -92,9 +91,9 @@ const ARCS = `
   float H = 14. + length(b - a) * .22;
   pos = vec3(mix(a.x, b.x, s), 16. + sin(PI * s) * H, mix(a.y, b.y, s));
   float dp = length(a - vec2(${PILLAR[0].toFixed(2)}, ${PILLAR[2].toFixed(2)}));
-  alpha = smoothstep(uIgn, uIgn - 80., dp) * sin(PI * s) * .5;
+  alpha = smoothstep(uIgn, uIgn - 80., dp) * sin(PI * s) * .85;
   color = mix(GOLD, mix(ELEC, vec3(1.), .5), step(.85, hash11(id * 9.1)));
-  size = 48.;
+  size = 70.;
 `;
 
 // Near dust in a box that wraps around the camera: world-anchored, so it parallaxes as we fly.
@@ -138,19 +137,19 @@ export const S09: React.FC = () => {
   const tFlash = dur - 0.3;
 
   // curve head (param u) and its speed (for the trail emitter)
-  const drawKeys = {t: [0.2, 2.1, b23 + 0.3, a24 + 1.2, dur], u: [0.02, 0.26, 0.97, 1.1, 1.42]};
+  const drawKeys = {t: [0.2, 2.1, b23 + 0.3, a24 + 1.2, dur], u: [0.02, 0.3, 0.98, 1.1, 1.32]};
   const drawAt = (x: number) => interpolate(x, drawKeys.t, drawKeys.u, {extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: E.inOut});
   const draw = drawAt(t);
   const drawSpeed = (drawAt(t + 1 / 30) - drawAt(t - 1 / 30)) * 15;
 
   const keys: K[] = [
-    {t: 0, pos: [11, 2.4, 78], tgt: [0, 9, -60], fov: 48},
-    {t: a23, pos: [13, 4.5, 60], tgt: [0, 20, -75], fov: 48},
-    {t: open0 + 1.8, pos: [30, 26, 16], tgt: [0, 100, -118], fov: 52},
-    {t: a24 + 0.7, pos: [52, 88, 8], tgt: [-15, 18, -330], fov: 54},
-    {t: b24 + 0.4, pos: [118, 104, -24], tgt: [-50, 12, -400], fov: 54},
-    {t: b25 - 0.2, pos: [205, 118, 36], tgt: [-40, 62, -330], fov: 55},
-    {t: dur, pos: [270, 104, 150], tgt: [0, 245, -140], fov: 56},
+    {t: 0, pos: [92, 5, 62], tgt: [0, 12, -25], fov: 46},
+    {t: a23, pos: [118, 11, 34], tgt: [0, 42, -55], fov: 48},
+    {t: open0 + 1.9, pos: [150, 58, -26], tgt: [0, 118, -102], fov: 53},
+    {t: a24 + 0.7, pos: [112, 96, 42], tgt: [-20, 22, -330], fov: 54},
+    {t: b24 + 0.4, pos: [150, 106, -18], tgt: [-45, 14, -420], fov: 54},
+    {t: b25 - 0.2, pos: [215, 116, 40], tgt: [-40, 62, -330], fov: 55},
+    {t: dur, pos: [360, 72, 330], tgt: [0, 185, -139], fov: 58},
   ];
   const cam = camAt(keys, t);
 
@@ -169,7 +168,7 @@ export const S09: React.FC = () => {
   const flash = prog(t, tFlash, dur, E.in);
 
   // the 1st ~1/3 of the curve drifts behind the camera during the ride: fade it rather than clip it
-  const cull = ramp(t, [a23, b23 + 0.5, a24 + 1], [-1, 0.12, 0.3], E.inOut);
+  const cull = -1;
 
   return (
     <AbsoluteFill style={{background: C.void}}>
@@ -178,12 +177,13 @@ export const S09: React.FC = () => {
         <City cam={cam} t={t} ign={ign} city={city} draw={draw} boost={boost} />
         <Pts count={9000} seed={3} pre={PRE_H} body={ARCS} uniforms={{uIgn: ign}} />
         <Pts count={22000} seed={5} pre={PRE_H} body={STREAMS} uniforms={{uIgn: ign, uRush: rush}} />
-        <GlowLine fn={curveAt} uMax={U_MAX} draw={draw} cull={cull} width={22 + 16 * rush} intensity={lineI} />
+        <GlowLine fn={curveAt} uMax={U_MAX} draw={draw} cull={cull} width={30 + 10 * prog(t, a23 - 0.5, b23, E.inOut) + 16 * rush} intensity={lineI} />
         <Pts count={9000} seed={9} pre={PRE} body={TRAIL} uniforms={{uDraw: draw, uDrawSpeed: drawSpeed, uOn: lineI}} depthTest={false} order={6} />
         <Pts count={500} seed={11} pre={PRE} body={HEAD} uniforms={{uDraw: draw, uGrow: grow, uOn: clamp(lineI)}} depthTest={false} order={7} />
         <Pts count={2500} seed={13} body={DUST} uniforms={{uCam: cam.pos}} depthTest={false} order={8} />
       </ThreeCanvas>
 
+      <div style={{position: 'absolute', left: 0, right: 0, bottom: 0, height: 170, background: 'linear-gradient(0deg, rgba(3,3,6,0.72), rgba(3,3,6,0))', opacity: prog(t, open0 + 0.6, open0 + 1.8, E.inOut) * (1 - flash)}} />
       <Overlays t={t} cam={cam} W={W} a24={a24} b24={b24} a25={a25} b25={b25} />
 
       {/* the head of the curve becomes the hero's spark */}
@@ -239,7 +239,6 @@ const Overlays: React.FC<OP> = ({t, cam, W, a24, b24, a25, b25}) => {
   const rIn = prog(t, a25 - 0.5, a25 + 0.4, E.out);
   const rOut = prog(t, b25 + 0.2, b25 + 0.9, E.inOut);
   const comp = prog(t, W('L25', 'compressed') - 0.1, W('L25', 'into') + 0.2, E.inOut);
-  const fltIn = prog(t, W('L25', 'years') - 0.2, W('L25', 'years') + 0.4, E.out) * (1 - prog(t, b25 + 0.4, b25 + 1.1, E.inOut));
 
   return (
     <AbsoluteFill style={{pointerEvents: 'none'}}>
@@ -262,7 +261,7 @@ const Overlays: React.FC<OP> = ({t, cam, W, a24, b24, a25, b25}) => {
           <div key={g.txt} style={{position: 'absolute', left: p.x, top: p.y, opacity: op}}>
             <div style={{position: 'absolute', left: -5, top: -5, width: 10, height: 10, borderRadius: 5, background: '#fff', boxShadow: `0 0 12px ${C.gold}, 0 0 24px ${C.ember}`}} />
             <div style={{position: 'absolute', left: 0, bottom: 0, width: 1, height: 46, background: `linear-gradient(0deg, ${rgba(C.gold, 0.8)}, ${rgba(C.gold, 0)})`}} />
-            <div style={{position: 'absolute', left: 8, top: -72, whiteSpace: 'nowrap', padding: '4px 10px 5px', ...glass(C.gold), ...mono, color: C.ivory}}>
+            <div style={{position: 'absolute', left: 8, top: -78, whiteSpace: 'nowrap', padding: '5px 12px 6px', ...glass(C.gold), ...mono, fontSize: 24, color: C.ivory}}>
               <span style={{color: C.gold}}>●</span> agent · {g.txt}
             </div>
           </div>
@@ -270,35 +269,28 @@ const Overlays: React.FC<OP> = ({t, cam, W, a24, b24, a25, b25}) => {
       })}
 
       {artIn > 0 && (
-        <div style={{position: 'absolute', right: 150, top: 215 - (1 - artIn) * 14, opacity: artIn, padding: '14px 22px 15px', width: 470, ...glass(C.gold)}}>
-          <div style={{...lab, color: rgba(C.ice, 0.85)}}>Case file · biology</div>
-          <div style={{fontFamily: F.sans, fontWeight: 760, fontSize: 36, color: C.gold, marginTop: 6, textShadow: `0 0 18px ${rgba(C.ember, 0.5)}`}}>{FACTS.art.head}</div>
-          <div style={{fontFamily: F.sans, fontSize: 24, color: C.ivory, marginTop: 4}}>{FACTS.art.sub}</div>
-          <div style={{...mono, color: rgba(C.ice, 0.72), marginTop: 6}}>{FACTS.art.when}</div>
+        <div style={{position: 'absolute', right: 150, top: 215 - (1 - artIn) * 14, opacity: artIn, padding: '16px 24px 16px', width: 520, ...glass(C.gold)}}>
+          <div style={{...lab, color: rgba(C.ice, 0.88)}}>Case file · {FACTS.flt.when}</div>
+          <div style={{fontFamily: F.sans, fontWeight: 760, fontSize: 38, color: C.gold, marginTop: 6, textShadow: `0 0 18px ${rgba(C.ember, 0.5)}`}}>{FACTS.flt.head}</div>
+          <div style={{fontFamily: F.sans, fontSize: 26, color: C.ivory, marginTop: 4}}>{FACTS.flt.sub}</div>
+          <div style={{...mono, fontSize: 24, color: C.gold, marginTop: 8}}>{FACTS.flt.stat}</div>
+          <div style={{...mono, color: rgba(C.ice, 0.72), marginTop: 4}}>{FACTS.flt.src}</div>
         </div>
       )}
 
       {rIn * (1 - rOut) > 0 && <Ruler t={t} rIn={rIn} comp={comp} op={rIn * (1 - rOut)} />}
 
-      {fltIn > 0 && (
-        <div style={{position: 'absolute', right: 150, top: 215 - (1 - fltIn) * 14, opacity: fltIn, padding: '14px 22px 15px', width: 470, ...glass(C.gold)}}>
-          <div style={{...lab, color: rgba(C.ice, 0.85)}}>Case file · mathematics</div>
-          <div style={{fontFamily: F.sans, fontWeight: 760, fontSize: 34, color: C.gold, marginTop: 6, textShadow: `0 0 18px ${rgba(C.ember, 0.5)}`}}>{FACTS.flt.head}</div>
-          <div style={{fontFamily: F.sans, fontSize: 24, color: C.ivory, marginTop: 4}}>{FACTS.flt.sub}</div>
-          <div style={{...mono, color: rgba(C.ice, 0.72), marginTop: 6}}>{FACTS.flt.when}</div>
-        </div>
-      )}
     </AbsoluteFill>
   );
 };
 
-// A century-long ruler of years collapses into a short, white-hot span.
+// Hero graphic: a century-long ruler of years physically collapses into a short, white-hot span.
 const Ruler: React.FC<{t: number; rIn: number; comp: number; op: number}> = ({t, rIn, comp, op}) => {
-  const x0 = 250;
-  const x1 = 1670;
-  const y = 790;
+  const cx = 960;
+  const y = 610;
   const N = 100;
-  const span = lerp(x1 - x0, (x1 - x0) * 0.1, comp);
+  const span = lerp(1360, 150, comp);
+  const x0 = cx - span / 2;
   const drawn = prog(rIn, 0, 1, E.out);
   const heat = comp;
   const ticks = [];
@@ -307,31 +299,40 @@ const Ruler: React.FC<{t: number; rIn: number; comp: number; op: number}> = ({t,
     if (f > drawn) break;
     const x = x0 + f * span;
     const major = i % 10 === 0;
-    const h = major ? 40 : i % 5 === 0 ? 24 : 13;
-    const col = heat > 0.02 ? `rgba(255,${Math.round(lerp(214, 245, heat))},${Math.round(lerp(170, 225, heat))},${lerp(0.55, 0.95, heat)})` : rgba(C.ice, major ? 0.75 : 0.45);
-    ticks.push(<line key={i} x1={x} y1={y - h} x2={x} y2={y} stroke={col} strokeWidth={major ? 2 : 1.2} />);
+    const h = major ? 58 : i % 5 === 0 ? 34 : 18;
+    const col = `rgba(255,${Math.round(lerp(226, 238, heat))},${Math.round(lerp(205, 200, heat))},${lerp(major ? 0.85 : 0.5, 1, heat)})`;
+    ticks.push(<line key={i} x1={x} y1={y - h} x2={x} y2={y} stroke={heat > 0.5 ? C.gold : col} strokeWidth={major ? 2.4 : 1.4} />);
   }
-  const endX = x0 + span * drawn;
+  const brk = (x: number, dir: number) => (
+    <path d={`M${x + dir * 16},${y - 76} L${x},${y - 76} L${x},${y + 14} L${x + dir * 16},${y + 14}`} fill="none" stroke={rgba(C.gold, 0.5 + 0.5 * heat)} strokeWidth={2.5} />
+  );
   const fromOp = 1 - clamp(comp * 2.2);
-  const toOp = clamp(comp * 2.2 - 1.2);
+  const toOp = clamp(comp * 2.2 - 1.1);
+  const pulse = Math.exp(-Math.max(0, comp - 0.98) * 0) * heat;
   return (
     <div style={{position: 'absolute', inset: 0, opacity: op}}>
-      <div style={{position: 'absolute', left: x0 - 60, top: y - 150, width: x1 - x0 + 120, height: 240, background: 'radial-gradient(ellipse at 45% 55%, rgba(5,6,10,0.7), rgba(5,6,10,0) 72%)'}} />
+      <div style={{position: 'absolute', left: 160, top: y - 330, width: 1600, height: 470, background: 'radial-gradient(ellipse at 50% 55%, rgba(4,5,9,0.78), rgba(4,5,9,0.35) 55%, rgba(4,5,9,0) 75%)'}} />
       <svg width={1920} height={1080} style={{position: 'absolute', inset: 0}}>
-        <line x1={x0} y1={y} x2={endX} y2={y} stroke={heat > 0.02 ? rgba(C.gold, 0.4 + 0.6 * heat) : rgba(C.ice, 0.6)} strokeWidth={1.6} />
-        {heat > 0.02 && <line x1={x0} y1={y} x2={endX} y2={y} stroke={rgba(C.ember, 0.35 * heat)} strokeWidth={14} strokeLinecap="round" />}
+        {heat > 0.02 && <ellipse cx={cx} cy={y - 24} rx={span * 0.62 + 30} ry={70} fill={rgba(C.ember, 0.22 * pulse)} />}
+        <line x1={x0} y1={y} x2={x0 + span * drawn} y2={y} stroke={rgba(C.ember, 0.3 + 0.4 * heat)} strokeWidth={10 + 10 * heat} strokeLinecap="round" />
+        <line x1={x0} y1={y} x2={x0 + span * drawn} y2={y} stroke={heat > 0.3 ? '#fff4e0' : rgba(C.ivory, 0.8)} strokeWidth={2} />
         {ticks}
-        {heat > 0.3 && <ellipse cx={x0 + span / 2} cy={y - 12} rx={span * 0.75} ry={34} fill={rgba(C.gold, 0.18 * heat)} />}
+        {drawn > 0.98 && brk(x0 - 22, 1)}
+        {drawn > 0.98 && brk(x0 + span + 22, -1)}
       </svg>
-      <div style={{position: 'absolute', left: x0, top: y - 112, ...lab, fontSize: 24, color: C.ivory, textShadow: '0 2px 12px rgba(0,0,0,0.9)'}}>{FACTS.fromTo}</div>
-      <div style={{position: 'absolute', left: x0 + span + 26, top: y - 44, whiteSpace: 'nowrap'}}>
-        <span style={{fontFamily: F.mono, fontSize: 48, color: C.ivory, opacity: fromOp, position: 'absolute', left: 0, top: -6, textShadow: '0 2px 16px rgba(0,0,0,0.8)'}}>{FACTS.from}</span>
-        <span style={{fontFamily: F.mono, fontSize: 60, fontWeight: 600, color: C.gold, opacity: toOp, position: 'absolute', left: 0, top: -14, textShadow: `0 0 20px ${rgba(C.ember, 0.7)}`}}>
-          {FACTS.to}
-        </span>
+      <div style={{position: 'absolute', left: 0, right: 0, top: y - 262, textAlign: 'center', ...lab, fontSize: 26, color: C.ivory, textShadow: '0 2px 14px rgba(0,0,0,0.9)', opacity: clamp(rIn * 2)}}>
+        {FACTS.fromTo}
       </div>
-      <div style={{position: 'absolute', left: x0, top: y + 18, ...mono, color: rgba(C.ice, 0.75), opacity: clamp(rIn * 1.5 - 0.5)}}>
-        {FACTS.quoteBy}
+      <div style={{position: 'absolute', left: 0, right: 0, top: y - 208, height: 110, textAlign: 'center', whiteSpace: 'nowrap'}}>
+        <div style={{position: 'absolute', left: 0, right: 0, top: 18, fontFamily: F.mono, fontSize: 76, color: C.ivory, opacity: fromOp * clamp(rIn * 2 - 0.4), textShadow: '0 2px 20px rgba(0,0,0,0.85)', transform: `scale(${1 - 0.25 * clamp(comp * 2)})`}}>
+          {FACTS.from}
+        </div>
+        <div style={{position: 'absolute', left: 0, right: 0, top: -2, fontFamily: F.mono, fontWeight: 600, fontSize: 108, color: C.gold, opacity: toOp, textShadow: `0 0 34px ${rgba(C.ember, 0.8)}, 0 2px 20px rgba(0,0,0,0.7)`, transform: `scale(${lerp(1.25, 1, toOp)})`}}>
+          {FACTS.to}
+        </div>
+      </div>
+      <div style={{position: 'absolute', left: 0, right: 0, top: y + 36, textAlign: 'center', ...mono, fontSize: 24, color: rgba(C.ice, 0.85), opacity: clamp(rIn * 1.5 - 0.5), textShadow: '0 2px 10px rgba(0,0,0,0.9)'}}>
+        {FACTS.fromBy} · {t > 0 ? 'on biology & medicine' : ''}
       </div>
     </div>
   );

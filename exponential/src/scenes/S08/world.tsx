@@ -185,7 +185,6 @@ const buildLinks = (th: number[], ph: number[], nodeA: Float32Array) => {
 
 // ---------- shaders ----------
 const NODE_BODY = /* glsl */ `
-  ${'' /* WORLD_GLSL injected via uniforms block below */}
   float th = aNode.x, ph = aNode.y, r = aNode.z;
   pos = embed(th, ph, 0.);
   float ta = arrive(th, ph, r);
@@ -270,7 +269,7 @@ export const World: React.FC<WorldProps> = ({u, arcs, arcU}) => {
   const pre = WORLD_GLSL;
   return (
     <>
-      <GLines count={links.count} attrs={links.attrs} body={`}\n${pre}\nvoid _unused(){`.length ? LINK_BODY : LINK_BODY} uniforms={u} glsl={pre} renderOrder={1} />
+      <GLines count={links.count} attrs={links.attrs} body={LINK_BODY} uniforms={u} glsl={pre} renderOrder={1} />
       <GPoints count={NODES} attrs={nodeAttrs} body={NODE_BODY} uniforms={u} glsl={pre} sprite="spark" renderOrder={2} />
       {arcs && arcU && <GLines count={arcs.count} attrs={arcs.attrs} body={ARC_LINE} uniforms={{...u, ...arcU}} glsl={pre} renderOrder={3} />}
     </>

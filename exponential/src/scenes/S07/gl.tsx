@@ -125,10 +125,11 @@ type PointsProps = {
   blending?: 'add' | 'normal';
   depthTest?: boolean;
   renderOrder?: number;
+  glsl?: string; // extra functions, injected after the uniform declarations
 };
 
 // GPU particles with optional custom per-vertex attributes (also gets aSeed, aSeed2, aIndex).
-export const GPoints: React.FC<PointsProps> = ({count, seed = 1, attrs, body, uniforms = {}, sprite = 'soft', blending = 'add', depthTest = false, renderOrder = 0}) => {
+export const GPoints: React.FC<PointsProps> = ({count, seed = 1, attrs, body, uniforms = {}, sprite = 'soft', blending = 'add', depthTest = false, renderOrder = 0, glsl = ''}) => {
   const {height} = useThree((s) => s.size);
   const geometry = useMemo(() => {
     const g = new THREE.BufferGeometry();
@@ -145,6 +146,7 @@ export const GPoints: React.FC<PointsProps> = ({count, seed = 1, attrs, body, un
       ${attrDecl(attrs)}
       varying vec3 vColor; varying float vAlpha; varying float vOcc;
       ${NOISE3}
+      ${glsl}
       void main(){
         vec3 pos = vec3(0.); float size = 2.0; vec3 color = vec3(1.); float alpha = 1.0; float occ = 0.;
         ${body}
@@ -170,7 +172,7 @@ export const GPoints: React.FC<PointsProps> = ({count, seed = 1, attrs, body, un
       premultipliedAlpha: true,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [body, uk, sprite, blending, depthTest, attrs]);
+  }, [body, uk, sprite, blending, depthTest, attrs, glsl]);
   material.uniforms.uPx.value = height / 1080;
   push(material, uniforms);
   return <points geometry={geometry} material={material} frustumCulled={false} renderOrder={renderOrder} />;
@@ -183,10 +185,11 @@ type LinesProps = {
   uniforms?: U;
   depthTest?: boolean;
   renderOrder?: number;
+  glsl?: string;
 };
 
 // 1-px GPU line segments (additive light). Vertex i and i+1 form a segment.
-export const GLines: React.FC<LinesProps> = ({count, attrs, body, uniforms = {}, depthTest = false, renderOrder = 0}) => {
+export const GLines: React.FC<LinesProps> = ({count, attrs, body, uniforms = {}, depthTest = false, renderOrder = 0, glsl = ''}) => {
   const geometry = useMemo(() => {
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(count * 3), 3));
@@ -201,6 +204,7 @@ export const GLines: React.FC<LinesProps> = ({count, attrs, body, uniforms = {},
       ${attrDecl(attrs)}
       varying vec3 vColor; varying float vAlpha;
       ${NOISE3}
+      ${glsl}
       void main(){
         vec3 pos = vec3(0.); vec3 color = vec3(1.); float alpha = 1.0;
         ${body}
@@ -220,7 +224,7 @@ export const GLines: React.FC<LinesProps> = ({count, attrs, body, uniforms = {},
       premultipliedAlpha: true,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [body, uk, depthTest, attrs]);
+  }, [body, uk, depthTest, attrs, glsl]);
   push(material, uniforms);
   return <lineSegments geometry={geometry} material={material} frustumCulled={false} renderOrder={renderOrder} />;
 };
