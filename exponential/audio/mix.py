@@ -81,6 +81,16 @@ def duck_curve(vo):
     return d
 
 
+def hit_windows(T, n):
+    """Designed hits that land under a VO line (hero reveal on "Claude", the S09 swell):
+    ducking is eased there so the moment still reads as the biggest thing on screen."""
+    w = np.zeros(n)
+    for t0, length in ((T.end('L13') - 0.45, 1.4), (T.cue('L23') + 0.2, 2.2)):
+        a, b = ns(t0 - 0.08), min(n, ns(t0 + length))
+        w[a:b] = 1.0
+    return uniform_filter1d(w, ns(0.25))
+
+
 def scene_table(T, x, music, vo):
     rows = []
     for sid in sorted(T.sc):
@@ -196,8 +206,9 @@ def main():
     # balance, then sidechain duck (band-split so the low end keeps its weight)
     music = music * db(MUSIC_LUFS - lufs_integrated(music))
     low = zlp(music, 150, 2)
-    g_hi = db(-DUCK_DB * d)
-    g_lo = db(-DUCK_LOW_DB * d)
+    w = hit_windows(T, n)
+    g_hi = db(-DUCK_DB * d * (1 - 0.6 * w))
+    g_lo = db(-DUCK_LOW_DB * d * (1 - w))
     music_d = ((music - low) * g_hi + low * g_lo).astype(F32)
     # master bus
     mix = music_d + vo

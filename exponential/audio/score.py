@@ -722,9 +722,9 @@ def sc01(sh, T):
            dur=slam - T.cue('L02') + 0.4, att=2.5, rel=0.25, fc=450, tilt=1.3, nv=5)
     sh.add(slam - 5.0, 'rev swell > title', 'revswell', -14, 0.0, notes=['D2', 'A2', 'D3', 'F3', 'A3', 'D4'], dur=5.0)
     sh.add(slam - 3.2, 'noise riser > title', 'riser', -21, 0.2, dur=3.2, f0=120, f1=5000, shape=3.0)
-    sh.add(slam, 'TITLE SLAM impact', 'impact', -6, 0.2, huge=0.5, f0=110, f1=32, tau=1.5, crack=1.0)
-    sh.add(slam, 'TITLE SLAM braam', 'braam', -11, 0.3, huge=0.35, notes=['D1', 'A1', 'D2', 'A2', 'F3'], dur=0.7, rel=2.6)
-    sh.add(slam, 'TITLE SLAM low brass', 'brass', -10, 0.4, huge=0.3, notes=['D2', 'A2', 'D3', 'F3', 'A3'], dur=0.5,
+    sh.add(slam, 'TITLE SLAM impact', 'impact', -7.5, 0.2, huge=0.5, f0=110, f1=32, tau=1.5, crack=1.0)
+    sh.add(slam, 'TITLE SLAM braam', 'braam', -12.5, 0.3, huge=0.35, notes=['D1', 'A1', 'D2', 'A2', 'F3'], dur=0.7, rel=2.6)
+    sh.add(slam, 'TITLE SLAM low brass', 'brass', -11.5, 0.4, huge=0.3, notes=['D2', 'A2', 'D3', 'F3', 'A3'], dur=0.5,
            att=0.01, rel=2.0, bright=2200, drive=2.0)
     sh.add(slam, 'title sub', 'sub', -14, 0.0, notes=['D1'], dur=1.2, att=0.005, rel=1.8)
     sh.add(slam, 'title ring D5', 'bell', -19, 0.6, huge=0.3, note='D5', **dict(COLD_BELL, dur=e - slam))
