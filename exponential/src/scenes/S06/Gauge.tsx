@@ -90,9 +90,9 @@ export const Gauge: React.FC<Props> = ({t, cx, cy, r, boot, cursor, swe, unlocke
       <circle cx={cx} cy={cy} r={r - 30} fill="url(#gcore)" opacity={b2} />
       {/* outer decorative rings */}
       <g opacity={b1}>
-        <circle cx={cx} cy={cy} r={r + 44} fill="none" stroke={rgba(C.gold, 0.16)} strokeWidth={1} strokeDasharray="2 7" transform={`rotate(${-t * 6} ${cx} ${cy})`} />
+        <circle cx={cx} cy={cy} r={r + 36} fill="none" stroke={rgba(C.gold, 0.16)} strokeWidth={1} strokeDasharray="2 7" transform={`rotate(${-t * 6} ${cx} ${cy})`} />
         {[45, 135, 225, 315].map((a) => (
-          <path key={a} d={arc(cx, cy, r + 58, a - 14 + t * 3, a + 14 + t * 3)} stroke={rgba(C.gold, 0.45)} strokeWidth={1.4} fill="none" />
+          <path key={a} d={arc(cx, cy, r + 46, a - 14 + t * 3, a + 14 + t * 3)} stroke={rgba(C.gold, 0.45)} strokeWidth={1.4} fill="none" />
         ))}
       </g>
       {/* timeline ring */}

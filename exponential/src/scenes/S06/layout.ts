@@ -1,6 +1,6 @@
 // HUD layout shared by S05 (the emblem pulls back into the HUD at the end) and S06 (the power scanner).
 // The power HUD is centred: ClaudeSpark inside a circular gauge, glass panels floating around it.
-export const GAUGE = {x: 960, y: 486, r: 150} as const;
+export const GAUGE = {x: 960, y: 480, r: 150} as const;
 export const EMBLEM_HUD_SIZE = 118; // ClaudeSpark size inside the gauge
 
 // The hero pose at the end of S05's reveal (emblem at rest just before it pulls back into the HUD).
