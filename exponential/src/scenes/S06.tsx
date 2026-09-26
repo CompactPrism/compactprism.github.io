@@ -97,7 +97,7 @@ export const S06: React.FC = () => {
     line1: at('L16', 0.66),
     big: at('L16', VO_FRAC.L16.doubled) - 0.35,
     lately: at('L16', VO_FRAC.L16.lately),
-    wind: dur - 1.2,
+    wind: dur - 1.45,
   };
 
   // camera: slow drift + push; everything in the HUD world is projected with it
@@ -151,7 +151,7 @@ export const S06: React.FC = () => {
   const landing = t < FLY_S06 + 0.5 ? Math.exp(-Math.max(0, t - FLY_S06) * 5) * (t > FLY_S06 ? 1 : 0) : 0;
 
   // end: cold wind, flicker, dip
-  const wind = prog(t, B.wind, dur, E.in);
+  const wind = prog(t, B.wind, dur - 0.1, E.inOut);
   const flick = wind > 0 ? (rnd(`fl${frame}`) > 0.62 ? 0.45 : 1) * (1 - 0.45 * wind) : 1;
   const glitch = wind > 0 && rnd(`gl${frame}`) > 0.7 ? (rnd(`gx${frame}`) - 0.5) * 18 * wind : 0;
   const black = prog(t, dur - 0.4, dur, E.in);
