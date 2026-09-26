@@ -167,13 +167,14 @@ export const City: React.FC<Props> = ({cam, t, ign, city, draw, boost}) => {
     const mats: THREE.Matrix4[] = [];
     const CELL = 10;
     for (let ix = -52; ix <= 52; ix++) {
-      for (let iz = -150; iz <= 5; iz++) {
+      for (let iz = 5; iz >= -150; iz--) {
         const x = ix * CELL;
         const z = iz * CELL;
         const a = r(), b = r(), c = r(), d = r(), e = r();
         const dp = Math.hypot(x - PILLAR[0], z - PILLAR[2]);
         if (Math.abs(x) < 18 && z > PILLAR[2] - 10) continue; // the avenue the curve runs along
         if (dp < 34) continue; // plaza round the pillar
+        if (x > -45 && x < 210 && z > PILLAR[2] - 30) continue; // open launch field on the camera side
         if (a < (iz < -95 ? 0.4 : 0.1)) continue;
         const w = CELL * 0.74;
         const dd = CELL * (c < 0.25 ? 0.74 : 0.74);
@@ -198,7 +199,7 @@ export const City: React.FC<Props> = ({cam, t, ign, city, draw, boost}) => {
       uniforms: {...common, uR: {value: new THREE.Vector3()}, uU: {value: new THREE.Vector3()}, uF: {value: new THREE.Vector3()}, uTan: {value: 1}, uAsp: {value: 16 / 9}},
       vertexShader: SKY_V,
       fragmentShader: SKY_F,
-      depthTest: false,
+      depthTest: true,
       depthWrite: false,
     });
     return {tower, ground, sky};
@@ -228,10 +229,10 @@ export const City: React.FC<Props> = ({cam, t, ign, city, draw, boost}) => {
 
   return (
     <>
-      <mesh material={mats.sky} renderOrder={-10} frustumCulled={false}>
+      <mesh material={mats.sky} renderOrder={2} frustumCulled={false}>
         <planeGeometry args={[2, 2]} />
       </mesh>
-      <mesh material={mats.ground} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, -500]} renderOrder={-5}>
+      <mesh material={mats.ground} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, -500]} renderOrder={1}>
         <planeGeometry args={[4000, 3200]} />
       </mesh>
       <primitive object={mesh} />

@@ -76,7 +76,7 @@ const buildBackbone = () => {
 export const SAMPLES = 460;
 const RAD = 10;
 
-type Sample = {pf: THREE.Vector3; hint: THREE.Vector3 | null; w: number; h: number; s: number};
+type Sample = {pf: THREE.Vector3; hint: THREE.Vector3 | null; w: number; h: number; s: number; ss: number};
 const buildSamples = (): Sample[] => {
   const res = buildBackbone();
   const curve = new THREE.CatmullRomCurve3(
@@ -110,7 +110,7 @@ const buildSamples = (): Sample[] => {
       h = 0.035;
       hint = r.hint;
     }
-    out.push({pf, hint, w, h, s: u});
+    out.push({pf, hint, w, h, s: u, ss: r.ss});
   }
   // light smoothing of the section size so helix/loop joins are soft (arrowheads stay sharp-ish)
   const ws = out.map((o) => o.w);
@@ -271,6 +271,21 @@ export const chainPoint = (s: number, t: number, front: number): V3 => {
   const v = tangled(samples[i].s, t, new THREE.Vector3()).lerp(samples[i].pf, me);
   return [v.x, v.y, v.z];
 };
+// chain parameter at the middle of the n-th helix (ss=1) or strand (ss=2)
+export const elementS = (ss: 1 | 2, nth: number) => {
+  const smp = CACHE.get();
+  const runs: [number, number][] = [];
+  let st = -1;
+  smp.forEach((x, i) => {
+    if (x.ss === ss && st < 0) st = i;
+    if ((x.ss !== ss || i === smp.length - 1) && st >= 0) {
+      runs.push([st, i]);
+      st = -1;
+    }
+  });
+  const r = runs[Math.min(nth, runs.length - 1)];
+  return (r[0] + r[1]) / 2 / (SAMPLES - 1);
+};
 const CACHE = (() => {
   let c: Sample[] | null = null;
   return {get: () => (c ??= buildSamples())};
@@ -340,15 +355,16 @@ export const molAttrs = () => {
 };
 
 // uMk: molecule k centre (xyz) + dock progress (w); uRk: rotation angle
+// M.w = seconds since docking (negative while approaching)
 const MOL_POS = /* glsl */ `
   float mi = floor(aOff.w + .001);
   vec4 M = mi < .5 ? uM0 : (mi < 1.5 ? uM1 : uM2);
   float rr = mi < .5 ? uR.x : (mi < 1.5 ? uR.y : uR.z);
-  vec3 o = aOff.xyz;
+  vec3 o = aOff.xyz * 1.25;
   o.xy = rot(rr) * o.xy; o.xz = rot(rr * .7 + mi) * o.xz;
   pos = M.xyz + o;
-  float dock = M.w;
-  float pulse = exp(-pow((dock - .98) * 30., 2.)) * step(.9, dock);
+  float dock = smoothstep(-1.1, 0., M.w);
+  float pulse = exp(-max(M.w, 0.) * 4.) * step(0., M.w);
 `;
 export const MOL_PTS = /* glsl */ `
   ${MOL_POS}

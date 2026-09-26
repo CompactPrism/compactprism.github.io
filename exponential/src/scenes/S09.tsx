@@ -8,7 +8,7 @@ import {useScene} from '../lib/timing';
 import {C, F, rgba} from '../theme';
 import {E, clamp, lerp, prog, ramp} from '../lib/anim';
 import {ClaudeSpark} from '../lib/ClaudeSpark';
-import {CAM_INIT, Cam, CameraRig, V3, project} from './S04/cam';
+import {CAM_INIT, Cam, CameraRig, V3, add, lerpCam, mix3, mul, norm, project, sub} from './S04/cam';
 import {wordCue} from './S04/vo';
 import {City} from './S09/City';
 import {GlowLine} from './S09/GlowLine';
@@ -66,7 +66,7 @@ const HEAD = `
 // Data streams: columns of light rising out of the city and bending into the curve's beam.
 const STREAMS = `
   ${PAL}
-  float id = floor(aSeed.x * 240.);
+  float id = floor(aSeed.x * 110.);
   vec2 base = (vec2(hash11(id * 1.37 + .1), hash11(id * 7.13 + .3)) - .5) * vec2(820., 900.) + vec2(0., -420.);
   float sp = .05 + .06 * hash11(id * 3.3);
   float life = fract(aSeed.y + uTime * sp * (1. + uRush * 1.5));
@@ -78,7 +78,7 @@ const STREAMS = `
   float on = smoothstep(uIgn, uIgn - 80., dp);
   alpha = on * smoothstep(0., .06, life) * (1. - life) * (.6 + .4 * uRush);
   color = mix(EMBER, GOLD, aSeed2.x);
-  size = mix(45., 120., pow(aSeed2.y, 3.)) * (1. + uRush * .5);
+  size = mix(55., 150., pow(aSeed2.y, 3.)) * (1. + uRush * .5);
 `;
 
 // Packets hopping between towers along low arcs.
@@ -142,16 +142,20 @@ export const S09: React.FC = () => {
   const draw = drawAt(t);
   const drawSpeed = (drawAt(t + 1 / 30) - drawAt(t - 1 / 30)) * 15;
 
+  // L23: auto-frame the growing curve from the side (the whole exponential sweep fills the frame)
+  const hW = curveAt(draw);
+  const s0 = curveAt(Math.max(0, draw - 0.78));
+  const mid = mix3(s0, hW, 0.5);
+  const ext = Math.hypot(...sub(hW, s0));
+  const dA = Math.max(55, (ext * 1.08) / (2 * Math.tan((22 * Math.PI) / 180)));
+  const autoCam: Cam = {pos: add(add(mid, mul(norm([1, 0.12, 0.34]), dA)), [0, 3, 0]), target: add(mid, [0, ext * 0.04, 0]), fov: 44};
   const keys: K[] = [
-    {t: 0, pos: [92, 5, 62], tgt: [0, 12, -25], fov: 46},
-    {t: a23, pos: [118, 11, 34], tgt: [0, 42, -55], fov: 48},
-    {t: open0 + 1.9, pos: [150, 58, -26], tgt: [0, 118, -102], fov: 53},
     {t: a24 + 0.7, pos: [112, 96, 42], tgt: [-20, 22, -330], fov: 54},
     {t: b24 + 0.4, pos: [150, 106, -18], tgt: [-45, 14, -420], fov: 54},
     {t: b25 - 0.2, pos: [215, 116, 40], tgt: [-40, 62, -330], fov: 55},
     {t: dur, pos: [360, 72, 330], tgt: [0, 185, -139], fov: 58},
   ];
-  const cam = camAt(keys, t);
+  const cam = lerpCam(autoCam, camAt(keys, t), prog(t, b23 + 0.2, a24 + 0.7, E.inOut));
 
   const ign = interpolate(t, [a24 - 1.3, a24 + 3.6], [0, 1500], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: E.inOut});
   const city = prog(t, a24 - 1.0, a24 + 4, E.inOut);
@@ -177,7 +181,7 @@ export const S09: React.FC = () => {
         <City cam={cam} t={t} ign={ign} city={city} draw={draw} boost={boost} />
         <Pts count={9000} seed={3} pre={PRE_H} body={ARCS} uniforms={{uIgn: ign}} />
         <Pts count={22000} seed={5} pre={PRE_H} body={STREAMS} uniforms={{uIgn: ign, uRush: rush}} />
-        <GlowLine fn={curveAt} uMax={U_MAX} draw={draw} cull={cull} width={30 + 10 * prog(t, a23 - 0.5, b23, E.inOut) + 16 * rush} intensity={lineI} />
+        <GlowLine fn={curveAt} uMax={U_MAX} draw={draw} cull={cull} width={38 + 12 * prog(t, a23 - 0.5, b23, E.inOut) + 18 * rush} intensity={lineI} />
         <Pts count={9000} seed={9} pre={PRE} body={TRAIL} uniforms={{uDraw: draw, uDrawSpeed: drawSpeed, uOn: lineI}} depthTest={false} order={6} />
         <Pts count={500} seed={11} pre={PRE} body={HEAD} uniforms={{uDraw: draw, uGrow: grow, uOn: clamp(lineI)}} depthTest={false} order={7} />
         <Pts count={2500} seed={13} body={DUST} uniforms={{uCam: cam.pos}} depthTest={false} order={8} />
@@ -257,8 +261,10 @@ const Overlays: React.FC<OP> = ({t, cam, W, a24, b24, a25, b25}) => {
         if (op <= 0) return null;
         const p = project(cam, g.p);
         if (!p.vis || p.x < 60 || p.x > 1860 || p.y < 60 || p.y > 900) return null;
+        const hide = artIn > 0 && p.x > 1100 && p.y < 520 ? 1 - artIn : 1;
+        if (op * hide <= 0.01) return null;
         return (
-          <div key={g.txt} style={{position: 'absolute', left: p.x, top: p.y, opacity: op}}>
+          <div key={g.txt} style={{position: 'absolute', left: p.x, top: p.y, opacity: op * hide}}>
             <div style={{position: 'absolute', left: -5, top: -5, width: 10, height: 10, borderRadius: 5, background: '#fff', boxShadow: `0 0 12px ${C.gold}, 0 0 24px ${C.ember}`}} />
             <div style={{position: 'absolute', left: 0, bottom: 0, width: 1, height: 46, background: `linear-gradient(0deg, ${rgba(C.gold, 0.8)}, ${rgba(C.gold, 0)})`}} />
             <div style={{position: 'absolute', left: 8, top: -78, whiteSpace: 'nowrap', padding: '5px 12px 6px', ...glass(C.gold), ...mono, fontSize: 24, color: C.ivory}}>
@@ -269,7 +275,7 @@ const Overlays: React.FC<OP> = ({t, cam, W, a24, b24, a25, b25}) => {
       })}
 
       {artIn > 0 && (
-        <div style={{position: 'absolute', right: 150, top: 215 - (1 - artIn) * 14, opacity: artIn, padding: '16px 24px 16px', width: 520, ...glass(C.gold)}}>
+        <div style={{position: 'absolute', right: 110, top: 190 - (1 - artIn) * 14, opacity: artIn, padding: '16px 26px 16px', width: 640, whiteSpace: 'nowrap', ...glass(C.gold)}}>
           <div style={{...lab, color: rgba(C.ice, 0.88)}}>Case file · {FACTS.flt.when}</div>
           <div style={{fontFamily: F.sans, fontWeight: 760, fontSize: 38, color: C.gold, marginTop: 6, textShadow: `0 0 18px ${rgba(C.ember, 0.5)}`}}>{FACTS.flt.head}</div>
           <div style={{fontFamily: F.sans, fontSize: 26, color: C.ivory, marginTop: 4}}>{FACTS.flt.sub}</div>

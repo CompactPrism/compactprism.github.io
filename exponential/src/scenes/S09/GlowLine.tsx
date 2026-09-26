@@ -78,8 +78,8 @@ export const GlowLine: React.FC<Props> = ({fn, uMax, n = 700, draw, cull = -1, w
           void main(){
             if (vU > uDraw) discard;
             float d = abs(vSide);
-            float core = exp(-d * d * 320.);
-            float glow = exp(-d * d * 10.) * .32 + exp(-d * 5.) * .1;
+            float core = exp(-d * d * 180.);
+            float glow = exp(-d * d * 7.) * .4 + exp(-d * 3.5) * .16;
             float head = exp(-(uDraw - vU) * 16.);
             float tail = smoothstep(uCull, uCull + .04, vU);
             float fog = mix(.45, 1., exp(-vDepth * .0015));

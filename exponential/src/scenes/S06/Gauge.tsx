@@ -83,7 +83,7 @@ export const Gauge: React.FC<Props> = ({t, cx, cy, r, boot, cursor, swe, unlocke
           <stop offset="1" stopColor={C.gold} />
         </linearGradient>
         <radialGradient id="gcore">
-          <stop offset="0" stopColor={rgba(C.ember, 0.28)} />
+          <stop offset="0" stopColor={rgba(C.ember, 0.14)} />
           <stop offset="1" stopColor={rgba(C.ember, 0)} />
         </radialGradient>
       </defs>

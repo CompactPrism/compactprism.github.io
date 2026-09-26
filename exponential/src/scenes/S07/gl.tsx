@@ -307,3 +307,40 @@ export const project = (cam: THREE.PerspectiveCamera, p: V3) => {
 export const pxPerUnit = (cam: THREE.PerspectiveCamera, depth: number) => 540 / (Math.tan((cam.fov * Math.PI) / 360) * depth);
 
 export const lerp3 = (a: V3, b: V3, k: number): V3 => [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k];
+
+// Screen px + view depth -> world point, for a given camera.
+export const unprojectAt = (cam: THREE.PerspectiveCamera, x: number, y: number, depth: number): V3 => {
+  const v = new THREE.Vector3(x / 960 - 1, 1 - y / 540, 0.5).unproject(cam).sub(cam.position).normalize();
+  const fwd = new THREE.Vector3();
+  cam.getWorldDirection(fwd);
+  return cam.position.clone().add(v.multiplyScalar(depth / v.dot(fwd))).toArray() as V3;
+};
+
+// Smooth keyframed path (cubic Hermite, Catmull-Rom tangents, zero velocity at the ends).
+export const spline = (keys: {t: number; p: V3}[], t: number): V3 => {
+  if (t <= keys[0].t) return keys[0].p;
+  const n = keys.length;
+  if (t >= keys[n - 1].t) return keys[n - 1].p;
+  let i = 0;
+  while (t > keys[i + 1].t) i++;
+  const k0 = keys[i];
+  const k1 = keys[i + 1];
+  const h = k1.t - k0.t;
+  const s = (t - k0.t) / h;
+  const tan = (j: number): V3 => {
+    if (j <= 0 || j >= n - 1) return [0, 0, 0];
+    const a = keys[j - 1];
+    const b = keys[j + 1];
+    const d = b.t - a.t;
+    return [(b.p[0] - a.p[0]) / d, (b.p[1] - a.p[1]) / d, (b.p[2] - a.p[2]) / d];
+  };
+  const m0 = tan(i);
+  const m1 = tan(i + 1);
+  const s2 = s * s;
+  const s3 = s2 * s;
+  const h00 = 2 * s3 - 3 * s2 + 1;
+  const h10 = s3 - 2 * s2 + s;
+  const h01 = -2 * s3 + 3 * s2;
+  const h11 = s3 - s2;
+  return [0, 1, 2].map((c) => h00 * k0.p[c] + h10 * h * m0[c] + h01 * k1.p[c] + h11 * h * m1[c]) as V3;
+};

@@ -17,30 +17,30 @@ void main(){
   vec2 q = uv + uCam / 1080. * .3;
   float n = fbm2(q * 2.3 + vec2(T * .01, T * .006));
   vec3 col = COL_VOID;
-  col += mix(COL_STEEL * .35, COL_CLAY * .32, smoothstep(.9, .1, length(uv))) * smoothstep(.35, .85, n) * .9;
+  col += mix(COL_STEEL * .32, COL_CLAY * .22, smoothstep(.8, .1, length(uv))) * smoothstep(.42, .9, n) * .6;
   col += stars(uv + uCam / 1080. * .5, 58., T) * .35 * COL_IVORY;
 
   // holographic floor grid receding below the HUD
-  float hz = 610.;
+  float hz = 700.;
   if (p.y > hz) {
     float dy = (p.y - hz) / 540.;
     float z = .22 / dy;                      // depth
     vec2 g = vec2((p.x - 960. - uCam.x * .8) / 1080. * z * 5., z * 3. - T * .25);
     vec2 gf = abs(fract(g) - .5);
-    float line = smoothstep(.03 * z + .01, 0., min(gf.x, gf.y) * .9);
+    float line = smoothstep(.018 * z + .006, 0., min(gf.x, gf.y));
     float fade = smoothstep(0., .25, dy) * exp(-z * .35);
-    col += mix(COL_CORAL, COL_GOLD, .3) * line * fade * .35;
+    col += mix(COL_CORAL, COL_GOLD, .3) * line * fade * .1;
   }
 
   // light spill: gauge + panels
   vec2 dg = p - uGauge.xy;
   float r = length(dg);
-  col += COL_EMBER * uGauge.z * (exp(-r * r / 26000.) * .55 + 90. / (r + 260.) * .25);
+  col += COL_EMBER * uGauge.z * (exp(-r * r / 30000.) * .4 + 90. / (r + 300.) * .12);
   for (int i = 0; i < 5; i++) {
     vec3 s = vec3(uSpill[i * 3], uSpill[i * 3 + 1], uSpill[i * 3 + 2]);
     if (s.z > .001) {
       vec2 d = (p - s.xy) / vec2(330., 190.);
-      col += mix(COL_CORAL, COL_GOLD, .35) * s.z * exp(-dot(d, d)) * .22;
+      col += mix(COL_CORAL, COL_GOLD, .35) * s.z * exp(-dot(d, d)) * .16;
     }
   }
   if (uChart.z > .001) {
@@ -69,8 +69,8 @@ void main(){
   float edge = max(abs(c.x) * 2., abs(c.y) * 2.4);           // 0 centre .. 1 edges
   float front = 1. - uWind * 1.35;                              // front moves inward
   float mask = smoothstep(front - .05, front + .35, edge + (streak - .5) * .35);
-  vec3 col = mix(COL_STEEL * .5, COL_ICE * .55, smoothstep(.45, .8, streak2)) * (.35 + .65 * streak);
-  float a = mask * (.55 + .45 * streak) * clamp(uWind * 1.4, 0., 1.);
-  col += COL_ICE * pow(smoothstep(.62, .8, streak2), 2.) * .35 * mask;
+  vec3 col = mix(COL_STEEL * .7, COL_ICE * .8, smoothstep(.42, .78, streak2)) * (.35 + .65 * streak);
+  float a = mask * (.7 + .3 * streak) * clamp(uWind * 1.8, 0., 1.);
+  col += COL_ICE * pow(smoothstep(.58, .8, streak2), 2.) * .6 * mask;
   fragColor = vec4(col * a, a);
 }`;

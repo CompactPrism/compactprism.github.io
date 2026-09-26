@@ -43,9 +43,9 @@ type PanelDef = {
 const PANELS: PanelDef[] = [
   {id: 'read', title: 'READ', chip: 'MAY 2023', X: -520, Y: -170, Z: -30, w: 480, h: 262, ry: 15, rx: -5, side: 1, ping: RELEASES[1].d},
   {id: 'see', title: 'SEE', chip: 'MAR 2024', X: 520, Y: -170, Z: -110, w: 480, h: 262, ry: -15, rx: -5, side: -1, ping: RELEASES[4].d},
-  {id: 'code', title: 'CODE', chip: 'FEB 2025', X: -515, Y: 170, Z: 40, w: 520, h: 272, ry: 13, rx: 5, side: 1, ping: RELEASES[7].d},
-  {id: 'computer', title: 'COMPUTER USE', chip: 'OCT 2024', X: 515, Y: 170, Z: -50, w: 520, h: 272, ry: -13, rx: 5, side: -1, ping: RELEASES[6].d},
-  {id: 'agents', title: 'AGENTS', chip: 'HOURS', X: 0, Y: 296, Z: 20, w: 600, h: 205, ry: 0, rx: 9, side: 0, ping: RELEASES[12].d},
+  {id: 'code', title: 'CODE', chip: 'FEB 2025', X: -535, Y: 170, Z: 40, w: 520, h: 272, ry: 13, rx: 5, side: 1, ping: RELEASES[7].d},
+  {id: 'computer', title: 'COMPUTER USE', chip: 'OCT 2024', X: 535, Y: 170, Z: -50, w: 520, h: 272, ry: -13, rx: 5, side: -1, ping: RELEASES[6].d},
+  {id: 'agents', title: 'AGENTS', chip: 'HOURS', X: 0, Y: 296, Z: 20, w: 500, h: 205, ry: 0, rx: 9, side: 0, ping: RELEASES[12].d},
 ];
 const BODIES = {read: ReadBody, see: SeeBody, code: CodeBody, computer: ComputerBody, agents: AgentsBody};
 const LP = 1100; // per-panel CSS perspective
@@ -215,7 +215,7 @@ export const S06: React.FC = () => {
               const u = (t * 0.55 + o + i * 0.17) % 1;
               const back = k === 2;
               const pt = bez(p0, p1, p2, p3, back ? 1 - u : u);
-              return <rect key={k} x={pt.x - 3.5} y={pt.y - 3.5} width={7} height={7} transform={`rotate(45 ${pt.x} ${pt.y})`} fill={back ? rgba(C.ivory, 0.8) : C.gold} opacity={draw >= 1 ? Math.sin(u * Math.PI) : 0} />;
+              return <rect key={k} x={pt.x - 3.5} y={pt.y - 3.5} width={7} height={7} transform={`rotate(45 ${pt.x} ${pt.y})`} fill={back ? C.electric : C.gold} opacity={draw >= 1 ? Math.sin(u * Math.PI) : 0} />;
             });
             return (
               <g key={i} opacity={q.op}>

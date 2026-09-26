@@ -25,7 +25,7 @@ await renderMedia({
   composition,
   serveUrl,
   codec: 'h264',
-  output,
+  outputLocation: output,
   crf: Number(opt('crf', '16')),
   pixelFormat: 'yuv420p',
   x264Preset: opt('preset', 'medium'),

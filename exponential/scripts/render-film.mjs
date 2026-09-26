@@ -18,7 +18,7 @@ const opt = (k, d) => {
 };
 const only = opt('only') ? opt('only').split(',') : null;
 const assembleOnly = args.includes('--assemble');
-const outDir = path.join(root, 'out/film');
+const outDir = path.join(root, 'renders/film'); // outside out/ so no scratch clean-up can touch it
 const chunkDir = path.join(outDir, 'chunks');
 fs.mkdirSync(chunkDir, {recursive: true});
 
@@ -41,7 +41,7 @@ if (!assembleOnly) {
       composition,
       serveUrl,
       codec: 'h264',
-      output: file + '.part.mp4',
+      outputLocation: file + '.part.mp4',
       crf: Number(opt('crf', '14')),
       pixelFormat: 'yuv420p',
       x264Preset: 'medium',

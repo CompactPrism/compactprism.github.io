@@ -1064,15 +1064,15 @@ def sc09(sh, T):
            amp_pts=[(0, 0.35), (sw - s - 0.4, 0.6), (c24 - s - 0.4, 0.45), (e25 - s - 0.4, 0.8), (dur, 1.0)])
     # the massive swell as the letterbox opens
     swn = ['D2', 'A2', 'D3', 'F#3', 'A3', 'D4', 'F#4']
-    sh.add(sw, 'SWELL strings', 'pad', -6, 0.5, huge=0.2, notes=swn, dur=1.6 + 1.2, att=1.6, att_curve=2.5, rel=2.5,
+    sh.add(sw, 'SWELL strings', 'pad', -3, 0.5, huge=0.2, notes=swn, dur=1.6 + 1.2, att=1.6, att_curve=2.5, rel=2.5,
            fc_pts=[(0, 400), (1.6, 3200), (5, 1400)], vib=8)
-    sh.add(sw, 'SWELL brass', 'brass', -7, 0.4, notes=swn[:5], dur=1.6 + 0.8, att=1.6, rel=2.0, bright=2800)
-    sh.add(sw, 'SWELL choir', 'choir', -9, 0.6, notes=['D4', 'F#4', 'A4', 'D5'], dur=1.6 + 1.5, att=1.6, att_curve=2.0,
+    sh.add(sw, 'SWELL brass', 'brass', -4, 0.4, notes=swn[:5], dur=1.6 + 0.8, att=1.6, rel=2.0, bright=2800)
+    sh.add(sw, 'SWELL choir', 'choir', -6, 0.6, notes=['D4', 'F#4', 'A4', 'D5'], dur=1.6 + 1.5, att=1.6, att_curve=2.0,
            rel=2.5, vowel='oh', to_vowel='ah', morph=(0.1, 0.5))
     sh.add(sw, 'SWELL rev cym', 'revcym', -11, 0.0, dur=1.6)
     rt, rvel = roll(sw, pk - 0.03, 8, 24, 0.1, 1.0)
     sh.hits('SWELL timp roll', rt, 'timp', -14, 0.3, amps=rvel, note='D2', vel=0.8, dur=1.0)
-    sh.add(pk, 'SWELL bloom', 'impact', -6, 0.2, huge=0.6, f0=90, f1=32, tau=2.0, crack=0.4)
+    sh.add(pk, 'SWELL bloom', 'impact', -4, 0.2, huge=0.6, f0=90, f1=32, tau=2.0, crack=0.4)
     sh.add(pk, 'SWELL sub', 'sub', -12, 0.0, notes=['D1'], dur=1.5, att=0.01, rel=2.0)
     sh.add(pk, 'SWELL crash', 'crash', -17, 0.3, dur=4.0)
     # full hero theme with choir under L24 (phrase A + answer B)
@@ -1285,6 +1285,10 @@ def mixdown(T, sh, jobs=3, log=print):
     mid = zbp(mix, 1000, 4000, 2)
     mix = mix - (1 - db(-5.0)) * act[None] * mid
     mix = zhp(mix, 28, 2)
+    # air: a gentle harmonic exciter (saturate the 2-6 kHz band, keep only what lands above 5 kHz)
+    band = zbp(mix, 2000, 6000, 2)
+    k = 3.0 / (np.abs(band).max() + 1e-9)
+    mix = mix + 0.35 * zhp(np.tanh(k * band) / k, 5000, 2)
     # mono below 110 Hz
     low = zlp(mix, 110, 2)
     mix = mix - low + low.mean(axis=0, keepdims=True)

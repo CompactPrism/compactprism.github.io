@@ -334,7 +334,7 @@ export const AgentsBody: React.FC<{u: number; t: number}> = ({u, t}) => {
   const hand = clk * 360 * 4.8; // hours spin by
   return (
     <div style={{display: 'flex', gap: 22}}>
-      <div style={{width: 150, flex: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+      <div style={{width: 130, flex: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
         <svg width={92} height={92}>
           <circle cx={46} cy={46} r={40} fill="none" stroke={rgba(C.ivory, 0.12)} strokeWidth={3} />
           <path
@@ -366,7 +366,7 @@ export const AgentsBody: React.FC<{u: number; t: number}> = ({u, t}) => {
           return (
             <div key={name} style={{position: 'absolute', left: 44, top: i * 27, height: 27, right: 0, display: 'flex', alignItems: 'center', gap: 12, opacity: g}}>
               <div style={{width: 8, height: 8, borderRadius: 4, background: C.coral, boxShadow: `0 0 8px ${C.coral}`}} />
-              <div style={{...mono(22, C.ivory), width: 104}}>{name}</div>
+              <div style={{...mono(22, C.ivory), width: 110}}>{name}</div>
               <div style={{flex: 1, height: 4, background: rgba(C.ivory, 0.08), borderRadius: 2}}>
                 <div style={{width: `${Math.min(1, work) * 100}%`, height: 4, borderRadius: 2, background: rgba(C.gold, 0.8)}} />
               </div>
