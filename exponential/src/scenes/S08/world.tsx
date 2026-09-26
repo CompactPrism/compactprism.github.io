@@ -191,11 +191,11 @@ const NODE_BODY = /* glsl */ `
   float lit = smoothstep(ta, ta + .5, uT);
   float flash = exp(-max(0., uT - ta) * 3.5) * step(ta, uT);
   float learner = step(aNode.w, .42);
-  vec3 cold = vec3(.30, .37, .48);
-  vec3 warm = mix(vec3(.93, .54, .37), vec3(.96, .78, .50), r);
+  vec3 cold = vec3(.40, .49, .64);
+  vec3 warm = mix(vec3(.93, .54, .37), vec3(.98, .80, .52), r);
   color = mix(cold, warm, lit) + vec3(1., .9, .75) * flash;
-  size = mix(2.0, 3.4, lit) * (learner > .5 ? 1.25 : .9) + flash * 3.;
-  alpha = mix(.32, .85, lit) * fogA(pos) * facing(pos) * uOp;
+  size = (mix(2.5, 3.6, lit) * (learner > .5 ? 1.25 : .9) + flash * 3.) * mix(1., 2.3, uCurv);
+  alpha = mix(.55, .95, lit) * fogA(pos) * facing(pos) * uOp;
 `;
 const LINK_BODY = /* glsl */ `
   pos = embed(aA.x, aA.y, 0.);
@@ -203,7 +203,7 @@ const LINK_BODY = /* glsl */ `
   float lb = smoothstep(arrive(aB.x, aB.y, aB.z), arrive(aB.x, aB.y, aB.z) + .6, uT);
   float lit = min(la, lb);
   color = mix(vec3(.35, .45, .6), vec3(.98, .7, .42), lit);
-  alpha = mix(.035, .42, lit) * fogA(pos) * facing(pos) * uOp;
+  alpha = mix(.06, .45, lit) * fogA(pos) * facing(pos) * uOp;
 `;
 
 // long-haul arcs (V3): aK = (arc index, s, launch time, -), aP/aQ = endpoint dirs

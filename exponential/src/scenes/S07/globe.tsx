@@ -16,13 +16,14 @@ void main(){
 
 const FRAG = /* glsl */ `
 varying vec3 vN; varying vec3 vObj; varying vec3 vW;
+float fbmG(vec3 p){ return snoise(p) * .5 + snoise(p * 2.03 + 17.1) * .25 + snoise(p * 4.1 + 31.7) * .125; }
 void main(){
   vec3 n = normalize(vN);
   vec3 V = normalize(cameraPosition - vW);
   vec3 L = normalize(uSun);
   vec3 sp = normalize(vObj);
   sp.xz = rot(uSpin) * sp.xz;
-  float c = fbm3(sp * 1.6 + 4.) + .1 * snoise(sp * 7.);
+  float c = fbmG(sp * 1.6 + 4.) + .06 * snoise(sp * 7.);
   float land = smoothstep(.05, .11, c);
   float ndl = dot(n, L);
   float diff = clamp(ndl, 0., 1.);
@@ -34,22 +35,28 @@ void main(){
   vec3 col = mix(ocean, landc, land) * (diff * 1.3 + .025);
   vec3 Hh = normalize(L + V);
   col += vec3(1., .9, .78) * pow(max(dot(n, Hh), 0.), 50.) * (1. - land) * .55 * cln * diff;
-  float cl = smoothstep(.15, .6, fbm3(sp * 3.2 + vec3(uT * .03, 0., 0.)) + .1);
-  col = mix(col, vec3(.88, .9, .94) * (diff * .95 + .02), cl * .5 * cln);
+  if (cln > .01) {
+    float cl = smoothstep(.15, .6, fbmG(sp * 3.2 + vec3(uT * .03, 0., 0.)) + .1);
+    col = mix(col, vec3(.88, .9, .94) * (diff * .95 + .02), cl * .5 * cln);
+  }
   // warm lights of the connected world (night side)
-  float grid = smoothstep(.55, .95, snoise(sp * 24.) * .6 + snoise(sp * 7.) * .6);
-  col += vec3(1., .66, .36) * grid * land * night * uLights * 1.4;
+  if (uLights * night > .01) {
+    float grid = smoothstep(.55, .95, snoise(sp * 24.) * .6 + snoise(sp * 7.) * .6);
+    col += vec3(1., .66, .36) * grid * land * night * uLights * 1.4;
+  }
   // smog with rising heat shimmer
-  vec3 sh = sp + .05 * vec3(snoise(sp * 8. + vec3(0., uT * 1.7, 0.)), snoise(sp * 8. + 5. + vec3(0., uT * 1.7, 0.)), 0.);
-  float sm = fbm3(sh * 2.3 + vec3(0., -uT * .15, uT * .06)) * .5 + .5;
-  float clr = smoothstep(uClr.w, uClr.w - .35, acos(clamp(dot(normalize(vObj), normalize(uClr.xyz)), -1., 1.)));
-  float smog = clamp(uSmog * (smoothstep(.25, .7, sm) + .45), 0., .96) * (1. - clr);
-  vec3 smogC = mix(vec3(.13, .07, .17), vec3(.40, .24, .44), sm) * (.25 + diff * .95);
-  col = mix(col, smogC, smog);
+  float smogA = uSmog * (1. - clr0);
+  if (smogA > .005) {
+    vec3 sh = sp + .05 * vec3(1., .6, 0.) * snoise(sp * 8. + vec3(0., uT * 1.7, 0.));
+    float sm = fbmG(sh * 2.3 + vec3(0., -uT * .15, uT * .06)) * .5 + .5;
+    float smog = clamp(smogA * (smoothstep(.25, .7, sm) + .45), 0., .96);
+    vec3 smogC = mix(vec3(.13, .07, .17), vec3(.40, .24, .44), sm) * (.25 + diff * .95);
+    col = mix(col, smogC, smog);
+  }
   // atmosphere at the limb
   float fr = pow(1. - max(dot(n, V), 0.), 2.4);
-  vec3 atmo = mix(vec3(.46, .26, .52) * uSmog, mix(vec3(.32, .58, 1.), vec3(1., .74, .44), uHalo) * uClean, uClean);
-  col += atmo * fr * ((1. - night) * .9 + .3);
+  vec3 atmo = mix(vec3(.46, .26, .52) * uSmog, mix(vec3(.32, .58, 1.), vec3(1., .74, .44), uHalo), cln);
+  col += atmo * fr * ((1. - night) * .9 + .3 + uHalo * .5);
   gl_FragColor = vec4(col * uOpacity, uOpacity);
 }`;
 

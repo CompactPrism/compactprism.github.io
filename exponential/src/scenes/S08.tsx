@@ -33,18 +33,18 @@ const SITE = surfaceFrame([-0.22, 0.5, 0.84]); // where the energy landscape sta
 const SUN: V3 = [-0.75, 0.5, 0.35];
 
 const GREET: {w: string; f: string; u: number; v: number; lift: number}[] = [
-  {w: 'Hello', f: F.serif, u: -0.6, v: -2.2, lift: 0.4},
-  {w: 'Hola', f: F.serif, u: 1.5, v: -3.0, lift: 0.55},
-  {w: 'Bonjour', f: F.serif, u: -2.6, v: -3.6, lift: 0.5},
-  {w: '你好', f: "'WenQuanYi Zen Hei', sans-serif", u: 3.1, v: -4.6, lift: 0.7},
-  {w: 'नमस्ते', f: "'FreeSerif', serif", u: -1.0, v: -5.2, lift: 0.75},
-  {w: 'Habari', f: F.serif, u: 0.9, v: -6.3, lift: 0.7},
-  {w: 'مرحبا', f: "'FreeSerif', serif", u: -3.9, v: -6.8, lift: 0.9},
-  {w: 'Olá', f: F.serif, u: 4.4, v: -7.4, lift: 0.9},
-  {w: 'こんにちは', f: "'IPAGothic', sans-serif", u: 2.2, v: -8.6, lift: 1.0},
-  {w: '안녕하세요', f: "'WenQuanYi Zen Hei', sans-serif", u: -2.3, v: -9.0, lift: 1.0},
-  {w: 'Привет', f: "'FreeSerif', serif", u: 0.1, v: -10.4, lift: 1.1},
-  {w: 'Sawubona', f: F.serif, u: 5.0, v: -10.8, lift: 1.2},
+  {w: 'Hello', f: F.serif, u: -0.6, v: -2.2, lift: 0.22},
+  {w: 'Hola', f: F.serif, u: 1.5, v: -3.0, lift: 0.3},
+  {w: 'Bonjour', f: F.serif, u: -2.6, v: -3.6, lift: 0.28},
+  {w: '你好', f: "'WenQuanYi Zen Hei', sans-serif", u: 2.2, v: -4.2, lift: 0.36},
+  {w: 'नमस्ते', f: "'FreeSerif', serif", u: -1.0, v: -5.2, lift: 0.38},
+  {w: 'Habari', f: F.serif, u: 0.9, v: -6.3, lift: 0.36},
+  {w: 'مرحبا', f: "'FreeSerif', serif", u: -3.9, v: -6.8, lift: 0.42},
+  {w: 'Olá', f: F.serif, u: 3.3, v: -6.4, lift: 0.42},
+  {w: 'こんにちは', f: "'IPAGothic', sans-serif", u: 2.2, v: -8.6, lift: 0.46},
+  {w: '안녕하세요', f: "'WenQuanYi Zen Hei', sans-serif", u: -2.3, v: -9.0, lift: 0.46},
+  {w: 'Привет', f: "'FreeSerif', serif", u: 0.1, v: -10.4, lift: 0.5},
+  {w: 'Sawubona', f: F.serif, u: 3.6, v: -10.2, lift: 0.52},
 ];
 
 // V3 long-haul arcs: from the edge of the lit region to remote nodes (sphere-local directions)
@@ -88,7 +88,7 @@ export const S08: React.FC = () => {
   const wave: Wave = {
     tA: named2 + 0.05,
     tB: hour + 0.1,
-    rho1: 10.5,
+    rho1: 6.5,
     tC: named3 + 0.1,
     tD: reach + 1.3,
     speed: 3.4,
@@ -98,7 +98,7 @@ export const S08: React.FC = () => {
   // ---------------- cameras ----------------
   const dr = drift(t, 0.05, 7);
   const aOrb = lerp(-0.34, 0.24, prog(t, 0, c20, E.inOut));
-  const cam1: CamSpec = {pos: [7.3 * Math.sin(aOrb) + dr.x, 0.75 + dr.y, 7.3 * Math.cos(aOrb)], target: [-0.95, 0.05, 0], fov: 40};
+  const cam1: CamSpec = {pos: [8.3 * Math.sin(aOrb) + dr.x, 0.8 + dr.y, 8.3 * Math.cos(aOrb)], target: [-1.2, 0.08, 0], fov: 40};
   const k2 = prog(t, c20, c21, E.linear);
   const cam2: CamSpec = {pos: [O[0] + 0.35 * Math.sin(t * 0.25) + dr.x, O[1] + 1.05 - 0.15 * k2 + dr.y, O[2] + 3.0 - 1.4 * k2], target: [O[0] + 0.2, O[1] - 0.12, O[2] - 8], fov: 42};
   const dirV3 = (k: number) => new THREE.Vector3().lerpVectors(new THREE.Vector3(0.05, 0.62, 0.78), new THREE.Vector3(0.3, -0.1, 0.95), k).normalize();
@@ -134,8 +134,8 @@ export const S08: React.FC = () => {
   const cam4: CamSpec = {pos: hermite(posKeys, t), target: hermite(tgtKeys, t), fov: 40};
 
   // blends between vignette cameras
-  const x12 = prog(t, c20 - 0.75, c20 + 0.55, E.inOut);
-  const x12t = prog(t, c20 - 0.9, c20 + 0.35, E.inOut);
+  const x12 = prog(t, c20 - 0.85, c20 + 0.35, E.inOut);
+  const x12t = prog(t, c20 - 1.0, c20 + 0.15, E.inOut);
   const x23 = prog(t, c21 - 0.55, c21 + 1.05, E.inOut);
   let spec: CamSpec;
   if (t < c20 + 0.6) spec = {pos: lerp3(cam1.pos, cam2.pos, x12), target: lerp3(cam1.target, cam2.target, x12t), fov: lerp(40, 42, x12)};
@@ -180,7 +180,7 @@ export const S08: React.FC = () => {
   const curv = prog(t, c21 - 0.6, c21 + 0.95, E.inOut);
   const rx = ramp(t, [c21 + 0.2, c22 + 0.6], [0, 0.72], E.inOut);
   const ry = (t - c21) * 0.05 * prog(t, c21, c21 + 1, E.linear);
-  const worldOp = Math.min(prog(t, c20 - 0.35, c20 + 0.45, E.out), 1 - prog(t, c22 - 0.3, c22 + 0.55, E.inOut));
+  const worldOp = Math.min(prog(t, c20 - 0.95, c20 + 0.1, E.out), 1 - prog(t, c22 - 0.3, c22 + 0.55, E.inOut));
   const wU = worldUniforms(wave, curv, O, rx, ry, t, lerp(0.085, 0, curv), worldOp);
   const arcs = React.useMemo(() => buildArcs(ARCS.map((a, k) => ({from: a.from, to: a.to, t: help + 0.1 + k * 0.42}))), [help]);
   const arcU = {uArcDur: 0.9, uArcFade: reach + 0.8};
@@ -198,7 +198,7 @@ export const S08: React.FC = () => {
   // ---------------- V4: planet ----------------
   const globeOn = t > c22 - 0.45;
   const globeOp = prog(t, c22 - 0.4, c22 + 0.5, E.inOut);
-  const clearAng = ramp(t, [energy - 0.3, smarter + 1.8], [0, Math.PI + 0.5], E.inOut);
+  const clearAng = ramp(t, [energy - 0.35, smarter + 0.2, smarter + 1.6], [0, 1.0, Math.PI + 0.6], E.inOut);
   const clean = prog(t, smarter + 0.2, e22 + 0.4, E.inOut);
   const halo = prog(t, smarter + 0.5, e22 + 1, E.inOut);
   // lattice placed in front of the camera as it is at "materials"
@@ -232,6 +232,7 @@ export const S08: React.FC = () => {
   const w2 = prog(t, c20 - 0.6, c20 + 0.4) * (1 - prog(t, c21 + 0.2, c21 + 1.2));
   const w34 = prog(t, c21 + 0.2, c21 + 1.2);
   const protScr = project(cam, [0, 0, 0]);
+  const limbScr = project(cam, V(surfDir(SITE, 0.66, 0).multiplyScalar(R * 1.02)));
   const globeScr = project(cam, CEN);
   const hz = project(cam, [cam.position.x + fwd.x * 500, O[1], cam.position.z + fwd.z * 500]);
   const uv = (p: {x: number; y: number}): [number, number] => [(p.x - 960) / 1080, (540 - p.y) / 1080];
@@ -240,19 +241,19 @@ export const S08: React.FC = () => {
   const mix3 = (a: number[], bb: number[], k: number) => a.map((x, i) => lerp(x, bb[i], k));
   const sky1 = [0.02, 0.026, 0.04];
   const sky2t = [0.012, 0.016, 0.03];
-  const sky2m = mix3([0.04, 0.05, 0.07], [0.16, 0.08, 0.05], litFrac2);
+  const sky2m = mix3([0.035, 0.045, 0.065], [0.075, 0.045, 0.04], litFrac2);
   const bgU = {
     uFade: 1,
     uTop: mix3(mix3(sky1, sky2t, w2), [0.008, 0.01, 0.018], w34),
     uMid: mix3(mix3([0.03, 0.036, 0.05], sky2m, w2), [0.01, 0.012, 0.02], w34),
     uBot: mix3(mix3([0.02, 0.024, 0.034], [0.01, 0.012, 0.018], w2), [0.008, 0.01, 0.016], w34),
     uHz: w2 > 0.5 && hz.visible ? uv(hz)[1] : lerp(0, -0.1, w34),
-    uHaze: [...mix3(mix3([0.05, 0.07, 0.09], [0.14, 0.07, 0.045], warm1), [0.05, 0.06, 0.08], w2 + w34), 0.6 * w1 + 0.25 * w2 + 0.12 * w34 * (1 - clean)],
+    uHaze: [...mix3(mix3([0.05, 0.07, 0.09], [0.14, 0.07, 0.045], warm1), [0.04, 0.05, 0.07], w2 + w34), 0.6 * w1 + 0.12 * w2 + 0.1 * w34 * (1 - clean)],
     uHazeS: 2.2,
     uGA: [...(w1 > 0.01 ? uv(protScr) : uv(globeScr)), w1 > 0.01 ? 0.42 : 0.5, w1 * (0.35 + 0.35 * warm1) + w34 * globeOp * (0.1 + 0.35 * halo) + w34 * (1 - globeOp) * 0.25 * litFrac3],
     uGAC: w1 > 0.01 ? mix3([0.35, 0.45, 0.55], [0.85, 0.45, 0.28], warm1) : mix3([0.3, 0.45, 0.7], [0.95, 0.62, 0.36], Math.max(halo, (1 - globeOp) * litFrac3)),
-    uGB: [...uv(hz.visible ? hz : {x: 960, y: 540}), 0.5, w2 * (0.1 + 0.5 * litFrac2)],
-    uGBC: [0.95, 0.55, 0.32],
+    uGB: [...(landOp > 0.01 && limbScr.visible ? uv(limbScr) : uv(hz.visible ? hz : {x: 960, y: 540})), landOp > 0.01 ? 0.3 : 0.26, w2 * (0.1 + 0.55 * litFrac2) + landOp * 0.5],
+    uGBC: landOp > 0.01 ? mix3([0.5, 0.3, 0.55], [0.95, 0.62, 0.36], clamp((sweep + 1) / 2)) : [0.95, 0.55, 0.32],
     uStars: 0.15 * w1 + 0.35 * w2 + 0.9 * w34,
     uDrift: [spec.pos[0] * 0.01, spec.pos[1] * 0.004],
     uSweep: [0, 0.2, 0, 0],
@@ -261,11 +262,11 @@ export const S08: React.FC = () => {
   // ---------------- overlays ----------------
   const flashIn = 1 - prog(t, 0, 0.75, E.out);
   const dip = prog(t, dur - 0.5, dur, E.inOut);
-  const hx = elementS(1, 0);
-  const sx = elementS(2, 1);
+  const hx = elementS(1, 1);
+  const sx = elementS(2, 2);
   const hP = project(cam, chainPoint(hx, t, front));
   const sP = project(cam, chainPoint(sx, t, front));
-  const bP = project(cam, pocket[0]);
+  const bP = project(cam, pocket[2]);
   const lab1 = fadeWin(t, foldEnd + 0.1, c20 - 0.4, 0.5, 0.4);
   const cardDrift = {x: (spec.pos[0] - cam1.pos[0]) * 6, y: 0};
 
@@ -277,7 +278,7 @@ export const S08: React.FC = () => {
         {v1on && (
           <>
             <GPoints count={7000} seed={81} body={DNA_BODY} uniforms={{uT: t, uSweep: ramp(t, [dec0, foldEnd + 0.6], [-0.1, 1.15], E.inOut), uOp: fadeWin(t, 0.2, c20 + 0.3, 0.8, 0.8)}} renderOrder={0} />
-            <Protein t={t} front={front} hot={prog(t, dec0 - 0.2, dec0 + 0.3) * (1 - prog(t, foldEnd, foldEnd + 0.8))} op={1 - prog(t, c20 - 0.5, c20 + 0.3, E.inOut)} />
+            <Protein t={t} front={front} hot={prog(t, dec0 - 0.2, dec0 + 0.3) * (1 - prog(t, foldEnd, foldEnd + 0.8))} op={1 - prog(t, c20 - 0.1, c20 + 0.5, E.inOut)} />
             <Molecules u={molU} />
             <GPoints count={260} seed={82} body={SPARKS} uniforms={{uT: t, uP: spark1 as number[], uI: prog(t, dec0 - 0.3, dec0) * (1 - prog(t, foldEnd, foldEnd + 0.6))}} sprite="spark" renderOrder={6} />
           </>
@@ -298,9 +299,9 @@ export const S08: React.FC = () => {
 
       {/* ---------- V1 HUD ---------- */}
       <CaseTag t={t} t0={dec0 - 0.4} t1={c20 - 0.2} n={1} name="DISEASE" />
-      <Leader x={hP.x} y={hP.y} dx={-120} dy={-70} text="α-HELIX" op={lab1} />
-      <Leader x={sP.x} y={sP.y} dx={150} dy={-90} text="β-SHEET" op={lab1} />
-      <Leader x={bP.x} y={bP.y} dx={160} dy={80} text="BINDING SITE" op={fadeWin(t, dockT[0] + 0.1, c20 - 0.4, 0.4, 0.4)} />
+      <Leader x={hP.x} y={hP.y} dx={Math.max(60, 1560 - hP.x)} dy={-Math.max(40, hP.y - 262)} text="α-HELIX" op={lab1} />
+      <Leader x={sP.x} y={sP.y} dx={Math.max(60, 1560 - sP.x)} dy={-30} text="β-SHEET" op={lab1} />
+      <Leader x={bP.x} y={bP.y} dx={Math.max(60, 1560 - bP.x)} dy={50} text="BINDING SITE" op={fadeWin(t, dockT[2] + 0.1, c20 - 0.4, 0.4, 0.4)} />
       <Card t={t} t0={dec0 + 1.3} t1={c20 - 0.3} x={150} y={250} w={560} depth={0.5} drift={cardDrift}>
         <CardHead date="SEP 2026" />
         <CardTitle>Claude-designed protein binders</CardTitle>
@@ -348,7 +349,7 @@ export const S08: React.FC = () => {
           );
         })}
       <CaseTag t={t} t0={c20 + 0.5} t1={c21 - 0.1} n={2} name="IGNORANCE" />
-      <Card t={t} t0={tutor + 0.6} t1={c21 - 0.1} x={1250} y={214} w={520} depth={0.4} tilt={-6} drift={{x: Math.sin(t * 0.25) * 8, y: 0}}>
+      <Card t={t} t0={tutor + 0.6} t1={c21 - 0.1} x={1150} y={204} w={630} depth={0.4} tilt={-6} drift={{x: Math.sin(t * 0.25) * 8, y: 0}}>
         <CardHead date="JAN 2026" kind="EDUCATION" />
         <CardTitle>Teach For All</CardTitle>
         <CardBody>AI training for educators in 63 countries</CardBody>
